@@ -6,6 +6,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.kolibri.rule=Host(`kolibri-inspect.de`) || Host(`www.kolibri-inspect.de`)"
-      - "traefik.http.routers.kolibri.entrypoints=web"
+      - "traefik.http.routers.kolibri.entrypoints=websecure"
+      - "traefik.http.routers.kolibri.tls=true"
+      - "traefik.http.routers.kolibri.tls.certresolver=letsencrypt"
       - "traefik.http.services.kolibri.loadbalancer.server.port=80"
     restart: unless-stopped
