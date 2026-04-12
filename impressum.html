@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Impressum – Kolibri Inspect</title>
+  <title>Impressum – KolibriInspect</title>
+  <meta name="robots" content="noindex, follow" />
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -30,8 +31,7 @@
       backdrop-filter:blur(18px);
       border-bottom:1px solid var(--borderM);
     }
-    .nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-weight:700;font-size:1.1rem;color:var(--text)}
-    .nav-logo span{color:var(--tealB)}
+    .nav-logo img{height:30px;mix-blend-mode:lighten}
     .back-btn{
       display:inline-flex;align-items:center;gap:7px;
       font-size:.85rem;font-weight:500;color:var(--muted);
@@ -75,6 +75,16 @@
     .info-card p{margin-bottom:.35rem}
     .info-card p:last-child{margin-bottom:0}
 
+    .legal-note{
+      background:rgba(22,126,116,.07);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:1rem 1.3rem;
+      font-size:.8rem;
+      color:var(--muted);
+      margin-bottom:1.5rem;
+    }
+
     /* FOOTER */
     footer{
       background:var(--card);
@@ -92,7 +102,7 @@
 
 <nav>
   <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
-    <img src="Bilder/Logo/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" style="height:30px;mix-blend-mode:lighten" />
+    <img src="Bilder/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
   </a>
   <a href="index.html" class="back-btn">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -105,42 +115,104 @@
     <div class="page-tag">Rechtliches</div>
     <h1>Impressum</h1>
 
+    <p style="font-size:.8rem;color:var(--dim);margin-bottom:1.8rem">
+      Angaben gemäß § 5 Telemediengesetz (TMG) und § 55 Abs. 2 Rundfunkstaatsvertrag (RStV)
+    </p>
+
+    <!-- Hauptangaben -->
     <div class="info-card">
-      <p><strong>Kolibri Inspect</strong></p>
-      <p>Felix Plöchinger</p>
-      <p>Passauer Str. 20<br/>94121 Salzweg<br/>Bayern, Deutschland</p>
+      <p><strong>KolibriInspect</strong></p>
+      <p>Dipl. Ing. Friedrich Plöchinger (und Team)</p>
+      <p>Eichenweg 8<br/>94121 Salzweg<br/>Bayern, Deutschland</p>
       <p style="margin-top:.6rem">
         <strong>Telefon:</strong> <a href="tel:+4915156054911">+49 151 56054911</a><br/>
-        <strong>E-Mail:</strong> <a href="mailto:info@kolibri-inspect.de">info@kolibri-inspect.de</a>
+        <strong>E-Mail:</strong> <a href="mailto:info@kolibri-inspect.de">info@kolibri-inspect.de</a><br/>
+        <strong>Website:</strong> <a href="https://www.kolibri-inspect.de" rel="noopener">www.kolibri-inspect.de</a>
       </p>
-      <p style="margin-top:.6rem;font-size:.82rem;color:var(--dim)">
-        USt-IdNr.: wird nachgetragen<br/>
-        Sitz der Gesellschaft: Salzweg<br/>
-        Amtsgericht Passau: wird nachgetragen
+      <p style="margin-top:.6rem">
+        <strong>Geschäftszeiten:</strong> Mo–Fr 07:00–18:00 Uhr
       </p>
     </div>
 
-    <p style="font-size:.8rem;color:var(--dim);margin-bottom:2.5rem">
-      Angaben gemäß § 5 TMG
-    </p>
+    <!-- Steuer / Register -->
+    <div class="section">
+      <h2>Steuerliche Angaben</h2>
+      <p>
+        <strong>Umsatzsteuer-Identifikationsnummer (USt-IdNr.):</strong> wird nachgetragen, sobald vorhanden (§ 27a UStG)<br/>
+        <strong>Steuernummer:</strong> auf Anfrage<br/>
+        <strong>Zuständiges Finanzamt:</strong> Finanzamt Passau
+      </p>
+      <p>
+        KolibriInspect wird als Einzelunternehmen (Freiberufler/Gewerbetreibender) geführt.
+        Eine Eintragung ins Handelsregister besteht derzeit nicht.
+      </p>
+    </div>
 
+    <!-- Berufsrecht -->
+    <div class="section">
+      <h2>Berufsrechtliche Angaben</h2>
+      <p>
+        Die Durchführung von Drohnenflügen (unbemannte Luftfahrtsysteme, UAS) erfolgt auf Grundlage der
+        <strong>EU-Drohnenverordnung (EU) 2019/947</strong> und der deutschen Luftfahrt-Durchführungsverordnung (DVO-BL).
+        Unser Pilot verfügt über die erforderliche <strong>Fernpilotenzeugnis-Kategorie A2/A3</strong> (EU-Kompetenznachweis)
+        sowie alle notwendigen Betriebsgenehmigungen der <strong>Luftfahrtbehörde Bayern (LfL)</strong>.
+      </p>
+      <p>
+        Zuständige Aufsichtsbehörde für Drohnenbetrieb:<br/>
+        <strong>Luftfahrtbehörde Bayern</strong>, Bayerisches Staatsministerium für Wohnen, Bau und Verkehr,
+        Franz-Josef-Strauß-Ring 4, 80539 München
+      </p>
+    </div>
+
+    <!-- Haftung Inhalte -->
     <div class="section">
       <h2>Haftung für Inhalte</h2>
-      <p>Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+      <p>Die Inhalte dieser Website wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte übernehmen wir jedoch keine Gewähr. Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
       <p>Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.</p>
     </div>
 
+    <!-- Haftung Links -->
     <div class="section">
       <h2>Haftung für Links</h2>
-      <p>Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p>
-      <p>Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
+      <p>Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.</p>
+      <p>Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
     </div>
 
+    <!-- Urheberrecht -->
     <div class="section">
       <h2>Urheberrecht</h2>
-      <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
-      <p>Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.</p>
+      <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.</p>
+      <p>Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.</p>
     </div>
+
+    <!-- Datenschutz -->
+    <div class="section">
+      <h2>Datenschutz (Kurzhinweis)</h2>
+      <p>Die Nutzung unserer Website ist in der Regel ohne Angabe personenbezogener Daten möglich. Soweit auf unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder E-Mail-Adressen) erhoben werden, erfolgt dies, soweit möglich, stets auf freiwilliger Basis. Diese Daten werden ohne Ihre ausdrückliche Zustimmung nicht an Dritte weitergegeben. Für die Erhebung und Verarbeitung personenbezogener Daten gelten die Bestimmungen der EU-Datenschutzgrundverordnung (DSGVO) sowie des Bundesdatenschutzgesetzes (BDSG).</p>
+    </div>
+
+    <!-- Streitbeilegung -->
+    <div class="section">
+      <h2>Streitbeilegung und Online-Streitbeilegung (OS)</h2>
+      <p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:
+        <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr</a>
+      </p>
+      <p>Unsere E-Mail-Adresse finden Sie oben im Impressum.</p>
+      <p>Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG), da wir ausschließlich gegenüber Unternehmern (B2B) tätig sind.</p>
+    </div>
+
+    <!-- Bildnachweise -->
+    <div class="section">
+      <h2>Bildnachweise</h2>
+      <p>Thermografie-Aufnahmen und Drohnenfotos: © KolibriInspect / Dipl. Ing. Friedrich Plöchinger<br/>
+      Stockfotos: Lizenzierte Bilder von Pixabay / freie Lizenz<br/>
+      Logo und Grafiken: © KolibriInspect – alle Rechte vorbehalten</p>
+    </div>
+
+    <div class="legal-note">
+      Dieses Impressum wurde nach bestem Wissen und Gewissen erstellt. Für die Vollständigkeit und rechtliche Korrektheit wird keine Haftung übernommen. Im Zweifel empfehlen wir die Konsultation eines auf IT-Recht spezialisierten Rechtsanwalts.
+    </div>
+
   </div>
 </main>
 
@@ -150,7 +222,7 @@
     <a href="impressum.html">Impressum</a>
     <a href="agb.html">AGBs</a>
   </div>
-  <p>© 2025 Kolibri Inspect · Felix Plöchinger · Passauer Str. 20, 94121 Salzweg</p>
+  <p>© 2025 KolibriInspect · Dipl. Ing. Friedrich Plöchinger · Eichenweg 8, 94121 Salzweg</p>
 </footer>
 
 </body>

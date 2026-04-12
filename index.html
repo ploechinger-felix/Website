@@ -544,7 +544,7 @@
 <!-- ═══ NAV ═══ -->
 <nav id="nav" aria-label="Hauptnavigation">
   <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
-    <img src="Bilder/Logo/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
+    <img src="Bilder/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
   </a>
   <ul class="nav-links" role="list">
     <li><a href="#about">Leistungen</a></li>
@@ -576,8 +576,8 @@
 
       <header id="hdr">
         <p class="hero-tag">KI-Thermografie · Drohneninspektion · PV-Anlagen</p>
-        <h1>Jede Zelle<br><em>zählt.</em></h1>
-        <p class="hero-sub">Versteckte Defekte in Ihrer Photovoltaikanlage kosten täglich Ertrag. Wir finden sie – präzise, schnell und normgerecht nach IEC 62446-3.</p>
+        <h1>Jede Zelle zählt.<br><em>KI-Thermografie sichert Ihre Solar-Rendite.</em></h1>
+        <p class="hero-sub">Versteckte Defekte kosten täglich Ertrag. Wir machen sie sichtbar – mit Drohnen-Thermografie und KI-Auswertung, normgerecht nach IEC 62446-3.</p>
         <div class="hero-btns">
           <a href="anfrage.html" class="btn-primary">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 10.9a19.79 19.79 0 01-3.07-8.67A2 2 0 012.618 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.96-.96a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
@@ -1001,7 +1001,7 @@
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <img src="Bilder/Logo/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
+      <img src="Bilder/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
       <p>Drohnen-Thermografie und KI-Auswertung für Photovoltaik-Anlagen. Normgerecht nach IEC 62446-3. Präzise. Verständlich.</p>
     </div>
     <div class="footer-col">
@@ -1021,12 +1021,12 @@
       <h3>Kontakt</h3>
       <a href="tel:+4915156054911">+49 151 56054911</a>
       <a href="mailto:info@kolibri-inspect.de">info@kolibri-inspect.de</a>
-      <a href="#">Passauer Str. 20, 94121 Salzweg</a>
+      <a href="#">Eichenweg 8, 94121 Salzweg</a>
       <p style="font-size:.74rem;color:var(--dim);margin-top:.5rem">Mo–Fr 07:00–18:00 Uhr</p>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 KolibriInspect · Felix Plöchinger · 94121 Salzweg, Bayern</p>
+    <p>© 2025 KolibriInspect · Dipl. Ing. Friedrich Plöchinger · Eichenweg 8, 94121 Salzweg</p>
     <div class="footer-links">
       <a href="impressum.html">Impressum</a>
       <a href="agb.html">AGB</a>
@@ -1083,183 +1083,231 @@ mobNav.querySelectorAll('a').forEach(a => {
   tick();
 })();
 
-/* ── PV Canvas – realistic FLIR white-hot thermal ── */
+/* ── PV Canvas – FLIR Ironbow palette (realistic field PV) ── */
 (function () {
   const canvas = document.getElementById('pv-canvas');
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
   const H = canvas.height;
 
-  // Fault positions (normalized 0–1, matching HTML overlay pins)
+  // Fault positions (0–1 normalized), matching HTML overlay pins
   const FAULTS = [
-    { x: 0.19, y: 0.33, type: 'cell',   heat: 0.90 },
-    { x: 0.55, y: 0.20, type: 'diode',  heat: 0.76 },
-    { x: 0.75, y: 0.62, type: 'string', heat: 0.18 }, // string = cold
-    { x: 0.38, y: 0.70, type: 'dirt',   heat: 0.62 },
+    { x: 0.19, y: 0.33, type: 'cell',   delta: +0.40 }, // bright hotspot
+    { x: 0.55, y: 0.20, type: 'diode',  delta: +0.24 }, // substring warm
+    { x: 0.75, y: 0.62, type: 'string', delta: -0.20 }, // cold = disconnected string
+    { x: 0.38, y: 0.70, type: 'dirt',   delta: +0.08 }, // slight hot patch
   ];
 
-  // FLIR white-hot palette: 0=cold/black, 1=hot/white, slight warm tint in midrange
-  function flirPx(t) {
-    t = Math.max(0, Math.min(1, t));
-    const v = t * 255;
-    const r = Math.min(255, v + (t > 0.55 ? (t - 0.55) * 28 : 0));
-    const g = v;
-    const b = Math.max(0, v - (t > 0.65 ? (t - 0.65) * 38 : 0));
-    return `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`;
-  }
+  // Classic FLIR Ironbow palette (black → purple → red → orange → yellow → white)
+  const IB = [
+    [0.00, [0,   0,   0  ]],
+    [0.08, [8,   0,   35 ]],
+    [0.17, [45,  0,   95 ]],
+    [0.26, [110, 0,   170]],
+    [0.36, [195, 0,   110]],
+    [0.46, [225, 0,   35 ]],
+    [0.55, [255, 55,  0  ]],
+    [0.64, [255, 140, 0  ]],
+    [0.74, [255, 215, 0  ]],
+    [0.84, [255, 255, 70 ]],
+    [0.93, [255, 255, 195]],
+    [1.00, [255, 255, 255]],
+  ];
 
-  // Stable per-module temp variation (seeded, not random each frame)
-  const MODULE_NOISE = [];
-  for (let i = 0; i < 200; i++) {
-    const s = (i * 6571 + 1237) % 997;
-    MODULE_NOISE.push((s / 997 - 0.5) * 0.05);
+  function ironbow(t) {
+    t = Math.max(0, Math.min(1, t));
+    for (let i = 0; i < IB.length - 1; i++) {
+      const [t0, c0] = IB[i], [t1, c1] = IB[i + 1];
+      if (t <= t1) {
+        const f = (t - t0) / (t1 - t0);
+        return [
+          Math.round(c0[0] + f * (c1[0] - c0[0])),
+          Math.round(c0[1] + f * (c1[1] - c0[1])),
+          Math.round(c0[2] + f * (c1[2] - c0[2])),
+        ];
+      }
+    }
+    return [255, 255, 255];
   }
+  function rgb(t) { const [r,g,b] = ironbow(t); return `rgb(${r},${g},${b})`; }
+
+  // Deterministic per-module noise (no flicker)
+  const NOISE = Array.from({length: 400}, (_,i) => ((i*7919+1987)%997)/997*0.05-0.025);
+
+  // Row bias: realistic thermal gradient across array rows
+  const ROW_BIAS = [0.02, 0.01, 0.015, 0.00, 0.005, -0.01, 0.00, 0.015, 0.01, -0.005];
 
   let frame = 0;
 
   function draw() {
     frame++;
 
-    // ── Background (rooftop – dark, cool) ──
-    ctx.fillStyle = '#090d10';
+    // ── Background: cold ground/vegetation in deep purple ──
+    ctx.fillStyle = '#1c0038';
     ctx.fillRect(0, 0, W, H);
 
-    // Subtle rooftop texture lines
-    ctx.strokeStyle = 'rgba(25,32,38,.5)';
-    ctx.lineWidth = 1;
-    for (let y = 0; y < H; y += 14) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    // Ground texture: subtle blotchy variation
+    for (let gy = 0; gy < H; gy += 4) {
+      for (let gx = 0; gx < W; gx += 48) {
+        const v = ((gx * 3 + gy * 11 + 17) % 53) / 53 * 0.07;
+        ctx.fillStyle = rgb(0.07 + v);
+        ctx.fillRect(gx, gy, 48, 4);
+      }
     }
 
-    // ── PV array layout ──
-    const SCALE_W = 48; // right sidebar
-    const PX = 36, PY = 28; // padding
-    const COLS = 15, ROWS = 7;
-    const GAP = 3;
+    // ── PV Array Layout ──
+    const SCALE_W = 54;
+    const PX = 28, PY = 34;
+    const COLS = 20, ROWS = 9;
+    const GX = 3, GY = 5;   // horizontal/vertical gap between modules
     const aW = W - PX * 2 - SCALE_W;
     const aH = H - PY * 2;
-    const mW = (aW - GAP * (COLS - 1)) / COLS;
-    const mH = (aH - GAP * (ROWS - 1)) / ROWS;
+    const mW = (aW - GX * (COLS - 1)) / COLS;
+    const mH = (aH - GY * (ROWS - 1)) / ROWS;
 
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLS; col++) {
-        const mx = PX + col * (mW + GAP);
-        const my = PY + row * (mH + GAP);
+        const mx = PX + col * (mW + GX);
+        const my = PY + row * (mH + GY);
+        const idx = row * COLS + col;
 
-        // Base temperature: moderate warmth, slight center-warm gradient
-        const dcx = (col / (COLS - 1) - 0.5) * 2;
-        const dcy = (row / (ROWS - 1) - 0.5) * 2;
-        const dist = Math.sqrt(dcx * dcx + dcy * dcy);
-        let t = 0.40 + (1 - dist * 0.28) * 0.08 + MODULE_NOISE[row * COLS + col];
+        // Base: panels in operational range → orange-yellow in ironbow (t≈0.64–0.72)
+        let t = 0.67 + (ROW_BIAS[row] || 0) + NOISE[idx];
 
-        // Normalize fault influence
-        const cx = (mx + mW / 2) / W;
-        const cy = (my + mH / 2) / H;
+        const cx = (mx + mW * 0.5) / W;
+        const cy = (my + mH * 0.5) / H;
 
-        FAULTS.forEach(f => {
+        for (const f of FAULTS) {
           const dx = cx - f.x, dy = cy - f.y;
           const d = Math.sqrt(dx * dx + dy * dy);
 
           if (f.type === 'string') {
-            // String fault: entire affected area appears cooler
-            if (col >= 10 && Math.abs(row - Math.round(f.y * (ROWS - 1))) <= 1) {
-              t *= 0.68;
+            // Entire vertical band of modules affected
+            const fcol = Math.round(f.x * (COLS - 1));
+            if (col >= fcol - 1 && col <= fcol + 2) {
+              t += f.delta * (1 - Math.abs(col - fcol) / 3);
             }
-          } else if (d < 0.14) {
-            const inf = 1 - d / 0.14;
-            const pulse = f.type === 'cell' ? 1 + Math.sin(frame * 0.05) * 0.025 : 1;
-            t += inf * (f.heat - 0.44) * 0.55 * pulse;
+          } else if (f.type === 'diode') {
+            // Substring: half module hot + nearby modules slightly warm
+            if (d < 0.13) {
+              const inf = (1 - d / 0.13) * (1 - d / 0.13);
+              t += f.delta * inf;
+            }
+          } else if (d < 0.09) {
+            const inf = 1 - d / 0.09;
+            const pulse = f.type === 'cell' ? 1 + Math.sin(frame * 0.038) * 0.045 : 1;
+            t += f.delta * inf * inf * pulse;
           }
-        });
+        }
 
         t = Math.max(0, Math.min(1, t));
 
         // Module fill
-        ctx.fillStyle = flirPx(t);
+        ctx.fillStyle = rgb(t);
         ctx.fillRect(mx, my, mW, mH);
 
-        // Cell grid lines (3 columns × 2 rows of cells per module)
-        ctx.strokeStyle = flirPx(t * 0.7);
+        // Monocrystalline cell grid: 6 cols × 2 rows
+        ctx.strokeStyle = rgb(Math.max(0, t - 0.10));
         ctx.lineWidth = 0.5;
-        for (let ci = 1; ci < 3; ci++) {
-          ctx.beginPath();
-          ctx.moveTo(mx + ci * mW / 3, my);
-          ctx.lineTo(mx + ci * mW / 3, my + mH);
-          ctx.stroke();
+        for (let ci = 1; ci < 6; ci++) {
+          const lx = mx + ci * mW / 6;
+          ctx.beginPath(); ctx.moveTo(lx, my + 1); ctx.lineTo(lx, my + mH - 1); ctx.stroke();
         }
-        ctx.beginPath();
-        ctx.moveTo(mx, my + mH / 2);
-        ctx.lineTo(mx + mW, my + mH / 2);
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(mx + 1, my + mH * 0.5); ctx.lineTo(mx + mW - 1, my + mH * 0.5); ctx.stroke();
+
+        // Frame border (darker, realistic aluminium frame appears cooler)
+        ctx.strokeStyle = rgb(Math.max(0, t - 0.17));
+        ctx.lineWidth = 1;
+        ctx.strokeRect(mx + 0.5, my + 0.5, mW - 1, mH - 1);
       }
     }
 
-    // ── Hotspot glows (bright, white-hot) ──
-    FAULTS.forEach(f => {
-      if (f.type === 'string') return;
+    // ── Hotspot glows ──
+    for (const f of FAULTS) {
+      if (f.delta <= 0) continue;
       const fx = f.x * W, fy = f.y * H;
-      const pulse = 1 + Math.sin(frame * 0.05) * 0.18;
-      const r = 16 * pulse;
+      const pulse = 1 + Math.sin(frame * 0.042) * 0.14;
+      const radius = (f.type === 'cell' ? 11 : 20) * pulse;
 
-      const grd = ctx.createRadialGradient(fx, fy, 0, fx, fy, r);
-      grd.addColorStop(0, 'rgba(255,255,255,.96)');
-      grd.addColorStop(0.25, f.type === 'cell' ? 'rgba(255,235,200,.7)' : 'rgba(255,220,170,.65)');
-      grd.addColorStop(1, 'rgba(240,180,80,0)');
+      const grd = ctx.createRadialGradient(fx, fy, 0, fx, fy, radius);
+      if (f.type === 'cell') {
+        grd.addColorStop(0, 'rgba(255,255,255,1)');
+        grd.addColorStop(0.25, 'rgba(255,255,120,.9)');
+        grd.addColorStop(0.6,  'rgba(255,200,0,.4)');
+        grd.addColorStop(1,    'rgba(255,140,0,0)');
+      } else {
+        grd.addColorStop(0, 'rgba(255,255,180,.95)');
+        grd.addColorStop(0.35,'rgba(255,220,0,.65)');
+        grd.addColorStop(0.75,'rgba(255,150,0,.2)');
+        grd.addColorStop(1,   'rgba(255,100,0,0)');
+      }
       ctx.fillStyle = grd;
-      ctx.beginPath(); ctx.arc(fx, fy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(fx, fy, radius, 0, Math.PI * 2); ctx.fill();
 
-      // FLIR-style red crosshair
-      ctx.strokeStyle = 'rgba(224,82,82,.9)';
+      // FLIR crosshair (broken lines)
+      ctx.strokeStyle = 'rgba(255,50,50,.95)';
       ctx.lineWidth = 1;
-      const cs = 7;
+      const g = 4, l = 9;
       ctx.beginPath();
-      ctx.moveTo(fx - cs, fy); ctx.lineTo(fx + cs, fy);
-      ctx.moveTo(fx, fy - cs); ctx.lineTo(fx, fy + cs);
+      ctx.moveTo(fx - l, fy); ctx.lineTo(fx - g, fy);
+      ctx.moveTo(fx + g, fy); ctx.lineTo(fx + l, fy);
+      ctx.moveTo(fx, fy - l); ctx.lineTo(fx, fy - g);
+      ctx.moveTo(fx, fy + g); ctx.lineTo(fx, fy + l);
       ctx.stroke();
-      ctx.beginPath(); ctx.arc(fx, fy, 3.5, 0, Math.PI * 2); ctx.stroke();
-    });
+      ctx.beginPath(); ctx.arc(fx, fy, 3, 0, Math.PI * 2); ctx.stroke();
+    }
 
-    // ── Temperature scale bar (right, like real FLIR) ──
-    const SX = W - SCALE_W + 10;
-    const SW = 16;
+    // ── Ironbow temperature scale bar ──
+    const SX = W - SCALE_W + 14;
+    const SW = 14;
     const SY = PY, SH = H - PY * 2;
 
-    const sGrad = ctx.createLinearGradient(SX, SY, SX, SY + SH);
-    sGrad.addColorStop(0, '#ffffff');
-    sGrad.addColorStop(0.35, '#adadad');
-    sGrad.addColorStop(0.7, '#525252');
-    sGrad.addColorStop(1, '#101010');
-    ctx.fillStyle = sGrad;
+    // Draw gradient matching Ironbow (hot at top)
+    const sGrd = ctx.createLinearGradient(SX, SY, SX, SY + SH);
+    sGrd.addColorStop(0.00, 'rgb(255,255,255)');
+    sGrd.addColorStop(0.10, 'rgb(255,255,80)');
+    sGrd.addColorStop(0.25, 'rgb(255,210,0)');
+    sGrd.addColorStop(0.40, 'rgb(255,130,0)');
+    sGrd.addColorStop(0.52, 'rgb(255,45,0)');
+    sGrd.addColorStop(0.63, 'rgb(210,0,50)');
+    sGrd.addColorStop(0.76, 'rgb(100,0,160)');
+    sGrd.addColorStop(0.90, 'rgb(35,0,80)');
+    sGrd.addColorStop(1.00, 'rgb(0,0,0)');
+    ctx.fillStyle = sGrd;
     ctx.fillRect(SX, SY, SW, SH);
-    ctx.strokeStyle = 'rgba(255,255,255,.12)';
+    ctx.strokeStyle = 'rgba(255,255,255,.14)';
     ctx.lineWidth = 1;
     ctx.strokeRect(SX, SY, SW, SH);
 
-    // Scale tick labels
     ctx.font = '8.5px monospace';
-    ctx.fillStyle = 'rgba(180,195,205,.82)';
     ctx.textAlign = 'right';
-    [{ p: 0, l: '54.2°C' }, { p: 0.5, l: '42.1°C' }, { p: 1, l: '31.4°C' }].forEach(({ p, l }) => {
+    [
+      { p: 0,    l: '57.4°C' },
+      { p: 0.33, l: '48.8°C' },
+      { p: 0.67, l: '40.2°C' },
+      { p: 1,    l: '31.6°C' },
+    ].forEach(({ p, l }) => {
       const ly = SY + p * SH;
-      ctx.fillText(l, SX - 4, ly + 3.5);
-      ctx.strokeStyle = 'rgba(255,255,255,.18)';
+      ctx.fillStyle = 'rgba(230,230,230,.9)';
+      ctx.fillText(l, SX - 5, ly + 3.5);
+      ctx.strokeStyle = 'rgba(255,255,255,.25)';
       ctx.lineWidth = .5;
-      ctx.beginPath(); ctx.moveTo(SX - 3, ly); ctx.lineTo(SX, ly); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(SX - 4, ly); ctx.lineTo(SX, ly); ctx.stroke();
     });
 
-    // ── FLIR metadata overlay ──
+    // ── HUD Overlay ──
     ctx.font = 'bold 8.5px monospace';
-    ctx.fillStyle = 'rgba(34,194,175,.85)';
+    ctx.fillStyle = 'rgba(255,215,0,.88)';
     ctx.textAlign = 'left';
-    ctx.fillText('FLIR · IEC 62446-3 · KI-ANALYSE', PX, 17);
+    ctx.fillText('FLIR IRONBOW · IEC 62446-3 · KI-ANALYSE', PX, 20);
     ctx.font = '8px monospace';
-    ctx.fillStyle = 'rgba(138,154,168,.65)';
-    ctx.fillText(`Emiss. 0.85  ΔTmax +${(11.8 + Math.sin(frame * 0.018) * 0.6).toFixed(1)}°C  ${FAULTS.filter(f => f.type !== 'string').length + 1} Anomalien`, PX, 28);
+    ctx.fillStyle = 'rgba(200,190,160,.65)';
+    ctx.fillText(`Emiss. 0.85  ΔTmax +${(18.6 + Math.sin(frame * 0.017) * 0.55).toFixed(1)}K  ${FAULTS.length} Anomalien erkannt`, PX, 31);
 
-    // Subtle scan line
-    const scanY = (frame * 1.1) % H;
-    ctx.fillStyle = 'rgba(34,194,175,.035)';
-    ctx.fillRect(0, scanY, W, 2);
+    // Scan line
+    const scanY = (frame * 0.85) % H;
+    ctx.fillStyle = 'rgba(255,200,0,.022)';
+    ctx.fillRect(0, scanY, W - SCALE_W, 2);
 
     requestAnimationFrame(draw);
   }
