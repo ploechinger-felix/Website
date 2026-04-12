@@ -3,4 +3,9 @@ services:
     build: .
     ports:
       - "8080:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kolibri.rule=Host(`kolibri-inspect.de`) || Host(`www.kolibri-inspect.de`)"
+      - "traefik.http.routers.kolibri.entrypoints=web"
+      - "traefik.http.services.kolibri.loadbalancer.server.port=80"
     restart: unless-stopped
