@@ -29,7 +29,7 @@ services:
       - "traefik.http.routers.kolibri-api.entrypoints=websecure"
       - "traefik.http.routers.kolibri-api.tls=true"
       - "traefik.http.routers.kolibri-api.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.kolibri-api.priority=10"
+      - "traefik.http.routers.kolibri-api.priority=100"
       - "traefik.http.services.kolibri-api.loadbalancer.server.port=3000"
       # /api-Prefix vom Pfad abschneiden bevor es an Express weitergegeben wird
       - "traefik.http.middlewares.strip-api.stripprefix.prefixes=/api"
