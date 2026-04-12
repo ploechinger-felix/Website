@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KolibriInspect – Drohnen-Thermografie für PV-Anlagen | KI-Auswertung Bayern</title>
+  <meta name="description" content="Professionelle Drohnen-Thermografie für Photovoltaik-Anlagen in Bayern. KI-gestützte Erkennung von Zelldefekten, Diodenfehler und Stringfehlern. Normgerecht nach IEC 62446-3. Ab 0,40 €/Modul." />
+  <meta name="keywords" content="PV Thermografie, Drohnen Thermografie Photovoltaik, Solaranlage Inspektion, Hotspot Detektion, KI Auswertung PV, Wärmebild Solaranlage Bayern" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.kolibri-inspect.de/" />
+  <meta property="og:title" content="KolibriInspect – Drohnen-Thermografie für PV-Anlagen" />
+  <meta property="og:description" content="KI-gestützte Thermografie-Inspektion für Photovoltaikanlagen. Hotspots, Stringfehler, Zelldefekte – normgerecht nach IEC 62446-3 erkannt." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.kolibri-inspect.de/" />
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"LocalBusiness","name":"KolibriInspect","description":"Drohnengestützte Thermografie und KI-Auswertung für Photovoltaik-Anlagen","address":{"@type":"PostalAddress","streetAddress":"Passauer Str. 20","addressLocality":"Salzweg","postalCode":"94121","addressCountry":"DE"},"telephone":"+4915156054911","email":"info@kolibri-inspect.de","url":"https://www.kolibri-inspect.de","openingHours":"Mo-Fr 07:00-18:00","geo":{"@type":"GeoCoordinates","latitude":48.634776,"longitude":13.4769482}}
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:      #151515;
+      --bg2:     #1a1c1f;
+      --card:    #222628;
+      --card2:   #1d2022;
+      --teal:    #167e74;
+      --tealM:   #1da897;
+      --tealB:   #22c2af;
+      --tealDim: rgba(22,126,116,.13);
+      --sun:     #f0c000;
+      --sunDim:  rgba(240,192,0,.13);
+      --red:     #e05252;
+      --border:  rgba(22,126,116,.22);
+      --borderM: rgba(255,255,255,.07);
+      --text:    #f0f0f0;
+      --muted:   #8a9aa8;
+      --dim:     #4a5560;
+      --fd:      'Poppins', sans-serif;
+      --fb:      'Open Sans', sans-serif;
+      --ease:    cubic-bezier(.4,0,.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { background: var(--bg); color: var(--text); font-family: var(--fb); line-height: 1.65; overflow-x: hidden; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+    ul { list-style: none; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
+
+    .skip-link { position: absolute; top: -100%; left: 1rem; background: var(--teal); color: #fff; padding: .5rem 1rem; border-radius: 8px; font-weight: 600; z-index: 9999; }
+    .skip-link:focus { top: 1rem; }
+
+    /* ── NAV ── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 68px;
+      transition: background .3s var(--ease), box-shadow .3s var(--ease);
+    }
+    #nav.scrolled {
+      background: rgba(21,21,21,.96);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      box-shadow: 0 1px 0 var(--borderM);
+    }
+    .nav-logo { display: flex; align-items: center; }
+    .nav-logo img {
+      height: 34px; width: auto;
+      mix-blend-mode: lighten; /* makes black bg transparent */
+    }
+    .nav-links { display: flex; gap: 2.2rem; align-items: center; }
+    .nav-links a { font-size: .875rem; font-weight: 500; color: var(--muted); transition: color .25s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 20px; background: var(--teal); color: #fff !important;
+      border-radius: 8px; font-weight: 600 !important; font-size: .84rem !important;
+      transition: background .25s, transform .25s !important;
+    }
+    .nav-cta:hover { background: var(--tealM) !important; transform: translateY(-1px); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 4px; }
+    .hamburger span { width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: .3s; }
+    #mob-nav {
+      display: none; position: fixed; top: 68px; left: 0; right: 0;
+      background: rgba(21,21,21,.97); backdrop-filter: blur(22px);
+      padding: 1.5rem 5vw 2rem; z-index: 299;
+      border-bottom: 1px solid var(--borderM);
+      flex-direction: column; gap: 1.1rem;
+    }
+    #mob-nav.open { display: flex; }
+    #mob-nav a { font-size: 1rem; font-weight: 500; color: var(--muted); transition: color .2s; }
+    #mob-nav a:hover { color: var(--text); }
+    #mob-nav .nav-cta { text-align: center; justify-content: center; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; background: var(--teal); color: #fff;
+      border-radius: 10px; font-family: var(--fd); font-weight: 600;
+      font-size: .9rem; transition: background .25s, transform .25s, box-shadow .25s;
+      box-shadow: 0 4px 22px rgba(22,126,116,.28);
+    }
+    .btn-primary:hover { background: var(--tealM); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(22,126,116,.38); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border: 1.5px solid var(--borderM);
+      border-radius: 10px; color: var(--muted); font-size: .9rem; font-weight: 500;
+      transition: border-color .25s, color .25s, transform .25s;
+    }
+    .btn-ghost:hover { border-color: var(--tealB); color: var(--tealB); transform: translateY(-2px); }
+
+    /* ── HERO (ContainerScroll) ── */
+    #hero { position: relative; height: 200vh; min-height: 1400px; }
+    .hero-sticky {
+      position: sticky; top: 0; height: 100vh; min-height: 700px;
+      overflow: hidden; display: flex; flex-direction: column;
+      align-items: center; padding-top: 80px; background: var(--bg);
+    }
+    .hero-glow {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(22,126,116,.2) 0%, transparent 68%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; pointer-events: none; opacity: .035;
+      background-image: linear-gradient(rgba(255,255,255,1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+    #hdr {
+      position: relative; z-index: 2; text-align: center;
+      padding: 0 5vw; max-width: 780px; margin: 0 auto;
+      will-change: transform;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: .68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .15em; color: var(--tealB); margin-bottom: 1.1rem;
+    }
+    .hero-tag::before { content: ''; width: 22px; height: 2px; background: var(--teal); border-radius: 2px; }
+    h1 {
+      font-family: var(--fd); font-size: clamp(2.4rem, 5.5vw, 4rem);
+      font-weight: 800; line-height: 1.07; letter-spacing: -.035em;
+      margin-bottom: 1.2rem;
+    }
+    h1 em { font-style: normal; color: var(--tealB); }
+    .hero-sub {
+      font-size: clamp(.88rem, 1.5vw, 1.02rem); color: var(--muted);
+      max-width: 560px; margin: 0 auto 1.9rem; line-height: 1.72;
+    }
+    .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: .8rem; }
+    .hero-norm {
+      font-size: .68rem; color: var(--dim); letter-spacing: .05em;
+    }
+
+    /* Hero card */
+    .hero-card-wrap { position: relative; z-index: 2; width: 100%; margin-top: 2.2rem; perspective: 1200px; }
+    #hcard {
+      width: min(920px, 90vw); margin: 0 auto;
+      border-radius: 16px; overflow: hidden;
+      border: 1.5px solid rgba(22,126,116,.28);
+      box-shadow: 0 30px 80px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.04);
+      background: #080c0e;
+      will-change: transform; transform-origin: top center;
+    }
+    .thermal-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 16px; background: #0a0f12;
+      border-bottom: 1px solid rgba(22,126,116,.22);
+    }
+    .toolbar-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+      color: var(--tealB); text-transform: uppercase; font-family: var(--fd);
+    }
+    .toolbar-label::before {
+      content: ''; width: 7px; height: 7px;
+      background: var(--tealB); border-radius: 50%;
+      animation: blink 2.5s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+    .toolbar-meta { font-size: .63rem; color: var(--dim); font-family: monospace; letter-spacing: .05em; }
+
+    /* PV thermal viewer */
+    .pv-viewer { position: relative; background: #05090a; line-height: 0; }
+    #pv-canvas { display: block; width: 100%; height: auto; }
+    .fault-overlay { position: absolute; inset: 0; pointer-events: none; }
+
+    /* Fault pins */
+    .fault-pin {
+      position: absolute; transform: translate(-50%, -50%);
+      pointer-events: all; cursor: pointer;
+    }
+    .pin-pulse {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 30px; height: 30px;
+      border: 1.5px solid rgba(224,82,82,.55); border-radius: 50%;
+      animation: pulse-r 2.8s ease-out infinite;
+    }
+    .pin-pulse2 {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 22px; height: 22px;
+      border: 1px solid rgba(224,82,82,.35); border-radius: 50%;
+      animation: pulse-r 2.8s ease-out infinite .7s;
+    }
+    @keyframes pulse-r {
+      0%  { opacity:1; transform:translate(-50%,-50%) scale(1); }
+      100%{ opacity:0; transform:translate(-50%,-50%) scale(2.5); }
+    }
+    .pin-dot {
+      width: 10px; height: 10px;
+      background: var(--red); border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.5);
+      position: relative; z-index: 2;
+      box-shadow: 0 0 10px rgba(224,82,82,.85);
+      transition: transform .2s;
+    }
+    .fault-pin:hover .pin-dot, .fault-pin:focus .pin-dot { transform: scale(1.35); }
+
+    /* Tooltip */
+    .pin-tip {
+      position: absolute; bottom: calc(100% + 14px); left: 50%;
+      transform: translateX(-50%) translateY(5px);
+      width: 195px;
+      background: rgba(10,15,18,.95); border: 1px solid rgba(22,126,116,.32);
+      border-radius: 10px; padding: 11px 13px;
+      pointer-events: none; opacity: 0;
+      transition: opacity .2s, transform .2s;
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+    .fault-pin:hover .pin-tip, .fault-pin:focus .pin-tip {
+      opacity: 1; transform: translateX(-50%) translateY(0);
+      pointer-events: all;
+    }
+    .pin-tip::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent; border-top-color: rgba(22,126,116,.32);
+    }
+    .pin-tip strong { display: block; font-size: .79rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .pin-tip p { font-size: .71rem; color: var(--muted); line-height: 1.5; margin-bottom: 7px; }
+    .pin-tip a {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: .71rem; font-weight: 600; color: var(--tealB); transition: color .2s;
+    }
+    .pin-tip a:hover { color: var(--tealM); }
+
+    /* Tip direction variants */
+    .fault-pin.tip-bl .pin-tip {
+      bottom: auto; top: calc(100% + 10px); left: 50%;
+      transform: translateX(-50%) translateY(-5px);
+    }
+    .fault-pin.tip-bl:hover .pin-tip, .fault-pin.tip-bl:focus .pin-tip {
+      transform: translateX(-50%) translateY(0);
+    }
+    .fault-pin.tip-bl .pin-tip::after {
+      top: auto; bottom: 100%; border-top-color: transparent;
+      border-bottom-color: rgba(22,126,116,.32);
+    }
+    .fault-pin.tip-left .pin-tip {
+      left: auto; right: calc(100% + 14px); bottom: 50%;
+      transform: translateY(50%) translateX(5px);
+    }
+    .fault-pin.tip-left:hover .pin-tip, .fault-pin.tip-left:focus .pin-tip {
+      transform: translateY(50%) translateX(0);
+    }
+    .fault-pin.tip-left .pin-tip::after {
+      top: 50%; left: 100%; bottom: auto;
+      transform: translateY(-50%);
+      border-top-color: transparent;
+      border-left-color: rgba(22,126,116,.32);
+    }
+
+    /* ── SECTION COMMON ── */
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: .67rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .15em; color: var(--tealB); margin-bottom: .85rem;
+    }
+    .section-tag::before { content: ''; width: 20px; height: 2px; background: var(--teal); border-radius: 2px; }
+    section { padding: 90px 5vw; }
+    .container { max-width: 1160px; margin: 0 auto; }
+    h2 {
+      font-family: var(--fd); font-size: clamp(1.7rem, 3vw, 2.4rem);
+      font-weight: 700; line-height: 1.13; letter-spacing: -.025em; margin-bottom: 1rem;
+    }
+    h2 em { font-style: normal; color: var(--tealB); }
+    .section-lead { font-size: .97rem; color: var(--muted); max-width: 600px; line-height: 1.78; margin-bottom: 3rem; }
+
+    /* Reveal */
+    .rv { opacity: 0; transform: translateY(26px); transition: opacity .55s var(--ease), transform .55s var(--ease); }
+    .rv.vis { opacity: 1; transform: none; }
+    .rv-d1 { transition-delay: .1s; }
+    .rv-d2 { transition-delay: .2s; }
+    .rv-d3 { transition-delay: .3s; }
+    .rv-d4 { transition-delay: .4s; }
+
+    /* ── STATS ── */
+    #stats { padding: 0; background: var(--bg2); border-top: 1px solid var(--borderM); border-bottom: 1px solid var(--borderM); }
+    .stats-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); }
+    .stat-item { padding: 2.4rem 2rem; text-align: center; position: relative; }
+    .stat-item+.stat-item::before { content: ''; position: absolute; left:0; top:20%; height:60%; width:1px; background:var(--borderM); }
+    .stat-num { font-family: var(--fd); font-size: clamp(2rem,4vw,3rem); font-weight: 800; color: var(--tealB); line-height: 1; }
+    .stat-unit { font-size: 1.4rem; }
+    .stat-label { font-size: .8rem; color: var(--dim); margin-top: .4rem; }
+
+    /* ── ABOUT ── */
+    #about { background: var(--bg); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; margin-bottom: 4rem; }
+    .about-text p { font-size: .93rem; color: var(--muted); line-height: 1.78; margin-bottom: 1.1rem; }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-img-wrap { position: relative; border-radius: 16px; overflow: hidden; }
+    .about-img-wrap img { width: 100%; height: 400px; object-fit: cover; object-position: center; }
+    .about-img-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(22,126,116,.18), transparent 60%); pointer-events: none; }
+    .yield-badge {
+      position: absolute; top: 20px; right: 20px; z-index: 2;
+      background: rgba(10,15,18,.92); border: 1px solid rgba(22,126,116,.45);
+      border-radius: 13px; padding: 13px 18px; backdrop-filter: blur(12px);
+    }
+    .yield-badge .num { font-family: var(--fd); font-size: 1.9rem; font-weight: 800; color: var(--sun); line-height: 1; }
+    .yield-badge .lbl { font-size: .68rem; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+    /* Steps */
+    .about-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.4rem; }
+    .about-step {
+      background: var(--card2); border: 1px solid var(--borderM);
+      border-radius: 14px; padding: 1.8rem 1.6rem; position: relative; overflow: hidden;
+      transition: border-color .3s;
+    }
+    .about-step:hover { border-color: var(--border); }
+    .about-step::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--tealDim), transparent); opacity: 0; transition: opacity .3s; }
+    .about-step:hover::before { opacity: 1; }
+    .step-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--tealDim); display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem; position: relative; z-index: 1;
+    }
+    .step-icon img { width: 24px; height: 24px; filter: invert(63%) sepia(40%) saturate(600%) hue-rotate(140deg); }
+    .step-num { font-family: var(--fd); font-size: 2.2rem; font-weight: 800; color: var(--teal); opacity: .35; line-height: 1; margin-bottom: .5rem; position: relative; z-index: 1; }
+    .step-title { font-family: var(--fd); font-weight: 700; font-size: .95rem; margin-bottom: .45rem; position: relative; z-index: 1; }
+    .step-text { font-size: .83rem; color: var(--muted); line-height: 1.65; position: relative; z-index: 1; }
+
+    /* ── DEFECTS ── */
+    #defects { background: var(--bg2); }
+    .defects-intro { display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; margin-bottom: 2.8rem; flex-wrap: wrap; }
+    .defects-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1.5rem; }
+    .defect-card {
+      background: var(--card); border: 1px solid var(--borderM);
+      border-radius: 16px; overflow: hidden;
+      transition: border-color .3s, transform .3s;
+    }
+    .defect-card:hover { border-color: var(--border); transform: translateY(-3px); }
+    .defect-thermal { position: relative; height: 185px; overflow: hidden; background: #080c0e; }
+    .defect-thermal img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.95) contrast(1.05); }
+    .defect-badge {
+      position: absolute; bottom: 10px; left: 12px;
+      background: rgba(10,15,18,.87); border-radius: 6px;
+      padding: 3px 10px; font-size: .62rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--tealB);
+      backdrop-filter: blur(6px);
+    }
+    .defect-body { padding: 1.4rem 1.6rem 1.5rem; }
+    .defect-name { font-family: var(--fd); font-size: .97rem; font-weight: 700; margin-bottom: .35rem; }
+    .defect-impact {
+      display: inline-block; font-size: .68rem; font-weight: 700;
+      color: var(--sun); background: var(--sunDim);
+      border-radius: 5px; padding: 2px 9px; margin-bottom: .75rem;
+    }
+    .defect-desc { font-size: .83rem; color: var(--muted); line-height: 1.67; }
+
+    /* ── PROCESS ── */
+    #process { background: var(--bg); }
+    .process-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; position: relative; }
+    .process-connector {
+      position: absolute; top: 28px; left: 5%; right: 5%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal) 0%, var(--tealB) 100%);
+      opacity: .2; pointer-events: none;
+    }
+    .process-step {
+      background: var(--card2); border: 1px solid var(--borderM);
+      border-radius: 14px; padding: 1.8rem 1.4rem; position: relative;
+      transition: border-color .3s;
+    }
+    .process-step:hover { border-color: var(--border); }
+    .process-num {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--teal); color: #fff;
+      font-family: var(--fd); font-weight: 700; font-size: .9rem;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.1rem; position: relative; z-index: 1;
+      box-shadow: 0 0 0 6px rgba(22,126,116,.12);
+    }
+    .process-title { font-family: var(--fd); font-weight: 700; font-size: .93rem; margin-bottom: .5rem; }
+    .process-text { font-size: .81rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── TECH ── */
+    #tech { background: var(--bg2); }
+    .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .tech-img-wrap { border-radius: 16px; overflow: hidden; position: relative; }
+    .tech-img-wrap img { width: 100%; height: 420px; object-fit: cover; object-position: center top; }
+    .tech-img-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 60%, rgba(22,126,116,.12)); }
+    .spec-list { display: flex; flex-direction: column; }
+    .spec-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: .95rem 0; border-bottom: 1px solid var(--borderM);
+    }
+    .spec-item:first-child { padding-top: 0; }
+    .spec-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .spec-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--tealDim); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--tealB); margin-top: 1px;
+    }
+    .spec-name { font-family: var(--fd); font-weight: 600; font-size: .86rem; margin-bottom: .12rem; }
+    .spec-val { font-size: .79rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── REPORT ── */
+    #report { background: var(--bg); }
+    .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .report-card {
+      background: var(--card2); border: 1px solid var(--borderM);
+      border-radius: 18px; padding: 2rem 2.2rem; position: relative; overflow: hidden;
+    }
+    .report-card::before {
+      content: ''; position: absolute; top: -40px; right: -40px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: var(--tealDim); pointer-events: none;
+    }
+    .report-card-top {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 1.6rem;
+    }
+    .report-icon {
+      width: 52px; height: 52px; background: var(--tealDim); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .report-icon img { width: 28px; height: 28px; filter: invert(63%) sepia(40%) saturate(600%) hue-rotate(140deg); }
+    .report-card-title { font-family: var(--fd); font-weight: 700; font-size: 1rem; }
+    .report-card-sub { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+    .report-items { display: flex; flex-direction: column; gap: .65rem; margin-bottom: 1.8rem; }
+    .report-item { display: flex; align-items: flex-start; gap: .7rem; font-size: .84rem; color: var(--muted); }
+    .report-item::before { content: '✓'; color: var(--tealB); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .btn-download {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 22px; background: var(--teal); color: #fff;
+      border-radius: 9px; font-weight: 600; font-size: .87rem;
+      transition: background .25s, transform .25s;
+    }
+    .btn-download:hover { background: var(--tealM); transform: translateY(-2px); }
+
+    /* ── PRICING TEASER ── */
+    #pricing { background: var(--bg2); }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8rem; margin-bottom: 2.4rem; }
+    .pricing-card {
+      background: var(--card); border: 1px solid var(--borderM);
+      border-radius: 16px; padding: 2rem 2rem 1.6rem;
+    }
+    .pricing-card.featured { border-color: var(--border); }
+    .pricing-badge {
+      display: inline-block; font-size: .64rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .1em;
+      background: var(--tealDim); color: var(--tealB);
+      border-radius: 5px; padding: 3px 10px; margin-bottom: 1rem;
+    }
+    .pricing-card-title { font-family: var(--fd); font-size: 1.05rem; font-weight: 700; margin-bottom: .35rem; }
+    .pricing-sub { font-size: .78rem; color: var(--dim); margin-bottom: 1.3rem; }
+    .pricing-table { width: 100%; border-collapse: collapse; font-size: .81rem; }
+    .pricing-table tr+tr td { border-top: 1px solid var(--borderM); }
+    .pricing-table td { padding: .6rem 0; color: var(--muted); }
+    .pricing-table td:last-child { text-align: right; color: var(--text); font-weight: 600; }
+    .pricing-note { font-size: .73rem; color: var(--dim); margin-top: 1rem; }
+    .pricing-cta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+    /* ── CTA ── */
+    #cta-section {
+      background: linear-gradient(135deg, rgba(22,126,116,.12) 0%, transparent 55%), var(--bg);
+      border-top: 1px solid var(--border); padding: 100px 5vw; text-align: center;
+    }
+    .cta-inner { max-width: 640px; margin: 0 auto; }
+    .cta-inner h2 { margin-bottom: 1rem; }
+    .cta-inner p { color: var(--muted); margin-bottom: 2rem; font-size: .98rem; line-height: 1.78; }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .cta-contact { margin-top: 2rem; font-size: .83rem; color: var(--dim); }
+    .cta-contact a { color: var(--tealB); }
+
+    /* ── FOOTER ── */
+    footer { background: #0e1214; border-top: 1px solid var(--borderM); padding: 3.5rem 5vw 2rem; }
+    .footer-grid { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+    .footer-brand img { height: 30px; margin-bottom: 1rem; mix-blend-mode: lighten; }
+    .footer-brand p { font-size: .81rem; color: var(--dim); line-height: 1.7; max-width: 230px; }
+    .footer-col h3 { font-family: var(--fd); font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: .9rem; }
+    .footer-col a { display: block; font-size: .81rem; color: var(--dim); margin-bottom: .45rem; transition: color .2s; }
+    .footer-col a:hover { color: var(--tealB); }
+    .footer-bottom {
+      max-width: 1160px; margin: 0 auto; padding-top: 1.5rem;
+      border-top: 1px solid var(--borderM);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-bottom p { font-size: .76rem; color: var(--dim); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: .76rem; color: var(--dim); transition: color .2s; }
+    .footer-links a:hover { color: var(--tealB); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .about-grid, .tech-grid, .report-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-img-wrap img { height: 300px; }
+      .tech-img-wrap img { height: 300px; }
+      .process-grid { grid-template-columns: repeat(2,1fr); }
+      .process-connector { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      h1 { font-size: 2.1rem; }
+      .hero-btns { flex-direction: column; align-items: center; }
+      .defects-grid, .about-steps, .pricing-grid { grid-template-columns: 1fr; }
+      section { padding: 60px 5vw; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-item+.stat-item::before { top:0; height:1px; width:50%; left:25%; }
+      .defects-intro { flex-direction: column; }
+    }
+    @media (max-width: 540px) {
+      .process-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+      .pin-tip { width: 155px; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Zum Hauptinhalt</a>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nav" aria-label="Hauptnavigation">
+  <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
+    <img src="Bilder/Logo/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
+  </a>
+  <ul class="nav-links" role="list">
+    <li><a href="#about">Leistungen</a></li>
+    <li><a href="#defects">Fehlerarten</a></li>
+    <li><a href="#tech">Technologie</a></li>
+    <li><a href="preise.html">Preise</a></li>
+    <li><a href="anfrage.html" class="nav-cta">Kostenlos anfragen</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menü öffnen" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="mob-nav" aria-label="Mobilnavigation">
+  <a href="#about">Leistungen</a>
+  <a href="#defects">Fehlerarten</a>
+  <a href="#tech">Technologie</a>
+  <a href="preise.html">Preise</a>
+  <a href="anfrage.html" class="nav-cta">Kostenlos anfragen</a>
+</div>
+
+<main id="main">
+
+  <!-- ═══ HERO ═══ -->
+  <section id="hero" aria-label="Hero-Bereich">
+    <div class="hero-sticky">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+
+      <header id="hdr">
+        <p class="hero-tag">KI-Thermografie · Drohneninspektion · PV-Anlagen</p>
+        <h1>Jede Zelle<br><em>zählt.</em></h1>
+        <p class="hero-sub">Versteckte Defekte in Ihrer Photovoltaikanlage kosten täglich Ertrag. Wir finden sie – präzise, schnell und normgerecht nach IEC 62446-3.</p>
+        <div class="hero-btns">
+          <a href="anfrage.html" class="btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 10.9a19.79 19.79 0 01-3.07-8.67A2 2 0 012.618 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.96-.96a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+            Kostenlos anfragen
+          </a>
+          <a href="Muster%20KI-Bericht/eng-mapperx-demo-report.pdf" target="_blank" rel="noopener" class="btn-ghost">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+            Musterbericht ansehen
+          </a>
+        </div>
+        <p class="hero-norm">Normgerecht · DIN EN IEC 62446-3 · Versichert</p>
+      </header>
+
+      <!-- Thermal screen card -->
+      <div class="hero-card-wrap">
+        <div id="hcard">
+          <div class="thermal-toolbar">
+            <div class="toolbar-label">Thermalbild · KI-Analyse</div>
+            <div class="toolbar-meta">IEC 62446-3 · Emissivität 0.85 · 640×512 IR · GPS-referenziert</div>
+          </div>
+          <div class="pv-viewer">
+            <canvas id="pv-canvas" width="920" height="380" aria-label="Thermalbild einer PV-Anlage mit interaktiven Fehlermarkierungen"></canvas>
+            <div class="fault-overlay" role="region" aria-label="Erkannte Fehler">
+
+              <div class="fault-pin" style="left:19%;top:33%" tabindex="0" aria-label="Zelldefekt – Klicken für Details">
+                <div class="pin-pulse" aria-hidden="true"></div>
+                <div class="pin-pulse2" aria-hidden="true"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-tip" role="tooltip">
+                  <strong>Zelldefekt</strong>
+                  <p>Lokale Überhitzung einer Solarzelle. Ertragsverlust bis zu 15 %.</p>
+                  <a href="#zellfehler">Weitere Infos ↓</a>
+                </div>
+              </div>
+
+              <div class="fault-pin tip-left" style="left:55%;top:20%" tabindex="0" aria-label="Bypassdiodenfehler – Klicken für Details">
+                <div class="pin-pulse" aria-hidden="true"></div>
+                <div class="pin-pulse2" aria-hidden="true"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-tip" role="tooltip">
+                  <strong>Bypassdiodenfehler</strong>
+                  <p>Ganzer Substring ausgefallen. Ertragsverlust 11–26 %.</p>
+                  <a href="#diodenfehler">Weitere Infos ↓</a>
+                </div>
+              </div>
+
+              <div class="fault-pin tip-bl" style="left:75%;top:62%" tabindex="0" aria-label="Stringfehler – Klicken für Details">
+                <div class="pin-pulse" aria-hidden="true"></div>
+                <div class="pin-pulse2" aria-hidden="true"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-tip" role="tooltip">
+                  <strong>Stringfehler</strong>
+                  <p>Kompletter Modulstring ohne Ertrag. Verlust bis zu 25 %.</p>
+                  <a href="#stringfehler">Weitere Infos ↓</a>
+                </div>
+              </div>
+
+              <div class="fault-pin" style="left:38%;top:70%" tabindex="0" aria-label="Verschmutzung – Klicken für Details">
+                <div class="pin-pulse" aria-hidden="true"></div>
+                <div class="pin-pulse2" aria-hidden="true"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-tip" role="tooltip">
+                  <strong>Verschmutzung</strong>
+                  <p>Vogelkot oder Laub erzeugt Abschattung. Verlust 2–10 %.</p>
+                  <a href="#verschmutzung">Weitere Infos ↓</a>
+                </div>
+              </div>
+
+            </div><!-- /fault-overlay -->
+          </div><!-- /pv-viewer -->
+        </div><!-- /hcard -->
+      </div><!-- /hero-card-wrap -->
+
+    </div><!-- /hero-sticky -->
+  </section>
+
+  <!-- ═══ STATS ═══ -->
+  <div id="stats" role="region" aria-label="Unternehmenskennzahlen">
+    <div class="stats-grid">
+      <div class="stat-item rv">
+        <div class="stat-num"><span class="count" data-target="89">0</span></div>
+        <div class="stat-label">Inspizierte Anlagen</div>
+      </div>
+      <div class="stat-item rv rv-d1">
+        <div class="stat-num"><span class="count" data-target="24">0</span></div>
+        <div class="stat-label">Zufriedene Kunden</div>
+      </div>
+      <div class="stat-item rv rv-d2">
+        <div class="stat-num"><span class="count" data-target="136">0</span></div>
+        <div class="stat-label">Drohnenflüge durchgeführt</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ABOUT ═══ -->
+  <section id="about" aria-labelledby="about-h2">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text">
+          <div class="section-tag rv">Was wir tun</div>
+          <h2 class="rv rv-d1" id="about-h2">Thermografie trifft<br><em>künstliche Intelligenz</em></h2>
+          <p class="rv rv-d2">KolibriInspect kombiniert professionelle Drohnen-Thermografie mit KI-gestützter Bildauswertung. Das Ergebnis: ein präziser Bericht, der genau zeigt, wo Ihre PV-Anlage Ertrag verliert – und was dagegen zu tun ist.</p>
+          <p class="rv rv-d2">Herkömmliche Kontrollen sind aufwändig und fehleranfällig. Unsere Lösung inspiziert hunderte Module in kurzer Betriebszeit, georeferenziert jeden Befund und liefert Ihnen handlungsfertige Ergebnisse – normgerecht nach DIN EN IEC 62446-3.</p>
+          <p class="rv rv-d3">Unentdeckte Defekte kosten Sie täglich Ertrag. Frühzeitig erkannte Fehler dagegen lassen sich gezielt beheben – bevor aus einem kleinen Hotspot ein kaputter Wechselrichter wird.</p>
+        </div>
+        <div class="about-img-wrap rv rv-d2">
+          <img src="Bilder/solar-energy-862602.jpg" alt="Photovoltaikanlage auf Industriedach in Bayern – bereit für Thermografie-Inspektion" loading="lazy" />
+          <div class="yield-badge">
+            <div class="num">+26 %</div>
+            <div class="lbl">mehr Solarertrag durch<br>frühzeitige Fehlererkennung</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-steps">
+        <div class="about-step rv">
+          <div class="step-icon">
+            <img src="Bilder/ChatGPT Image 4. Mai 2025, 16_24_55.png" alt="" aria-hidden="true" />
+          </div>
+          <div class="step-num">01</div>
+          <div class="step-title">Drohnenflug</div>
+          <p class="step-text">Unser Pilot fliegt die Anlage systematisch ab. Der integrierte Dual-Sensor erfasst gleichzeitig Thermalbild und RGB-Aufnahme – bei voller Betriebsleistung der Anlage und GPS-Referenzierung jedes Frames.</p>
+        </div>
+        <div class="about-step rv rv-d1">
+          <div class="step-icon">
+            <img src="Bilder/ChatGPT Image 4. Mai 2025, 16_25_49.png" alt="" aria-hidden="true" />
+          </div>
+          <div class="step-num">02</div>
+          <div class="step-title">KI-Auswertung</div>
+          <p class="step-text">Unsere KI analysiert automatisch jedes Modul: Temperaturanomalien werden klassifiziert, georeferenziert und nach Schweregrad gewichtet. Kein Modul bleibt ungeprüft.</p>
+        </div>
+        <div class="about-step rv rv-d2">
+          <div class="step-icon">
+            <img src="Bilder/ChatGPT Image 4. Mai 2025, 16_23_39.png" alt="" aria-hidden="true" />
+          </div>
+          <div class="step-num">03</div>
+          <div class="step-title">Ihr Bericht</div>
+          <p class="step-text">Sie erhalten einen übersichtlichen PDF-Bericht mit Lageplan, Thermografiefotos, GPS-Koordinaten und konkreten Handlungsempfehlungen – verständlich auch ohne Fachkenntnisse.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DEFECTS ═══ -->
+  <section id="defects" aria-labelledby="defects-h2">
+    <div class="container">
+      <div class="defects-intro">
+        <div>
+          <div class="section-tag rv">Fehlertypen</div>
+          <h2 class="rv rv-d1" id="defects-h2">Was die Kamera<br><em>sieht</em></h2>
+        </div>
+        <p class="rv rv-d1" style="max-width:400px;font-size:.88rem;color:var(--muted);line-height:1.75">
+          Die meisten PV-Defekte sind mit bloßem Auge unsichtbar. Die Drohnen-Thermografie macht sie sichtbar – bevor sie zum teuren Problem werden.
+        </p>
+      </div>
+
+      <div class="defects-grid">
+        <article class="defect-card rv" id="zellfehler">
+          <div class="defect-thermal">
+            <img src="Bilder/Zellfehler.PNG" alt="FLIR-Thermalbild: Zelldefekt in Solarmodul – heller Hotspot sichtbar" loading="lazy" />
+            <span class="defect-badge">FLIR · Thermalbild</span>
+          </div>
+          <div class="defect-body">
+            <div class="defect-name">Zelldefekte</div>
+            <span class="defect-impact">Ertragsverlust bis 15 %</span>
+            <p class="defect-desc">Einzelne Solarzellen entwickeln durch mechanischen Stress (Mikrorisse), Materialfehler oder Überspannung lokale Hotspots. Im Thermalbild erscheinen sie als punktuelle Wärmeflecken. Unbehandelt degeneriert das gesamte Modul zunehmend.</p>
+          </div>
+        </article>
+
+        <article class="defect-card rv rv-d1" id="diodenfehler">
+          <div class="defect-thermal">
+            <img src="Bilder/Diodenfehler.PNG" alt="FLIR-Thermalbild: Bypassdiodenfehler – ganzer Substring überhitzt" loading="lazy" />
+            <span class="defect-badge">FLIR · Thermalbild</span>
+          </div>
+          <div class="defect-body">
+            <div class="defect-name">Bypassdiodenfehler</div>
+            <span class="defect-impact">Ertragsverlust 11–26 %</span>
+            <p class="defect-desc">Eine defekte Bypassdiode legt einen ganzen Substring (typisch 20–24 Zellen) dauerhaft lahm. Im Thermalbild erscheint dieser Bereich deutlich wärmer als das übrige Modul. Frühe Erkennung verhindert Brandgefahr durch dauerhafte Wärmebelastung.</p>
+          </div>
+        </article>
+
+        <article class="defect-card rv rv-d2" id="stringfehler">
+          <div class="defect-thermal">
+            <img src="Bilder/Stringfehler.PNG" alt="FLIR-Thermalbild: Stringfehler – betroffene Module deutlich kälter als Nachbarn" loading="lazy" />
+            <span class="defect-badge">FLIR · Thermalbild</span>
+          </div>
+          <div class="defect-body">
+            <div class="defect-name">Stringfehler</div>
+            <span class="defect-impact">Ertragsverlust bis 25 %</span>
+            <p class="defect-desc">Leitungsbrüche, korrodierte Steckverbinder oder Wechselrichterprobleme können einen kompletten Modulstring lahmlegen. Betroffene Module erscheinen im Thermalbild gleichmäßig kälter als Nachbarmodule – sie erzeugen keinen Strom mehr.</p>
+          </div>
+        </article>
+
+        <article class="defect-card rv rv-d3" id="verschmutzung">
+          <div class="defect-thermal">
+            <img src="Bilder/Verschmutzung.PNG" alt="FLIR-Thermalbild: Verschmutzung auf Solarmodul – Abschattungseffekt erkennbar" loading="lazy" />
+            <span class="defect-badge">FLIR · Thermalbild</span>
+          </div>
+          <div class="defect-body">
+            <div class="defect-name">Verschmutzung &amp; Abschattung</div>
+            <span class="defect-impact">Ertragsverlust 2–10 %</span>
+            <p class="defect-desc">Vogelkot, Staub, Laub oder Schattenwurf durch Aufbauten erzeugen im Thermalbild typische Abschattungsmuster. Da bereits kleine Verschattungen den gesamten String beeinflussen können, amortisiert sich eine gezielte Reinigung oft schneller als erwartet.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PROCESS ═══ -->
+  <section id="process" aria-labelledby="process-h2">
+    <div class="container">
+      <div class="section-tag rv">Ablauf</div>
+      <h2 class="rv rv-d1" id="process-h2">Von der Anfrage<br><em>zum Bericht</em></h2>
+      <p class="section-lead rv rv-d2">Unkompliziert und transparent – von der ersten Anfrage bis zum fertigen Bericht.</p>
+      <div class="process-grid">
+        <div class="process-connector" aria-hidden="true"></div>
+        <div class="process-step rv">
+          <div class="process-num">1</div>
+          <div class="process-title">Beauftragung</div>
+          <p class="process-text">Sie füllen das Anfrageformular aus – wir prüfen Ihre Anlage und erstellen ein individuelles Angebot. Transparent, ohne versteckte Kosten.</p>
+        </div>
+        <div class="process-step rv rv-d1">
+          <div class="process-num">2</div>
+          <div class="process-title">Vorbereitung</div>
+          <p class="process-text">Wir koordinieren den Flugtermin und holen alle erforderlichen Genehmigungen ein. Optimale Bedingungen: gute Einstrahlung, wenig Wind, volle Betriebsleistung.</p>
+        </div>
+        <div class="process-step rv rv-d2">
+          <div class="process-num">3</div>
+          <div class="process-title">Thermografie-Flüge</div>
+          <p class="process-text">Unser Pilot fliegt die Anlage systematisch ab – simultane Erfassung von Thermalbild und RGB-Kamera, GPS-referenziert, lückenlos dokumentiert.</p>
+        </div>
+        <div class="process-step rv rv-d3">
+          <div class="process-num">4</div>
+          <div class="process-title">KI-Auswertung &amp; Bericht</div>
+          <p class="process-text">Die KI klassifiziert alle Anomalien automatisch. Ihr Bericht enthält: Lageplan, Fehlerfotos, Koordinaten, Schweregrad und Handlungsempfehlung – je Modul.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TECH ═══ -->
+  <section id="tech" aria-labelledby="tech-h2">
+    <div class="container">
+      <div class="tech-grid">
+        <div class="tech-text rv">
+          <div class="section-tag">Technologie</div>
+          <h2 id="tech-h2">Präzision<br><em>in der Luft</em></h2>
+          <p style="color:var(--muted);font-size:.92rem;line-height:1.78;margin-bottom:2rem">
+            Wir setzen auf Profi-Drohnentechnik mit dualem Kamerasystem und zentimetergenauer Positionierung. Kein Anlagetyp ist zu groß, kein Defekt zu klein.
+          </p>
+          <div class="spec-list">
+            <div class="spec-item">
+              <div class="spec-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg>
+              </div>
+              <div>
+                <div class="spec-name">640 × 512 Infrarot-Sensor (radiometrisch)</div>
+                <div class="spec-val">±2 °C Messgenauigkeit · 30 fps · vollständig kalibriert</div>
+              </div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <div>
+                <div class="spec-name">4K RGB-Begleitkamera</div>
+                <div class="spec-val">Simultane Aufnahme für präzise Modulidentifikation und Lagebericht</div>
+              </div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div>
+                <div class="spec-name">Bis 42 Minuten Flugausdauer</div>
+                <div class="spec-val">Großanlagen mit mehreren MWp in einem Einsatz erfassbar</div>
+              </div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              </div>
+              <div>
+                <div class="spec-name">RTK-Positionierung (zentimetergenau)</div>
+                <div class="spec-val">GPS + GLONASS + Galileo – jeder Defekt exakt georeferenziert</div>
+              </div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div>
+                <div class="spec-name">IP54-Schutz · bis 12 m/s Windstabilität</div>
+                <div class="spec-val">Zuverlässiger Betrieb auch bei Wind und wechselhafter Witterung</div>
+              </div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+              </div>
+              <div>
+                <div class="spec-name">Omnidirektionale Hindernisvermeidung</div>
+                <div class="spec-val">Sicherer Betrieb in komplexen Dach- und Freiflächenumgebungen</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-img-wrap rv rv-d2">
+          <img src="Bilder/ChatGPT Image 4. Mai 2025, 15_29_39.png" alt="Professionelle Drohne mit Dual-Thermalkamera im Einsatz über einer Photovoltaikanlage" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MUSTERBERICHT ═══ -->
+  <section id="report" aria-labelledby="report-h2">
+    <div class="container">
+      <div class="report-grid">
+        <div class="report-card rv">
+          <div class="report-card-top">
+            <div class="report-icon">
+              <img src="Bilder/ChatGPT Image 4. Mai 2025, 16_23_39.png" alt="" aria-hidden="true" />
+            </div>
+            <div>
+              <div class="report-card-title">KI-Inspektionsbericht</div>
+              <div class="report-card-sub">Normgerecht · IEC 62446-3 · PDF-Format</div>
+            </div>
+          </div>
+          <div class="report-items">
+            <div class="report-item">Lageplan mit GPS-referenzierten Fehlerpositionen aller Module</div>
+            <div class="report-item">Einzelauswertung je Defekt: Thermalbild + RGB-Foto + Koordinate</div>
+            <div class="report-item">Fehlerklassifikation nach Schweregrad (Priorität 1–3)</div>
+            <div class="report-item">Temperaturwerte, ΔT und Normabweichung je Anomalie</div>
+            <div class="report-item">Konkrete Handlungsempfehlung für jedes betroffene Modul</div>
+            <div class="report-item">Anlagenzusammenfassung mit KPI-Übersicht</div>
+          </div>
+          <a href="Muster%20KI-Bericht/eng-mapperx-demo-report.pdf" target="_blank" rel="noopener" class="btn-download">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Musterbericht herunterladen (PDF)
+          </a>
+        </div>
+        <div class="rv rv-d2">
+          <div class="section-tag">Musterbericht</div>
+          <h2 id="report-h2">Sehen, was<br><em>Ihnen fehlt</em></h2>
+          <p style="color:var(--muted);font-size:.93rem;line-height:1.78;margin-bottom:1.1rem">
+            Ein KolibriInspect-Bericht ist kein roher Datensatz – er ist ein Werkzeug. Strukturiert aufgebaut, damit Sie sofort wissen: welches Modul, welcher Fehler, welche Priorität.
+          </p>
+          <p style="color:var(--muted);font-size:.93rem;line-height:1.78;margin-bottom:1.1rem">
+            Laden Sie den Musterbericht herunter und überzeugen Sie sich von der Qualität der KI-Auswertung – bevor Sie anfragen.
+          </p>
+          <p style="font-size:.78rem;color:var(--dim)">Der Musterbericht basiert auf einer realen Anlageninspek­tion. Firmendaten wurden anonymisiert.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PREISE ═══ -->
+  <section id="pricing" aria-labelledby="pricing-h2">
+    <div class="container">
+      <div class="section-tag rv">Preise</div>
+      <h2 class="rv rv-d1" id="pricing-h2">Transparent.<br><em>Kalkulierbar.</em></h2>
+      <p class="section-lead rv rv-d2">Keine versteckten Kosten. Der Preis richtet sich nach der Anlagengröße – je größer, desto günstiger pro Modul.</p>
+      <div class="pricing-grid rv rv-d1">
+        <div class="pricing-card">
+          <div class="pricing-badge">Einmalig</div>
+          <div class="pricing-card-title">Einmalige Inspektion</div>
+          <p class="pricing-sub">Zzgl. 190 € Pauschale (inkl. Anfahrt bis 100 km)</p>
+          <table class="pricing-table" aria-label="Preise einmalige Inspektion">
+            <tr><td>bis 500 Module</td><td>0,80 €/Modul</td></tr>
+            <tr><td>501 – 1.500 Module</td><td>0,70 €/Modul</td></tr>
+            <tr><td>1.501 – 3.000 Module</td><td>0,60 €/Modul</td></tr>
+            <tr><td>3.001 – 5.000 Module</td><td>0,50 €/Modul</td></tr>
+            <tr><td>Ab 5.001 Module</td><td>0,40 €/Modul</td></tr>
+          </table>
+          <p class="pricing-note">Alle Preise zzgl. MwSt.</p>
+        </div>
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Empfohlen · 48 Monate Vertragslaufzeit</div>
+          <div class="pricing-card-title">Jährliche Inspektion</div>
+          <p class="pricing-sub">Inkl. Dokumentation · mind. 30 % Ersparnis ggü. Einzelpreis</p>
+          <table class="pricing-table" aria-label="Preise jährliche Inspektion">
+            <tr><td>bis 500 Module</td><td>299 €/Jahr</td></tr>
+            <tr><td>501 – 1.500 Module</td><td>299 – 735 €/Jahr</td></tr>
+            <tr><td>1.501 – 3.000 Module</td><td>735 – 1.260 €/Jahr</td></tr>
+            <tr><td>3.001 – 5.000 Module</td><td>1.260 – 1.750 €/Jahr</td></tr>
+            <tr><td>Ab 5.001 Module</td><td>ab 1.750 €/Jahr</td></tr>
+          </table>
+          <p class="pricing-note">Alle Preise zzgl. MwSt. · 48 Monate Laufzeit</p>
+        </div>
+      </div>
+      <div class="pricing-cta rv rv-d2">
+        <a href="preise.html" class="btn-ghost">Alle Preisdetails &amp; FAQ →</a>
+        <a href="anfrage.html" class="btn-primary">Individuelles Angebot anfragen</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section id="cta-section" aria-labelledby="cta-h2">
+    <div class="cta-inner rv">
+      <div class="section-tag" style="justify-content:center">Ihr nächster Schritt</div>
+      <h2 id="cta-h2">Verluste stoppen.<br><em>Ertrag sichern.</em></h2>
+      <p>Schicken Sie uns Ihre Anlagendaten – wir erstellen ein unverbindliches Angebot. Kein Risiko, keine Verpflichtung.</p>
+      <div class="cta-btns">
+        <a href="anfrage.html" class="btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 10.9a19.79 19.79 0 01-3.07-8.67A2 2 0 012.618 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.96-.96a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+          Kostenlos anfragen
+        </a>
+        <a href="tel:+4915156054911" class="btn-ghost">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 10.9a19.79 19.79 0 01-3.07-8.67A2 2 0 012.618 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.96-.96a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+          +49 151 56054911
+        </a>
+      </div>
+      <p class="cta-contact">Mo–Fr 07:00–18:00 Uhr · <a href="mailto:info@kolibri-inspect.de">info@kolibri-inspect.de</a></p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="Bilder/Logo/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
+      <p>Drohnen-Thermografie und KI-Auswertung für Photovoltaik-Anlagen. Normgerecht nach IEC 62446-3. Präzise. Verständlich.</p>
+    </div>
+    <div class="footer-col">
+      <h3>Leistungen</h3>
+      <a href="#about">Thermografie-Inspektion</a>
+      <a href="#defects">Fehleranalyse</a>
+      <a href="#report">KI-Bericht</a>
+      <a href="preise.html">Preise</a>
+    </div>
+    <div class="footer-col">
+      <h3>Unternehmen</h3>
+      <a href="impressum.html">Impressum</a>
+      <a href="agb.html">AGB</a>
+      <a href="anfrage.html">Kontakt &amp; Anfrage</a>
+    </div>
+    <div class="footer-col">
+      <h3>Kontakt</h3>
+      <a href="tel:+4915156054911">+49 151 56054911</a>
+      <a href="mailto:info@kolibri-inspect.de">info@kolibri-inspect.de</a>
+      <a href="#">Passauer Str. 20, 94121 Salzweg</a>
+      <p style="font-size:.74rem;color:var(--dim);margin-top:.5rem">Mo–Fr 07:00–18:00 Uhr</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 KolibriInspect · Felix Plöchinger · 94121 Salzweg, Bayern</p>
+    <div class="footer-links">
+      <a href="impressum.html">Impressum</a>
+      <a href="agb.html">AGB</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── NAV ── */
+const nav = document.getElementById('nav');
+const hamburger = document.getElementById('hamburger');
+const mobNav = document.getElementById('mob-nav');
+
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 8);
+}, { passive: true });
+
+hamburger.addEventListener('click', () => {
+  const open = mobNav.classList.toggle('open');
+  hamburger.setAttribute('aria-expanded', String(open));
+});
+
+mobNav.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    mobNav.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+  });
+});
+
+/* ── ContainerScroll ── */
+(function () {
+  const hero = document.getElementById('hero');
+  const hdr  = document.getElementById('hdr');
+  const card = document.getElementById('hcard');
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function tick() {
+    const rect = hero.getBoundingClientRect();
+    const scrollable = hero.offsetHeight - window.innerHeight;
+    const raw = Math.max(0, Math.min(1, -rect.top / scrollable));
+    const p = easeOut(raw);
+
+    hdr.style.transform = `translateY(${-p * 80}px)`;
+
+    const mobile = window.innerWidth < 768;
+    const rotX  = (1 - p) * 18;
+    const sS = mobile ? 0.72 : 1.06;
+    const sE = mobile ? 0.92 : 1.0;
+    card.style.transform = `rotateX(${rotX}deg) scale(${sS + p * (sE - sS)})`;
+  }
+
+  window.addEventListener('scroll', tick, { passive: true });
+  tick();
+})();
+
+/* ── PV Canvas – realistic FLIR white-hot thermal ── */
+(function () {
+  const canvas = document.getElementById('pv-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+
+  // Fault positions (normalized 0–1, matching HTML overlay pins)
+  const FAULTS = [
+    { x: 0.19, y: 0.33, type: 'cell',   heat: 0.90 },
+    { x: 0.55, y: 0.20, type: 'diode',  heat: 0.76 },
+    { x: 0.75, y: 0.62, type: 'string', heat: 0.18 }, // string = cold
+    { x: 0.38, y: 0.70, type: 'dirt',   heat: 0.62 },
+  ];
+
+  // FLIR white-hot palette: 0=cold/black, 1=hot/white, slight warm tint in midrange
+  function flirPx(t) {
+    t = Math.max(0, Math.min(1, t));
+    const v = t * 255;
+    const r = Math.min(255, v + (t > 0.55 ? (t - 0.55) * 28 : 0));
+    const g = v;
+    const b = Math.max(0, v - (t > 0.65 ? (t - 0.65) * 38 : 0));
+    return `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`;
+  }
+
+  // Stable per-module temp variation (seeded, not random each frame)
+  const MODULE_NOISE = [];
+  for (let i = 0; i < 200; i++) {
+    const s = (i * 6571 + 1237) % 997;
+    MODULE_NOISE.push((s / 997 - 0.5) * 0.05);
+  }
+
+  let frame = 0;
+
+  function draw() {
+    frame++;
+
+    // ── Background (rooftop – dark, cool) ──
+    ctx.fillStyle = '#090d10';
+    ctx.fillRect(0, 0, W, H);
+
+    // Subtle rooftop texture lines
+    ctx.strokeStyle = 'rgba(25,32,38,.5)';
+    ctx.lineWidth = 1;
+    for (let y = 0; y < H; y += 14) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    // ── PV array layout ──
+    const SCALE_W = 48; // right sidebar
+    const PX = 36, PY = 28; // padding
+    const COLS = 15, ROWS = 7;
+    const GAP = 3;
+    const aW = W - PX * 2 - SCALE_W;
+    const aH = H - PY * 2;
+    const mW = (aW - GAP * (COLS - 1)) / COLS;
+    const mH = (aH - GAP * (ROWS - 1)) / ROWS;
+
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 0; col < COLS; col++) {
+        const mx = PX + col * (mW + GAP);
+        const my = PY + row * (mH + GAP);
+
+        // Base temperature: moderate warmth, slight center-warm gradient
+        const dcx = (col / (COLS - 1) - 0.5) * 2;
+        const dcy = (row / (ROWS - 1) - 0.5) * 2;
+        const dist = Math.sqrt(dcx * dcx + dcy * dcy);
+        let t = 0.40 + (1 - dist * 0.28) * 0.08 + MODULE_NOISE[row * COLS + col];
+
+        // Normalize fault influence
+        const cx = (mx + mW / 2) / W;
+        const cy = (my + mH / 2) / H;
+
+        FAULTS.forEach(f => {
+          const dx = cx - f.x, dy = cy - f.y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+
+          if (f.type === 'string') {
+            // String fault: entire affected area appears cooler
+            if (col >= 10 && Math.abs(row - Math.round(f.y * (ROWS - 1))) <= 1) {
+              t *= 0.68;
+            }
+          } else if (d < 0.14) {
+            const inf = 1 - d / 0.14;
+            const pulse = f.type === 'cell' ? 1 + Math.sin(frame * 0.05) * 0.025 : 1;
+            t += inf * (f.heat - 0.44) * 0.55 * pulse;
+          }
+        });
+
+        t = Math.max(0, Math.min(1, t));
+
+        // Module fill
+        ctx.fillStyle = flirPx(t);
+        ctx.fillRect(mx, my, mW, mH);
+
+        // Cell grid lines (3 columns × 2 rows of cells per module)
+        ctx.strokeStyle = flirPx(t * 0.7);
+        ctx.lineWidth = 0.5;
+        for (let ci = 1; ci < 3; ci++) {
+          ctx.beginPath();
+          ctx.moveTo(mx + ci * mW / 3, my);
+          ctx.lineTo(mx + ci * mW / 3, my + mH);
+          ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.moveTo(mx, my + mH / 2);
+        ctx.lineTo(mx + mW, my + mH / 2);
+        ctx.stroke();
+      }
+    }
+
+    // ── Hotspot glows (bright, white-hot) ──
+    FAULTS.forEach(f => {
+      if (f.type === 'string') return;
+      const fx = f.x * W, fy = f.y * H;
+      const pulse = 1 + Math.sin(frame * 0.05) * 0.18;
+      const r = 16 * pulse;
+
+      const grd = ctx.createRadialGradient(fx, fy, 0, fx, fy, r);
+      grd.addColorStop(0, 'rgba(255,255,255,.96)');
+      grd.addColorStop(0.25, f.type === 'cell' ? 'rgba(255,235,200,.7)' : 'rgba(255,220,170,.65)');
+      grd.addColorStop(1, 'rgba(240,180,80,0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath(); ctx.arc(fx, fy, r, 0, Math.PI * 2); ctx.fill();
+
+      // FLIR-style red crosshair
+      ctx.strokeStyle = 'rgba(224,82,82,.9)';
+      ctx.lineWidth = 1;
+      const cs = 7;
+      ctx.beginPath();
+      ctx.moveTo(fx - cs, fy); ctx.lineTo(fx + cs, fy);
+      ctx.moveTo(fx, fy - cs); ctx.lineTo(fx, fy + cs);
+      ctx.stroke();
+      ctx.beginPath(); ctx.arc(fx, fy, 3.5, 0, Math.PI * 2); ctx.stroke();
+    });
+
+    // ── Temperature scale bar (right, like real FLIR) ──
+    const SX = W - SCALE_W + 10;
+    const SW = 16;
+    const SY = PY, SH = H - PY * 2;
+
+    const sGrad = ctx.createLinearGradient(SX, SY, SX, SY + SH);
+    sGrad.addColorStop(0, '#ffffff');
+    sGrad.addColorStop(0.35, '#adadad');
+    sGrad.addColorStop(0.7, '#525252');
+    sGrad.addColorStop(1, '#101010');
+    ctx.fillStyle = sGrad;
+    ctx.fillRect(SX, SY, SW, SH);
+    ctx.strokeStyle = 'rgba(255,255,255,.12)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(SX, SY, SW, SH);
+
+    // Scale tick labels
+    ctx.font = '8.5px monospace';
+    ctx.fillStyle = 'rgba(180,195,205,.82)';
+    ctx.textAlign = 'right';
+    [{ p: 0, l: '54.2°C' }, { p: 0.5, l: '42.1°C' }, { p: 1, l: '31.4°C' }].forEach(({ p, l }) => {
+      const ly = SY + p * SH;
+      ctx.fillText(l, SX - 4, ly + 3.5);
+      ctx.strokeStyle = 'rgba(255,255,255,.18)';
+      ctx.lineWidth = .5;
+      ctx.beginPath(); ctx.moveTo(SX - 3, ly); ctx.lineTo(SX, ly); ctx.stroke();
+    });
+
+    // ── FLIR metadata overlay ──
+    ctx.font = 'bold 8.5px monospace';
+    ctx.fillStyle = 'rgba(34,194,175,.85)';
+    ctx.textAlign = 'left';
+    ctx.fillText('FLIR · IEC 62446-3 · KI-ANALYSE', PX, 17);
+    ctx.font = '8px monospace';
+    ctx.fillStyle = 'rgba(138,154,168,.65)';
+    ctx.fillText(`Emiss. 0.85  ΔTmax +${(11.8 + Math.sin(frame * 0.018) * 0.6).toFixed(1)}°C  ${FAULTS.filter(f => f.type !== 'string').length + 1} Anomalien`, PX, 28);
+
+    // Subtle scan line
+    const scanY = (frame * 1.1) % H;
+    ctx.fillStyle = 'rgba(34,194,175,.035)';
+    ctx.fillRect(0, scanY, W, 2);
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+
+/* ── Scroll Reveal ── */
+(function () {
+  const els = document.querySelectorAll('.rv');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(el => io.observe(el));
+})();
+
+/* ── Counter animation ── */
+(function () {
+  const counts = document.querySelectorAll('.count');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, end = +el.dataset.target, dur = 1600;
+      const t0 = performance.now();
+      function step(now) {
+        const p = Math.min(1, (now - t0) / dur);
+        el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * end);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counts.forEach(c => io.observe(c));
+})();
+
+/* ── Fault pin keyboard access ── */
+document.querySelectorAll('.fault-pin').forEach(pin => {
+  pin.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pin.classList.toggle('active'); }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preise – Drohnen-Thermografie PV-Anlagen | KolibriInspect</title>
+  <meta name="description" content="Transparente Preise für Drohnen-Thermografie Ihrer Photovoltaikanlage. Ab 0,40 €/Modul (Einmalinspektion) oder ab 299 €/Jahr im Wartungsvertrag. Inkl. KI-Bericht." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#151515; --bg2:#1a1c1f; --card:#222628; --card2:#1d2022;
+      --teal:#167e74; --tealM:#1da897; --tealB:#22c2af; --tealDim:rgba(22,126,116,.13);
+      --sun:#f0c000; --sunDim:rgba(240,192,0,.12);
+      --border:rgba(22,126,116,.22); --borderM:rgba(255,255,255,.07);
+      --text:#f0f0f0; --muted:#8a9aa8; --dim:#4a5560;
+      --fd:'Poppins',sans-serif; --fb:'Open Sans',sans-serif;
+      --ease:cubic-bezier(.4,0,.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;font-size:16px}
+    body{background:var(--bg);color:var(--text);font-family:var(--fb);line-height:1.65;overflow-x:hidden}
+    img{max-width:100%;display:block}
+    a{color:inherit;text-decoration:none}
+    button{cursor:pointer;border:none;background:none;font:inherit}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--teal);border-radius:3px}
+
+    /* NAV */
+    nav{
+      position:sticky;top:0;z-index:200;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 5vw;height:68px;
+      background:rgba(21,21,21,.96);
+      backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+      border-bottom:1px solid var(--borderM);
+    }
+    .nav-logo img{height:32px;mix-blend-mode:lighten}
+    .nav-links{display:flex;gap:2.2rem;align-items:center}
+    .nav-links a{font-size:.875rem;font-weight:500;color:var(--muted);transition:color .25s}
+    .nav-links a:hover{color:var(--text)}
+    .nav-cta{
+      display:inline-flex;align-items:center;gap:7px;
+      padding:9px 20px;background:var(--teal);color:#fff!important;
+      border-radius:8px;font-weight:600!important;font-size:.84rem!important;
+      transition:background .25s!important;
+    }
+    .nav-cta:hover{background:var(--tealM)!important}
+    .hamburger{display:none;flex-direction:column;gap:5px;padding:4px}
+    .hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px}
+    #mob-nav{
+      display:none;position:fixed;top:68px;left:0;right:0;
+      background:rgba(21,21,21,.97);backdrop-filter:blur(22px);
+      padding:1.5rem 5vw 2rem;z-index:199;
+      border-bottom:1px solid var(--borderM);
+      flex-direction:column;gap:1.1rem;
+    }
+    #mob-nav.open{display:flex}
+    #mob-nav a{font-size:1rem;font-weight:500;color:var(--muted);transition:color .2s}
+    #mob-nav a:hover{color:var(--text)}
+
+    /* PAGE */
+    .page-hero{
+      padding:80px 5vw 70px;
+      background:linear-gradient(180deg,rgba(22,126,116,.07) 0%,transparent 100%);
+      border-bottom:1px solid var(--borderM);
+    }
+    .page-hero .container{max-width:1100px;margin:0 auto}
+    .section-tag{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:.67rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.15em;color:var(--tealB);margin-bottom:.85rem;
+    }
+    .section-tag::before{content:'';width:20px;height:2px;background:var(--teal);border-radius:2px}
+    h1{
+      font-family:var(--fd);font-size:clamp(2.1rem,4vw,3.2rem);
+      font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:1rem;
+    }
+    h1 em, h2 em{font-style:normal;color:var(--tealB)}
+    .page-lead{font-size:.97rem;color:var(--muted);max-width:540px;line-height:1.78}
+
+    section{padding:80px 5vw}
+    .container{max-width:1100px;margin:0 auto}
+    h2{
+      font-family:var(--fd);font-size:clamp(1.55rem,2.5vw,2.1rem);
+      font-weight:700;line-height:1.15;letter-spacing:-.025em;margin-bottom:1rem;
+    }
+    .section-lead{font-size:.93rem;color:var(--muted);max-width:560px;line-height:1.78;margin-bottom:2.8rem}
+
+    /* Reveal */
+    .rv{opacity:0;transform:translateY(22px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+    .rv.vis{opacity:1;transform:none}
+    .rv-d1{transition-delay:.1s} .rv-d2{transition-delay:.2s} .rv-d3{transition-delay:.3s}
+
+    /* PRICING CARDS */
+    #pricing{background:var(--bg)}
+    .pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2.2rem}
+    .pricing-card{
+      background:var(--card);border:1px solid var(--borderM);
+      border-radius:20px;padding:2.4rem 2.4rem 2rem;
+      position:relative;overflow:hidden;
+      transition:border-color .3s,transform .3s;
+    }
+    .pricing-card.featured{border-color:var(--border)}
+    .pricing-card.featured::before{
+      content:'';position:absolute;top:-60px;right:-60px;
+      width:200px;height:200px;border-radius:50%;
+      background:var(--tealDim);pointer-events:none;
+    }
+    .featured-badge{
+      position:absolute;top:18px;right:18px;
+      background:var(--teal);color:#fff;
+      font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+      border-radius:6px;padding:3px 10px;
+    }
+    .pricing-badge{
+      display:inline-block;font-size:.65rem;font-weight:700;
+      text-transform:uppercase;letter-spacing:.1em;
+      background:var(--tealDim);color:var(--tealB);
+      border-radius:5px;padding:3px 10px;margin-bottom:1rem;
+    }
+    .pricing-card-title{font-family:var(--fd);font-size:1.15rem;font-weight:700;margin-bottom:.25rem}
+    .pricing-card-sub{font-size:.8rem;color:var(--muted);margin-bottom:1.8rem;line-height:1.6}
+    .price-table{width:100%;border-collapse:collapse}
+    .price-table thead th{
+      font-family:var(--fd);font-size:.73rem;font-weight:700;
+      text-transform:uppercase;letter-spacing:.1em;color:var(--dim);
+      padding-bottom:.7rem;text-align:left;border-bottom:1px solid var(--borderM);
+    }
+    .price-table thead th:last-child{text-align:right}
+    .price-table tbody tr+tr td{border-top:1px solid var(--borderM)}
+    .price-table tbody td{padding:.65rem 0;font-size:.85rem;color:var(--muted)}
+    .price-table tbody td:last-child{text-align:right;color:var(--text);font-weight:600}
+    .pricing-note{font-size:.74rem;color:var(--dim);margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--borderM)}
+    .pricing-note em{font-style:normal;color:var(--tealB);font-weight:600}
+
+    /* Savings bar */
+    .savings-bar{
+      background:var(--tealDim);border:1px solid var(--border);
+      border-radius:12px;padding:1.1rem 1.6rem;
+      display:flex;align-items:center;gap:1rem;margin-bottom:2.2rem;
+      flex-wrap:wrap;
+    }
+    .savings-icon{font-size:1.4rem;flex-shrink:0}
+    .savings-text{font-size:.88rem;color:var(--muted);line-height:1.6}
+    .savings-text strong{color:var(--tealB)}
+
+    /* INCL LIST */
+    #included{background:var(--bg2)}
+    .incl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.8rem}
+    .incl-card{
+      background:var(--card);border:1px solid var(--borderM);
+      border-radius:14px;padding:1.8rem 1.6rem;
+      transition:border-color .3s;
+    }
+    .incl-card:hover{border-color:var(--border)}
+    .incl-icon{
+      width:42px;height:42px;border-radius:10px;
+      background:var(--tealDim);display:flex;align-items:center;justify-content:center;
+      margin-bottom:.9rem;color:var(--tealB);
+    }
+    .incl-title{font-family:var(--fd);font-weight:700;font-size:.93rem;margin-bottom:.45rem}
+    .incl-text{font-size:.81rem;color:var(--muted);line-height:1.65}
+
+    /* FAQ */
+    #faq{background:var(--bg)}
+    .faq-list{max-width:780px;display:flex;flex-direction:column;gap:.8rem;margin-top:2.5rem}
+    .faq-item{
+      background:var(--card2);border:1px solid var(--borderM);
+      border-radius:12px;overflow:hidden;
+      transition:border-color .3s;
+    }
+    .faq-item.open{border-color:var(--border)}
+    .faq-q{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1.1rem 1.4rem;cursor:pointer;
+      font-family:var(--fd);font-weight:600;font-size:.9rem;
+      gap:1rem;
+    }
+    .faq-q svg{width:18px;height:18px;flex-shrink:0;color:var(--tealB);transition:transform .3s var(--ease)}
+    .faq-item.open .faq-q svg{transform:rotate(45deg)}
+    .faq-a{
+      max-height:0;overflow:hidden;
+      transition:max-height .35s var(--ease);
+    }
+    .faq-item.open .faq-a{max-height:300px}
+    .faq-a-inner{padding:0 1.4rem 1.2rem;font-size:.84rem;color:var(--muted);line-height:1.75}
+
+    /* CTA */
+    #cta{
+      background:linear-gradient(135deg,rgba(22,126,116,.1) 0%,transparent 55%),var(--bg2);
+      border-top:1px solid var(--border);
+      padding:90px 5vw;text-align:center;
+    }
+    .cta-inner{max-width:600px;margin:0 auto}
+    .cta-inner h2{margin-bottom:1rem}
+    .cta-inner p{color:var(--muted);font-size:.95rem;line-height:1.78;margin-bottom:2rem}
+    .cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn-primary{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:13px 28px;background:var(--teal);color:#fff;
+      border-radius:10px;font-family:var(--fd);font-weight:600;font-size:.9rem;
+      transition:background .25s,transform .25s;
+      box-shadow:0 4px 20px rgba(22,126,116,.28);
+    }
+    .btn-primary:hover{background:var(--tealM);transform:translateY(-2px)}
+    .btn-ghost{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:12px 24px;border:1.5px solid var(--borderM);
+      border-radius:10px;color:var(--muted);font-size:.9rem;font-weight:500;
+      transition:border-color .25s,color .25s;
+    }
+    .btn-ghost:hover{border-color:var(--tealB);color:var(--tealB)}
+
+    /* FOOTER */
+    footer{background:#0e1214;border-top:1px solid var(--borderM);padding:2.5rem 5vw 2rem}
+    .footer-bottom{
+      max-width:1100px;margin:0 auto;
+      display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+    }
+    .footer-bottom p{font-size:.76rem;color:var(--dim)}
+    .footer-links{display:flex;gap:1.5rem}
+    .footer-links a{font-size:.76rem;color:var(--dim);transition:color .2s}
+    .footer-links a:hover{color:var(--tealB)}
+
+    @media(max-width:768px){
+      .pricing-grid,.incl-grid{grid-template-columns:1fr}
+      .nav-links{display:none}
+      .hamburger{display:flex}
+      section{padding:55px 5vw}
+    }
+  </style>
+</head>
+<body>
+
+<nav aria-label="Hauptnavigation">
+  <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
+    <img src="Bilder/Logo/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
+  </a>
+  <ul class="nav-links" role="list">
+    <li><a href="index.html#about">Leistungen</a></li>
+    <li><a href="index.html#defects">Fehlerarten</a></li>
+    <li><a href="index.html#tech">Technologie</a></li>
+    <li><a href="preise.html" style="color:var(--tealB)">Preise</a></li>
+    <li><a href="anfrage.html" class="nav-cta">Kostenlos anfragen</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menü öffnen" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div id="mob-nav">
+  <a href="index.html#about">Leistungen</a>
+  <a href="index.html#defects">Fehlerarten</a>
+  <a href="index.html#tech">Technologie</a>
+  <a href="preise.html">Preise</a>
+  <a href="anfrage.html" class="nav-cta">Kostenlos anfragen</a>
+</div>
+
+<main>
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <div class="container">
+      <div class="section-tag">Preise & Pakete</div>
+      <h1>Transparent.<br><em>Kalkulierbar.</em></h1>
+      <p class="page-lead">Der Preis richtet sich nach der Anlagengröße. Je mehr Module, desto günstiger pro Modul. Keine versteckten Kosten.</p>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <section id="pricing" aria-labelledby="pricing-h2">
+    <div class="container">
+      <div class="savings-bar rv">
+        <span class="savings-icon">💡</span>
+        <p class="savings-text">Mit dem <strong>Jahresvertrag</strong> sparen Sie mindestens 30 % gegenüber dem Einzelpreis – bei gleichzeitig jährlicher Überprüfung Ihrer Anlage. Fehler werden früher erkannt, bevor sie teurer werden.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <div class="pricing-card rv">
+          <div class="pricing-badge">Einmalig buchbar</div>
+          <div class="pricing-card-title">Einmalige Inspektion</div>
+          <p class="pricing-card-sub">Pauschale 190 € (inkl. Anfahrt bis 100 km) zzgl. modulbezogenem Preis</p>
+          <table class="price-table" aria-label="Preise einmalige Inspektion">
+            <thead>
+              <tr><th>Anlagengröße</th><th>Preis pro Modul</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>bis 500 Module</td><td>0,80 €/Modul</td></tr>
+              <tr><td>501 – 1.500 Module</td><td>0,70 €/Modul</td></tr>
+              <tr><td>1.501 – 3.000 Module</td><td>0,60 €/Modul</td></tr>
+              <tr><td>3.001 – 5.000 Module</td><td>0,50 €/Modul</td></tr>
+              <tr><td>Ab 5.001 Module</td><td>0,40 €/Modul</td></tr>
+            </tbody>
+          </table>
+          <p class="pricing-note">Alle Preise zzgl. gesetzlicher MwSt. · Anfahrt über 100 km auf Anfrage</p>
+        </div>
+
+        <div class="pricing-card featured rv rv-d1">
+          <div class="featured-badge">Empfohlen</div>
+          <div class="pricing-badge">48 Monate Laufzeit</div>
+          <div class="pricing-card-title">Jährliche Inspektion</div>
+          <p class="pricing-card-sub">Inkl. Dokumentation und jährlichem Kontrollflug – mind. 30 % Ersparnis</p>
+          <table class="price-table" aria-label="Preise jährliche Inspektion">
+            <thead>
+              <tr><th>Anlagengröße</th><th>Preis pro Jahr</th><th>Ersparnis</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>bis 500 Module</td><td>299 €</td><td style="text-align:right;color:var(--tealB);font-weight:600">–</td></tr>
+              <tr><td>501 – 1.500 Module</td><td>299 – 735 €</td><td style="text-align:right;color:var(--tealB);font-weight:600">–</td></tr>
+              <tr><td>1.501 – 3.000 Module</td><td>735 – 1.260 €</td><td style="text-align:right;color:var(--tealB);font-weight:600">–</td></tr>
+              <tr><td>3.001 – 5.000 Module</td><td>1.260 – 1.750 €</td><td style="text-align:right;color:var(--tealB);font-weight:600">mind. 30 %</td></tr>
+              <tr><td>Ab 5.001 Module</td><td>ab 1.750 €</td><td style="text-align:right;color:var(--tealB);font-weight:600">mind. 30 %</td></tr>
+            </tbody>
+          </table>
+          <p class="pricing-note">Alle Preise zzgl. MwSt. · <em>48 Monate Vertragslaufzeit</em> · Jährliche Drohneninspektion inkl. Dokumentation</p>
+        </div>
+      </div>
+
+      <div class="rv rv-d2" style="text-align:center">
+        <a href="anfrage.html" class="btn-primary">Individuelles Angebot anfragen</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- INCLUDED -->
+  <section id="included" aria-labelledby="included-h2">
+    <div class="container">
+      <div class="section-tag rv">Leistungsumfang</div>
+      <h2 class="rv rv-d1" id="included-h2">Im Preis<br><em>enthalten</em></h2>
+      <p class="section-lead rv rv-d2">Jede Inspektion – ob einmalig oder im Jahresvertrag – liefert denselben vollständigen Bericht. Kein Extra für die KI-Auswertung, kein Extra für den PDF-Bericht.</p>
+      <div class="incl-grid">
+        <div class="incl-card rv">
+          <div class="incl-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6l11 6 11-6"/><path d="M1 12l11 6 11-6"/><path d="M1 18l11 6 11-6"/></svg>
+          </div>
+          <div class="incl-title">Thermalbild + RGB-Aufnahme</div>
+          <p class="incl-text">Simultane Erfassung mit Dual-Kamerasystem. Jedes Modul wird im Thermalbild (640×512 IR, radiometrisch) und RGB-Foto lückenlos dokumentiert.</p>
+        </div>
+        <div class="incl-card rv rv-d1">
+          <div class="incl-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          </div>
+          <div class="incl-title">GPS-Referenzierung</div>
+          <p class="incl-text">Jeder Defekt erhält GPS-Koordinaten – damit Ihre Wartungstechniker das betroffene Modul sofort auf dem Dach finden. Kein Suchen mehr.</p>
+        </div>
+        <div class="incl-card rv rv-d2">
+          <div class="incl-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          </div>
+          <div class="incl-title">KI-Klassifikation</div>
+          <p class="incl-text">Automatische Erkennung und Kategorisierung aller Anomalien: Zelldefekte, Bypassdiodenfehler, Stringfehler, Verschmutzung – nach Schweregrad sortiert.</p>
+        </div>
+        <div class="incl-card rv">
+          <div class="incl-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="incl-title">PDF-Bericht (normgerecht)</div>
+          <p class="incl-text">Strukturierter Bericht nach IEC 62446-3: Lageplan, Einzelbefunde je Modul, ΔT-Werte, Schweregrad und konkrete Handlungsempfehlung.</p>
+        </div>
+        <div class="incl-card rv rv-d1">
+          <div class="incl-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="incl-title">Alle Genehmigungen</div>
+          <p class="incl-text">Wir kümmern uns um alle erforderlichen Luftfahrtgenehmigungen und koordinieren den Flugtermin. Sie müssen sich um nichts kümmern.</p>
+        </div>
+        <div class="incl-card rv rv-d2">
+          <div class="incl-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="incl-title">Haftpflichtversicherung</div>
+          <p class="incl-text">Alle Flüge sind über eine Drohnen-Haftpflichtversicherung abgesichert. Vollständige Dokumentation aller Flugeinsätze gemäß Luftfahrtrecht.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" aria-labelledby="faq-h2">
+    <div class="container">
+      <div class="section-tag rv">Häufige Fragen</div>
+      <h2 class="rv rv-d1" id="faq-h2">Was Sie noch<br><em>wissen möchten</em></h2>
+      <div class="faq-list rv rv-d1">
+
+        <div class="faq-item">
+          <div class="faq-q" role="button" aria-expanded="false">
+            Wann amortisiert sich eine Inspektion?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Bereits ein einziger unentdeckter Bypassdiodenfehler kostet eine 10-kWp-Anlage rund 200–400 € Ertragsverlust pro Jahr. Die Inspektionskosten liegen bei solchen Anlagen im niedrigen dreistelligen Bereich – die Amortisation ist in der Regel nach einem Jahr erreicht. Bei größeren Anlagen ist der ROI deutlich schneller.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" role="button" aria-expanded="false">
+            Wie lange dauert ein Inspektionsflug?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Das hängt von der Anlagengröße ab. Eine typische Dachanlage mit 200–500 Modulen ist in 30–60 Minuten vollständig erfasst. Freiflächenanlagen mit mehreren MWp können mehrere Flugeinsätze erfordern – wir planen den Ablauf individuell.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" role="button" aria-expanded="false">
+            Was ist die beste Jahreszeit für die Inspektion?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Thermografie funktioniert am besten, wenn die Anlage unter Last steht und die Außentemperatur nicht zu hoch ist – ideal sind Frühsommer oder Frühherbst (April–Mai, September–Oktober). Wichtig: kein Regen, wenig Wind, gute Einstrahlung. Wir koordinieren den Termin passend zu Wetter und Betriebsbedingungen.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" role="button" aria-expanded="false">
+            Wie weit im Voraus muss ich buchen?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Wir empfehlen, mindestens 2–3 Wochen vor dem Wunschtermin anzufragen, da wir Genehmigungen einholen und Wetterfenster einplanen müssen. In der Hochsaison (Mai–September) sind Termine schnell belegt – frühzeitige Anfragen werden bevorzugt behandelt.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" role="button" aria-expanded="false">
+            Muss ich bei der Inspektion anwesend sein?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Nicht zwingend, aber wir empfehlen es, damit unser Pilot bei Bedarf Rückfragen zum Anlageaufbau stellen kann. Wichtig ist der gesicherte Zugang zum Gelände. Alles Weitere klären wir vorab per Telefon oder E-Mail.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" role="button" aria-expanded="false">
+            Was passiert bei schlechtem Wetter?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Flüge finden nur bei geeigneten Wetterbedingungen statt (kein Regen, Windgeschwindigkeit unter 10 m/s, ausreichende Einstrahlung). Bei Schlechtwetter verschieben wir den Termin kostenfrei auf den nächstmöglichen geeigneten Tag.
+          </div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q" role="button" aria-expanded="false">
+            Gilt die Inspektion für alle Anlagentypen?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a"><div class="faq-a-inner">
+            Ja. Wir inspizieren Dachanlagen (Schrägdach, Flachdach, Hallengebäude) sowie Freiflächenanlagen jeder Größe. Auch Balkonkraftwerke können auf Anfrage inspiziert werden. Besondere Gegebenheiten (Hochspannungsleitungen, Naturschutzgebiete) klären wir vorab.
+          </div></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="cta-inner rv">
+      <div class="section-tag" style="justify-content:center">Jetzt anfragen</div>
+      <h2>Angebot für Ihre Anlage<br><em>anfordern</em></h2>
+      <p>Teilen Sie uns Ihre Modulanzahl und den Standort mit – wir erstellen innerhalb von 24 Stunden ein individuelles Angebot.</p>
+      <div class="cta-btns">
+        <a href="anfrage.html" class="btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 10.9a19.79 19.79 0 01-3.07-8.67A2 2 0 012.618 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.96-.96a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+          Anfrage stellen
+        </a>
+        <a href="tel:+4915156054911" class="btn-ghost">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 10.9a19.79 19.79 0 01-3.07-8.67A2 2 0 012.618 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.96-.96a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+          +49 151 56054911
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-bottom">
+    <p>© 2025 KolibriInspect · Felix Plöchinger · Passauer Str. 20, 94121 Salzweg</p>
+    <div class="footer-links">
+      <a href="index.html">Startseite</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="agb.html">AGB</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* NAV */
+const hamburger = document.getElementById('hamburger');
+const mobNav = document.getElementById('mob-nav');
+hamburger.addEventListener('click', () => {
+  const open = mobNav.classList.toggle('open');
+  hamburger.setAttribute('aria-expanded', String(open));
+});
+mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  mobNav.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', 'false');
+}));
+
+/* Reveal */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+/* FAQ */
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.closest('.faq-item');
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+    });
+    if (!wasOpen) {
+      item.classList.add('open');
+      q.setAttribute('aria-expanded', 'true');
+    }
+  });
+  q.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); q.click(); } });
+});
+</script>
+</body>
+</html>

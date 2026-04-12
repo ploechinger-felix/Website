@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Impressum – Kolibri Inspect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#151515;--bg2:#1b1b1b;--card:#2b2f33;
+      --teal:#167e74;--tealB:#22c2af;
+      --border:rgba(22,126,116,.18);--borderM:rgba(255,255,255,.07);
+      --text:#f0f0f0;--muted:#8a9aa8;--dim:#4a5560;
+      --fd:'Poppins',sans-serif;--fb:'Open Sans',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;font-size:16px}
+    body{background:var(--bg);color:var(--text);font-family:var(--fb);line-height:1.7;min-height:100vh}
+    a{color:var(--tealB);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* NAV */
+    nav{
+      position:sticky;top:0;z-index:100;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 5vw;height:64px;
+      background:rgba(21,21,21,.95);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--borderM);
+    }
+    .nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-weight:700;font-size:1.1rem;color:var(--text)}
+    .nav-logo span{color:var(--tealB)}
+    .back-btn{
+      display:inline-flex;align-items:center;gap:7px;
+      font-size:.85rem;font-weight:500;color:var(--muted);
+      transition:color .25s;
+    }
+    .back-btn:hover{color:var(--tealB);text-decoration:none}
+
+    /* CONTENT */
+    .page-wrap{max-width:760px;margin:0 auto;padding:60px 5vw 100px}
+    .page-tag{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:.7rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.14em;color:var(--tealB);margin-bottom:1rem;
+    }
+    .page-tag::before{content:'';width:20px;height:2px;background:var(--teal);border-radius:2px}
+    h1{
+      font-family:var(--fd);font-size:clamp(1.8rem,3vw,2.6rem);
+      font-weight:800;line-height:1.1;letter-spacing:-.025em;
+      margin-bottom:2.5rem;
+    }
+    h1 em{font-style:normal;color:var(--tealB)}
+
+    .section{margin-bottom:2.5rem}
+    h2{
+      font-family:var(--fd);font-size:1.05rem;font-weight:700;
+      color:var(--text);margin-bottom:.7rem;
+      padding-bottom:.5rem;
+      border-bottom:1px solid var(--borderM);
+    }
+    p{font-size:.92rem;color:var(--muted);line-height:1.8;margin-bottom:.8rem}
+    p:last-child{margin-bottom:0}
+    strong{color:var(--text);font-weight:600}
+
+    .info-card{
+      background:var(--card);
+      border:1px solid var(--borderM);
+      border-radius:14px;
+      padding:1.6rem 2rem;
+      margin-bottom:2rem;
+    }
+    .info-card p{margin-bottom:.35rem}
+    .info-card p:last-child{margin-bottom:0}
+
+    /* FOOTER */
+    footer{
+      background:var(--card);
+      border-top:1px solid var(--borderM);
+      padding:2rem 5vw;
+      text-align:center;
+      font-size:.8rem;color:var(--dim);
+    }
+    footer a{color:var(--muted)}
+    footer a:hover{color:var(--tealB)}
+    .foot-links{display:flex;justify-content:center;gap:2rem;margin-bottom:.8rem;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
+    <img src="Bilder/Logo/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" style="height:30px;mix-blend-mode:lighten" />
+  </a>
+  <a href="index.html" class="back-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Zurück zur Startseite
+  </a>
+</nav>
+
+<main>
+  <div class="page-wrap">
+    <div class="page-tag">Rechtliches</div>
+    <h1>Impressum</h1>
+
+    <div class="info-card">
+      <p><strong>Kolibri Inspect</strong></p>
+      <p>Felix Plöchinger</p>
+      <p>Passauer Str. 20<br/>94121 Salzweg<br/>Bayern, Deutschland</p>
+      <p style="margin-top:.6rem">
+        <strong>Telefon:</strong> <a href="tel:+4915156054911">+49 151 56054911</a><br/>
+        <strong>E-Mail:</strong> <a href="mailto:info@kolibri-inspect.de">info@kolibri-inspect.de</a>
+      </p>
+      <p style="margin-top:.6rem;font-size:.82rem;color:var(--dim)">
+        USt-IdNr.: wird nachgetragen<br/>
+        Sitz der Gesellschaft: Salzweg<br/>
+        Amtsgericht Passau: wird nachgetragen
+      </p>
+    </div>
+
+    <p style="font-size:.8rem;color:var(--dim);margin-bottom:2.5rem">
+      Angaben gemäß § 5 TMG
+    </p>
+
+    <div class="section">
+      <h2>Haftung für Inhalte</h2>
+      <p>Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+      <p>Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.</p>
+    </div>
+
+    <div class="section">
+      <h2>Haftung für Links</h2>
+      <p>Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p>
+      <p>Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
+    </div>
+
+    <div class="section">
+      <h2>Urheberrecht</h2>
+      <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
+      <p>Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="foot-links">
+    <a href="index.html">Startseite</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="agb.html">AGBs</a>
+  </div>
+  <p>© 2025 Kolibri Inspect · Felix Plöchinger · Passauer Str. 20, 94121 Salzweg</p>
+</footer>
+
+</body>
+</html>
