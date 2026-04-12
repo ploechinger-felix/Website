@@ -614,35 +614,45 @@ document.getElementById('back2').addEventListener('click', () => goBack(1));
 document.getElementById('back3').addEventListener('click', () => goBack(2));
 
 /* ── Submit ── */
-document.getElementById('inquiry-form').addEventListener('submit', function (e) {
+document.getElementById('inquiry-form').addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  // Final validation
   if (!validateStep(3)) return;
   const dsgvo = document.getElementById('dsgvo');
-  if (!dsgvo.checked) {
-    dsgvo.focus();
-    return;
-  }
+  if (!dsgvo.checked) { dsgvo.focus(); return; }
 
   updateVolladresse();
 
-  // In production: POST to backend / Formspree / Netlify Forms etc.
-  // For now: show success
+  const submitBtn = this.querySelector('.btn-submit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Wird gesendet …';
+
   const fd = new FormData(this);
   const data = Object.fromEntries(fd.entries());
-  console.log('Anfrage:', data);
 
-  // Hide form steps, show success
-  document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
-  document.querySelectorAll('.form-progress, .form-title, .form-sub').forEach(el => { el.style.display = 'none'; });
-  const success = document.getElementById('form-success');
-  document.getElementById('success-anfrage-id').textContent = anfrage_id;
-  success.classList.add('show');
+  try {
+    const res = await fetch('/api/anfrage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.ok) throw new Error(json.error || 'Fehler');
 
-  // Track in analytics if available
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'form_submit', { event_category: 'Anfrage', event_label: anfrage_id });
+    // Erfolg
+    document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+    document.querySelectorAll('.form-progress, .form-title, .form-sub').forEach(el => { el.style.display = 'none'; });
+    document.getElementById('success-anfrage-id').textContent = anfrage_id;
+    document.getElementById('form-success').classList.add('show');
+
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'form_submit', { event_category: 'Anfrage', event_label: anfrage_id });
+    }
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Anfrage absenden';
+    alert('Ihre Anfrage konnte leider nicht gesendet werden. Bitte versuchen Sie es erneut oder schreiben Sie uns direkt an info@kolibri-inspect.de.');
+    console.error('Anfrage-Fehler:', err.message);
   }
 });
 </script>

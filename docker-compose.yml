@@ -1,4 +1,5 @@
 services:
+
   web:
     build: .
     ports:
@@ -11,3 +12,29 @@ services:
       - "traefik.http.routers.kolibri.tls.certresolver=letsencrypt"
       - "traefik.http.services.kolibri.loadbalancer.server.port=80"
     restart: unless-stopped
+
+  api:
+    build: ./api
+    volumes:
+      - anfragen_data:/data
+    environment:
+      - PORT=3000
+      - DATA_FILE=/data/anfragen.json
+      - ADMIN_TOKEN=changeme          # <-- VOR GO-LIVE ändern!
+      - N8N_WEBHOOK=${N8N_WEBHOOK:-}  # In .env auf VPS setzen
+    labels:
+      - "traefik.enable=true"
+      # Pfad-basiertes Routing: /api/* → API-Container
+      - "traefik.http.routers.kolibri-api.rule=(Host(`kolibri-inspect.de`) || Host(`www.kolibri-inspect.de`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.kolibri-api.entrypoints=websecure"
+      - "traefik.http.routers.kolibri-api.tls=true"
+      - "traefik.http.routers.kolibri-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.kolibri-api.priority=10"
+      - "traefik.http.services.kolibri-api.loadbalancer.server.port=3000"
+      # /api-Prefix vom Pfad abschneiden bevor es an Express weitergegeben wird
+      - "traefik.http.middlewares.strip-api.stripprefix.prefixes=/api"
+      - "traefik.http.routers.kolibri-api.middlewares=strip-api@docker"
+    restart: unless-stopped
+
+volumes:
+  anfragen_data:
