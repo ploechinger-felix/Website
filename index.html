@@ -159,6 +159,27 @@
     .hero-norm {
       font-size: .68rem; color: var(--dim); letter-spacing: .05em;
     }
+    /* ── Cycling hero phrase ── */
+    #hero-cycle-wrap { display: inline; }
+    #hero-cycle {
+      display: inline;
+      color: #F5C842;
+      transition: opacity .3s ease, transform .3s ease;
+    }
+    #hero-cycle.exit {
+      opacity: 0;
+      transform: translateY(-14px);
+    }
+    #hero-cycle.enter {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: none;
+    }
+    #hero-cycle.enter-active {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .4s ease, transform .4s ease;
+    }
 
     /* Hero card */
     .hero-card-wrap { position: relative; z-index: 2; width: 100%; margin-top: 2.2rem; perspective: 1200px; }
@@ -580,7 +601,7 @@
 
       <header id="hdr">
         <p class="hero-tag">KI-Thermografie · Drohneninspektion · PV-Anlagen</p>
-        <h1>Jede Zelle zählt.<br><em>KI-Thermografie sichert Ihre Solar-Rendite.</em></h1>
+        <h1>Jede Zelle zählt.<br><em>KI-Thermografie <span id="hero-cycle-wrap"><span id="hero-cycle">sichert Ihre Solar-Rendite.</span></span></em></h1>
         <p class="hero-sub">Versteckte Defekte kosten täglich Ertrag. Wir machen sie sichtbar – mit Drohnen-Thermografie und KI-Auswertung, normgerecht nach IEC 62446-3.</p>
         <div class="hero-btns">
           <a href="anfrage.html" class="btn-primary">
@@ -1088,6 +1109,43 @@ mobNav.querySelectorAll('a').forEach(a => {
 
   window.addEventListener('scroll', tick, { passive: true });
   tick();
+})();
+
+/* ── Hero phrase cycler ── */
+(function () {
+  const phrases = [
+    'sichert Ihre Solar-Rendite.',
+    'findet versteckte Defekte.',
+    'maximiert Ihren Ertrag.',
+    'schützt Ihr Investment.',
+  ];
+  let idx = 0;
+  const el = document.getElementById('hero-cycle');
+  if (!el) return;
+
+  function next() {
+    idx = (idx + 1) % phrases.length;
+
+    // Step 1: slide current text up and out
+    el.classList.add('exit');
+
+    setTimeout(() => {
+      // Step 2: teleport to bottom (no transition)
+      el.textContent = phrases[idx];
+      el.classList.remove('exit');
+      el.classList.add('enter');
+
+      // Step 3: force reflow, then animate in
+      el.getBoundingClientRect();
+      el.classList.replace('enter', 'enter-active');
+    }, 370);
+
+    setTimeout(() => {
+      el.classList.remove('enter-active');
+    }, 370 + 500);
+  }
+
+  setInterval(next, 2800);
 })();
 
 /* ── PV Canvas – FLIR Ironbow palette (realistic field PV) ── */
