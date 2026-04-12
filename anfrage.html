@@ -38,7 +38,10 @@
       backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
       border-bottom: 1px solid var(--borderM);
     }
-    .nav-logo img { height: 44px; width: auto; mix-blend-mode: screen; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo img { height: 42px; width: auto; mix-blend-mode: screen; }
+    .nav-logo-text { font-family: var(--fd); font-size: .95rem; font-weight: 700; color: var(--text); line-height: 1.2; letter-spacing: -.01em; }
+    .nav-logo-text em { display: block; font-style: normal; color: var(--tealB); }
     .nav-links { display: flex; gap: 2.2rem; align-items: center; }
     .nav-links a { font-size: .875rem; font-weight: 500; color: var(--muted); transition: color .25s; }
     .nav-links a:hover { color: var(--text); }
@@ -244,7 +247,8 @@
 
 <nav aria-label="Hauptnavigation">
   <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
-    <img src="Bilder/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
+    <img src="Bilder/Logo/nur Symbol.png" alt="" />
+    <span class="nav-logo-text">Kolibri<em>Inspect</em></span>
   </a>
   <ul class="nav-links" role="list">
     <li><a href="index.html#about">Leistungen</a></li>

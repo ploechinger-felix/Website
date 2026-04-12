@@ -72,11 +72,10 @@
       -webkit-backdrop-filter: blur(22px);
       box-shadow: 0 1px 0 var(--borderM);
     }
-    .nav-logo { display: flex; align-items: center; }
-    .nav-logo img {
-      height: 44px; width: auto;
-      mix-blend-mode: screen;
-    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo img { height: 42px; width: auto; mix-blend-mode: screen; }
+    .nav-logo-text { font-family: var(--fd); font-size: .95rem; font-weight: 700; color: var(--text); line-height: 1.2; letter-spacing: -.01em; }
+    .nav-logo-text em { display: block; font-style: normal; color: var(--tealB); }
     .nav-links { display: flex; gap: 2.2rem; align-items: center; }
     .nav-links a { font-size: .875rem; font-weight: 500; color: var(--muted); transition: color .25s; }
     .nav-links a:hover { color: var(--text); }
@@ -495,7 +494,10 @@
     /* ── FOOTER ── */
     footer { background: #0e1214; border-top: 1px solid var(--borderM); padding: 3.5rem 5vw 2rem; }
     .footer-grid { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
-    .footer-brand img { height: 40px; margin-bottom: 1rem; mix-blend-mode: screen; }
+    .footer-brand-logo { display: flex; align-items: center; gap: 9px; margin-bottom: 1rem; }
+    .footer-brand-logo img { height: 38px; width: auto; mix-blend-mode: screen; }
+    .footer-brand-logo span { font-family: var(--fd); font-size: .9rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .footer-brand-logo em { display: block; font-style: normal; color: var(--tealB); }
     .footer-brand p { font-size: .81rem; color: var(--dim); line-height: 1.7; max-width: 230px; }
     .footer-col h3 { font-family: var(--fd); font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: .9rem; }
     .footer-col a { display: block; font-size: .81rem; color: var(--dim); margin-bottom: .45rem; transition: color .2s; }
@@ -545,7 +547,8 @@
 <!-- ═══ NAV ═══ -->
 <nav id="nav" aria-label="Hauptnavigation">
   <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
-    <img src="Bilder/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
+    <img src="Bilder/Logo/nur Symbol.png" alt="" />
+    <span class="nav-logo-text">Kolibri<em>Inspect</em></span>
   </a>
   <ul class="nav-links" role="list">
     <li><a href="#about">Leistungen</a></li>
@@ -1002,7 +1005,10 @@
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <img src="Bilder/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" />
+      <div class="footer-brand-logo">
+        <img src="Bilder/Logo/nur Symbol.png" alt="" />
+        <span>Kolibri<em>Inspect</em></span>
+      </div>
       <p>Drohnen-Thermografie und KI-Auswertung für Photovoltaik-Anlagen. Normgerecht nach IEC 62446-3. Präzise. Verständlich.</p>
     </div>
     <div class="footer-col">

@@ -31,8 +31,10 @@
       backdrop-filter:blur(18px);
       border-bottom:1px solid var(--borderM);
     }
-    .nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-weight:700;font-size:1.1rem;color:var(--text)}
-    .nav-logo span{color:var(--tealB)}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo img{height:42px;width:auto;mix-blend-mode:screen}
+    .nav-logo-text{font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--text);line-height:1.2;letter-spacing:-.01em}
+    .nav-logo-text em{display:block;font-style:normal;color:var(--tealB)}
     .back-btn{
       display:inline-flex;align-items:center;gap:7px;
       font-size:.85rem;font-weight:500;color:var(--muted);
@@ -109,7 +111,8 @@
 
 <nav>
   <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
-    <img src="Bilder/0f9d496b-7b4a-43c0-ae97-5a69d05894ac.png" alt="KolibriInspect" style="height:44px;width:auto;mix-blend-mode:screen" />
+    <img src="Bilder/Logo/nur Symbol.png" alt="" />
+    <span class="nav-logo-text">Kolibri<em>Inspect</em></span>
   </a>
   <a href="index.html" class="back-btn">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
