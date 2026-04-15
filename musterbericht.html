@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Musterbericht – KolibriInspect Thermografie-Inspektion</title>
+  <meta name="robots" content="noindex, follow"/>
+  <link rel="icon" type="image/png" href="Bilder/Logo/nur Symbol.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050d1a; --bg2: #0a1628;
+      --teal: #167e74; --tealB: #22c2af;
+      --border: rgba(22,126,116,.2); --borderM: rgba(255,255,255,.08);
+      --text: #e8f4f8; --muted: #8a9aa8; --dim: #3a4a58;
+      --fd: 'Poppins', sans-serif; --fb: 'DM Sans', sans-serif;
+      --amber: #F59E0B;
+      /* report colors */
+      --r-bg: #ffffff; --r-text: #1a1a2e; --r-muted: #555; --r-border: #e0e0e0;
+      --r-teal: #167e74; --r-tealB: #22c2af; --r-red: #e53935; --r-amber: #F59E0B;
+      --r-green: #2e7d32;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { background: var(--bg); color: var(--text); font-family: var(--fb); line-height: 1.7; }
+    a { color: var(--tealB); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 64px;
+      background: rgba(5,13,26,.96); backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--borderM);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo img { height: 42px; width: auto; mix-blend-mode: screen; }
+    .nav-logo-text { font-family: var(--fd); font-size: .95rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .nav-logo-text em { display: block; font-style: normal; color: var(--tealB); }
+    .nav-right { display: flex; align-items: center; gap: 1.2rem; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: .85rem; color: var(--muted); transition: color .2s;
+    }
+    .back-btn:hover { color: var(--tealB); text-decoration: none; }
+    .btn-dl {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: .82rem; font-weight: 600; padding: 8px 16px;
+      background: var(--teal); color: #fff; border-radius: 8px;
+      transition: background .2s; text-decoration: none;
+    }
+    .btn-dl:hover { background: var(--tealB); text-decoration: none; }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 48px 5vw 36px;
+      background: linear-gradient(180deg, rgba(22,126,116,.09) 0%, transparent 100%);
+      border-bottom: 1px solid var(--borderM);
+      text-align: center;
+    }
+    .page-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: .67rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .15em; color: var(--tealB); margin-bottom: .8rem;
+    }
+    .page-tag::before { content: ''; width: 20px; height: 2px; background: var(--teal); border-radius: 2px; }
+    .page-header h1 {
+      font-family: var(--fd); font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800; letter-spacing: -.03em; margin-bottom: .5rem;
+    }
+    .page-header h1 em { font-style: normal; color: var(--tealB); }
+    .page-header p { color: var(--muted); font-size: .9rem; max-width: 600px; margin: 0 auto; }
+    .disclaimer {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 1rem;
+      font-size: .72rem; color: var(--dim); background: rgba(255,255,255,.03);
+      border: 1px solid var(--borderM); border-radius: 8px; padding: 6px 14px;
+    }
+
+    /* REPORT WRAPPER */
+    .report-wrap { max-width: 960px; margin: 0 auto; padding: 40px 5vw 80px; }
+
+    /* REPORT CARD (white, printable) */
+    .report-card {
+      background: var(--r-bg);
+      color: var(--r-text);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,.5);
+      font-family: var(--fb);
+    }
+
+    /* REPORT HEADER */
+    .rpt-header {
+      background: #0a1628;
+      padding: 28px 36px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .rpt-logo { display: flex; align-items: center; gap: 12px; }
+    .rpt-logo img { height: 38px; mix-blend-mode: screen; }
+    .rpt-logo-text { font-family: var(--fd); font-size: .95rem; font-weight: 700; color: #e8f4f8; line-height: 1.2; }
+    .rpt-logo-text em { display: block; font-style: normal; color: var(--tealB); }
+    .rpt-type { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+    /* COVER INFO */
+    .rpt-cover {
+      background: #f8f9fb;
+      padding: 28px 36px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px; border-bottom: 1px solid var(--r-border);
+    }
+    .rpt-cover-cell { padding: 14px 18px; background: #fff; }
+    .rpt-cover-label { font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--r-muted); margin-bottom: 4px; }
+    .rpt-cover-val { font-size: .9rem; font-weight: 700; color: var(--r-text); }
+    .rpt-cover-val.green { color: var(--r-green); }
+    .rpt-cover-val.red { color: var(--r-red); }
+
+    /* SECTION HEADINGS */
+    .rpt-section { padding: 32px 36px 0; }
+    .rpt-section:last-child { padding-bottom: 36px; }
+    .rpt-h2 {
+      font-family: var(--fd); font-size: 1.05rem; font-weight: 700;
+      color: var(--r-text); border-bottom: 2px solid var(--r-teal);
+      padding-bottom: 8px; margin-bottom: 20px;
+    }
+    .rpt-h3 { font-size: .88rem; font-weight: 700; color: var(--r-text); margin-bottom: 10px; }
+    .rpt-p { font-size: .84rem; color: var(--r-muted); line-height: 1.75; margin-bottom: 10px; }
+
+    /* INFO BOXES */
+    .info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .info-box {
+      background: #f4f7f9; border: 1px solid var(--r-border);
+      border-radius: 10px; padding: 16px 20px;
+    }
+    .info-box-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--r-muted); margin-bottom: 10px; }
+    .info-line { display: flex; justify-content: space-between; font-size: .83rem; padding: 4px 0; border-bottom: 1px solid var(--r-border); }
+    .info-line:last-child { border-bottom: none; }
+    .info-line-key { color: var(--r-muted); }
+    .info-line-val { font-weight: 600; color: var(--r-text); }
+
+    /* SUMMARY BAR */
+    .summary-bar {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 1px; background: var(--r-border); margin-bottom: 24px;
+    }
+    .summary-cell {
+      background: #fff; padding: 20px 16px; text-align: center;
+    }
+    .summary-num {
+      font-family: var(--fd); font-size: 1.8rem; font-weight: 800;
+      line-height: 1; margin-bottom: 4px;
+    }
+    .summary-num.green { color: var(--r-green); }
+    .summary-num.red { color: var(--r-red); }
+    .summary-num.amber { color: var(--r-amber); }
+    .summary-num.blue { color: var(--r-teal); }
+    .summary-label { font-size: .72rem; color: var(--r-muted); font-weight: 500; }
+
+    /* PIE CHART (SVG) */
+    .chart-row { display: grid; grid-template-columns: 200px 1fr; gap: 28px; align-items: center; margin-bottom: 24px; }
+    .pie-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .pie-legend { display: flex; flex-direction: column; gap: 5px; width: 100%; }
+    .pie-legend-item { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: var(--r-text); }
+    .pie-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .pie-num { margin-left: auto; font-weight: 700; }
+
+    /* FAULT TABLE */
+    .fault-table { width: 100%; border-collapse: collapse; font-size: .8rem; margin-bottom: 20px; }
+    .fault-table th {
+      background: #0a1628; color: #e8f4f8;
+      padding: 10px 14px; text-align: left;
+      font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    }
+    .fault-table th:first-child { border-radius: 0; }
+    .fault-table td { padding: 10px 14px; border-bottom: 1px solid var(--r-border); color: var(--r-text); }
+    .fault-table tr:last-child td { border-bottom: none; font-weight: 700; background: #f4f7f9; }
+    .fault-table tr:hover td { background: #f0f8f7; }
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: .68rem; font-weight: 700; text-transform: uppercase;
+    }
+    .badge-high { background: #fde8e8; color: #c62828; }
+    .badge-med  { background: #fff3e0; color: #e65100; }
+    .badge-low  { background: #e8f5e9; color: #2e7d32; }
+
+    /* FINANCIAL TABLE */
+    .fin-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    .fin-table th { background: #f4f7f9; color: var(--r-muted); padding: 9px 14px; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; border-bottom: 2px solid var(--r-border); }
+    .fin-table td { padding: 10px 14px; border-bottom: 1px solid var(--r-border); }
+    .fin-table tr:last-child td { font-weight: 700; background: #f8f9fb; border-top: 2px solid var(--r-border); border-bottom: none; }
+    .fin-highlight { color: var(--r-red); font-weight: 700; }
+
+    /* BAR CHART */
+    .bar-chart { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; font-size: .78rem; }
+    .bar-label { width: 160px; color: var(--r-muted); flex-shrink: 0; text-align: right; }
+    .bar-track { flex: 1; height: 14px; background: #eef1f3; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; }
+    .bar-val { width: 28px; text-align: right; font-weight: 700; color: var(--r-text); }
+
+    /* PANEL DETAIL */
+    .panel-detail {
+      background: #f8f9fb; border: 1px solid var(--r-border);
+      border-radius: 12px; overflow: hidden; margin-bottom: 24px;
+    }
+    .panel-detail-header {
+      background: #0a1628; color: #e8f4f8;
+      padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .panel-id { font-family: var(--fd); font-size: .95rem; font-weight: 700; }
+    .panel-id span { font-size: .7rem; font-weight: 400; color: var(--muted); margin-left: 8px; }
+    .panel-badge { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; padding: 3px 10px; border-radius: 5px; background: #e53935; color: #fff; }
+    .panel-images { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--r-border); }
+    .panel-img-wrap { background: #fff; padding: 12px 16px; }
+    .panel-img-label { font-size: .68rem; color: var(--r-muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+    .panel-img-placeholder {
+      width: 100%; aspect-ratio: 4/3; border-radius: 6px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; color: #aaa; font-style: italic; position: relative;
+    }
+    .panel-img-rgb { background: linear-gradient(135deg, #6a8fa0 0%, #8faab0 30%, #7a9aaa 50%, #5a7a8a 70%, #4a6a7a 100%); }
+    .panel-img-thermal { background: linear-gradient(135deg, #1a1a3a 0%, #2a2a6a 15%, #1a4a8a 30%, #0a6a8a 45%, #0a8a6a 55%, #2aaa4a 65%, #8ad02a 75%, #daa020 85%, #ea4010 95%, #ff1a0a 100%); }
+    .panel-img-caption { font-size: .68rem; color: var(--r-muted); margin-top: 6px; }
+    .panel-data { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--r-border); }
+    .panel-data-cell { background: #fff; padding: 14px 16px; }
+    .panel-data-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--r-muted); margin-bottom: 8px; }
+    .panel-kv { display: flex; justify-content: space-between; font-size: .78rem; padding: 2px 0; }
+    .panel-kv-key { color: var(--r-muted); }
+    .panel-kv-val { font-weight: 600; color: var(--r-text); }
+    .panel-kv-val.hot { color: #c62828; }
+    .panel-kv-val.warm { color: #e65100; }
+    .panel-explain { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .panel-explain-box { }
+    .panel-explain-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--r-teal); margin-bottom: 6px; }
+    .panel-explain-text { font-size: .8rem; color: var(--r-muted); line-height: 1.65; }
+
+    /* RECOMMENDATIONS */
+    .rec-list { display: flex; flex-direction: column; gap: 10px; }
+    .rec-item {
+      display: flex; gap: 14px; align-items: flex-start;
+      background: #fff; border: 1px solid var(--r-border);
+      border-radius: 10px; padding: 14px 16px;
+    }
+    .rec-num {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: var(--r-teal); color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; margin-top: 2px;
+    }
+    .rec-text { font-size: .82rem; color: var(--r-muted); line-height: 1.65; }
+    .rec-text strong { color: var(--r-text); }
+
+    /* FOOTER */
+    .rpt-footer {
+      background: #0a1628;
+      padding: 16px 36px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: .72rem; color: var(--muted); flex-wrap: wrap; gap: 8px;
+    }
+
+    /* SITE FOOTER */
+    footer {
+      background: #0a1628; border-top: 1px solid var(--borderM);
+      padding: 2rem 5vw; text-align: center;
+      font-size: .8rem; color: var(--dim);
+    }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--tealB); }
+    .foot-links { display: flex; justify-content: center; gap: 2rem; margin-bottom: .8rem; flex-wrap: wrap; }
+
+    @media (max-width: 680px) {
+      .rpt-cover { grid-template-columns: 1fr 1fr; }
+      .info-row { grid-template-columns: 1fr; }
+      .summary-bar { grid-template-columns: 1fr 1fr; }
+      .chart-row { grid-template-columns: 1fr; }
+      .panel-images { grid-template-columns: 1fr; }
+      .panel-data { grid-template-columns: 1fr 1fr; }
+      .panel-explain { grid-template-columns: 1fr; }
+      .rpt-section { padding: 24px 20px 0; }
+      .rpt-cover-cell { padding: 10px 12px; }
+    }
+    @media (max-width: 480px) {
+      .rpt-cover { grid-template-columns: 1fr; }
+      .summary-bar { grid-template-columns: 1fr 1fr; }
+    }
+    @media print {
+      nav, .page-header, .report-wrap > .btn-dl, footer { display: none; }
+      body { background: #fff; }
+      .report-card { box-shadow: none; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
+    <img src="Bilder/Logo/nur Symbol.png" alt=""/>
+    <span class="nav-logo-text">Kolibri<em>Inspect</em></span>
+  </a>
+  <div class="nav-right">
+    <a href="index.html" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Zurück
+    </a>
+    <a href="anfrage.html" class="btn-dl">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 10.9"/><path d="M1 1l22 22"/></svg>
+      Eigene Anlage anfragen
+    </a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-tag">Musterbericht</div>
+  <h1>KI-Thermografie-Inspektionsbericht<br><em>Muster-Solaranlage GmbH</em></h1>
+  <p>Normgerecht nach DIN EN IEC 62446-3 · Drohnen-Thermografie mit KI-Auswertung · PDF-Export</p>
+  <div class="disclaimer">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Alle Firmendaten und Koordinaten wurden für dieses Musterexemplar anonymisiert.
+  </div>
+</div>
+
+<div class="report-wrap">
+<div class="report-card">
+
+  <!-- ── REPORT HEADER ── -->
+  <div class="rpt-header">
+    <div class="rpt-logo">
+      <img src="Bilder/Logo/nur Symbol.png" alt="KolibriInspect"/>
+      <span class="rpt-logo-text">Kolibri<em>Inspect</em></span>
+    </div>
+    <div style="text-align:right">
+      <div class="rpt-type">Thermografischer Inspektionsbericht</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:3px">DIN EN IEC 62446-3 · Erstellt: April 2025</div>
+    </div>
+  </div>
+
+  <!-- ── COVER INFO ── -->
+  <div class="rpt-cover">
+    <div class="rpt-cover-cell">
+      <div class="rpt-cover-label">Auftraggeber</div>
+      <div class="rpt-cover-val">Muster-Solaranlage GmbH</div>
+    </div>
+    <div class="rpt-cover-cell">
+      <div class="rpt-cover-label">Standort</div>
+      <div class="rpt-cover-val">Bayern, Deutschland</div>
+    </div>
+    <div class="rpt-cover-cell">
+      <div class="rpt-cover-label">Inspektionsdatum</div>
+      <div class="rpt-cover-val">03. April 2025</div>
+    </div>
+    <div class="rpt-cover-cell">
+      <div class="rpt-cover-label">Anlagenleistung</div>
+      <div class="rpt-cover-val">498 kWp</div>
+    </div>
+    <div class="rpt-cover-cell">
+      <div class="rpt-cover-label">Inspizierte Module</div>
+      <div class="rpt-cover-val">1.247 Module</div>
+    </div>
+    <div class="rpt-cover-cell">
+      <div class="rpt-cover-label">Anomalie-Quote</div>
+      <div class="rpt-cover-val red">2,81 %</div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 1: ANLAGE & MESSBEDINGUNGEN ── -->
+  <div class="rpt-section">
+    <div class="rpt-h2">1. Anlagen- und Messdaten</div>
+    <div class="info-row">
+      <div class="info-box">
+        <div class="info-box-title">Anlageninformationen</div>
+        <div class="info-line"><span class="info-line-key">Anlagenbezeichnung</span><span class="info-line-val">Muster-Solaranlage GmbH</span></div>
+        <div class="info-line"><span class="info-line-key">Anlagentyp</span><span class="info-line-val">Freiflächenanlage</span></div>
+        <div class="info-line"><span class="info-line-key">Modultyp</span><span class="info-line-val">Bifazial, monokristallin</span></div>
+        <div class="info-line"><span class="info-line-key">Gesamtleistung</span><span class="info-line-val">498 kWp</span></div>
+        <div class="info-line"><span class="info-line-key">Gesamtmodulanzahl</span><span class="info-line-val">1.247</span></div>
+        <div class="info-line"><span class="info-line-key">Inbetriebnahme</span><span class="info-line-val">2019</span></div>
+        <div class="info-line"><span class="info-line-key">Montagesystem</span><span class="info-line-val">Festmontage, Süd 20°</span></div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Messbedingungen (IEC 62446-3)</div>
+        <div class="info-line"><span class="info-line-key">Referenztemperatur (T<sub>ref</sub>)</span><span class="info-line-val">11 °C</span></div>
+        <div class="info-line"><span class="info-line-key">Umgebungstemperatur</span><span class="info-line-val">13 °C</span></div>
+        <div class="info-line"><span class="info-line-key">Windgeschwindigkeit</span><span class="info-line-val">1,4 m/s</span></div>
+        <div class="info-line"><span class="info-line-key">Globalstrahlung (GHI)</span><span class="info-line-val">514 W/m²</span></div>
+        <div class="info-line"><span class="info-line-key">Direktstrahlung (DNI)</span><span class="info-line-val">749 W/m²</span></div>
+        <div class="info-line"><span class="info-line-key">Bewölkungsgrad</span><span class="info-line-val">0 %</span></div>
+        <div class="info-line"><span class="info-line-key">Emissivität</span><span class="info-line-val">0,85</span></div>
+      </div>
+    </div>
+    <div class="info-row">
+      <div class="info-box">
+        <div class="info-box-title">Eingesetzte Technik</div>
+        <div class="info-line"><span class="info-line-key">Drohne</span><span class="info-line-val">DJI Mavic 3T Enterprise</span></div>
+        <div class="info-line"><span class="info-line-key">Thermalkamera</span><span class="info-line-val">640 × 512 px IR-Sensor</span></div>
+        <div class="info-line"><span class="info-line-key">RGB-Kamera</span><span class="info-line-val">4K Begleitkamera</span></div>
+        <div class="info-line"><span class="info-line-key">GPS-Referenzierung</span><span class="info-line-val">Ja (RTK-gestützt)</span></div>
+        <div class="info-line"><span class="info-line-key">Flughöhe</span><span class="info-line-val">30 m AGL</span></div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Berichtsinfos</div>
+        <div class="info-line"><span class="info-line-key">Inspekteur</span><span class="info-line-val">Dipl.-Ing. (FH) F. Plöchinger</span></div>
+        <div class="info-line"><span class="info-line-key">Norm</span><span class="info-line-val">DIN EN IEC 62446-3</span></div>
+        <div class="info-line"><span class="info-line-key">Berichtsnummer</span><span class="info-line-val">KI-2025-0047</span></div>
+        <div class="info-line"><span class="info-line-key">Erstellt am</span><span class="info-line-val">04. April 2025</span></div>
+        <div class="info-line"><span class="info-line-key">Version</span><span class="info-line-val">1.0 – Final</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: ERGEBNISÜBERSICHT ── -->
+  <div class="rpt-section">
+    <div class="rpt-h2">2. Ergebnisübersicht</div>
+
+    <div class="summary-bar">
+      <div class="summary-cell">
+        <div class="summary-num blue">1.247</div>
+        <div class="summary-label">Inspizierte Module</div>
+      </div>
+      <div class="summary-cell">
+        <div class="summary-num green">1.212</div>
+        <div class="summary-label">Fehlerfreie Module</div>
+      </div>
+      <div class="summary-cell">
+        <div class="summary-num red">35</div>
+        <div class="summary-label">Fehlerhafte Module</div>
+      </div>
+      <div class="summary-cell">
+        <div class="summary-num amber">2,81 %</div>
+        <div class="summary-label">Anomalie-Quote</div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <!-- SVG Pie Chart: 2.81% faulty -->
+      <div class="pie-wrap">
+        <svg width="160" height="160" viewBox="0 0 36 36" aria-hidden="true">
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e8f5e9" stroke-width="3.2"/>
+          <!-- healthy: 97.19% -->
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#2e7d32" stroke-width="3.2"
+            stroke-dasharray="97.19 2.81" stroke-dashoffset="25" />
+          <!-- faulty: 2.81% -->
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e53935" stroke-width="3.2"
+            stroke-dasharray="2.81 97.19" stroke-dashoffset="-72.19" />
+          <text x="18" y="19.5" text-anchor="middle" font-size="4.5" font-weight="700" fill="#1a1a2e">97,2 %</text>
+          <text x="18" y="24" text-anchor="middle" font-size="2.4" fill="#555">fehlerfrei</text>
+        </svg>
+        <div class="pie-legend">
+          <div class="pie-legend-item"><div class="pie-dot" style="background:#2e7d32"></div>Fehlerfreie Module<span class="pie-num">1.212</span></div>
+          <div class="pie-legend-item"><div class="pie-dot" style="background:#e53935"></div>Fehlerhafte Module<span class="pie-num">35</span></div>
+        </div>
+      </div>
+
+      <!-- Bar chart -->
+      <div>
+        <div class="rpt-h3" style="margin-bottom:14px">Fehlertypen nach Häufigkeit</div>
+        <div class="bar-chart">
+          <div class="bar-row"><span class="bar-label">String-Fehler</span><div class="bar-track"><div class="bar-fill" style="width:68%;background:#e53935"></div></div><span class="bar-val">24</span></div>
+          <div class="bar-row"><span class="bar-label">Multi-Zellen-Fehler</span><div class="bar-track"><div class="bar-fill" style="width:9%;background:#ef6c00"></div></div><span class="bar-val">3</span></div>
+          <div class="bar-row"><span class="bar-label">Diodenfehler</span><div class="bar-track"><div class="bar-fill" style="width:6%;background:#7b1fa2"></div></div><span class="bar-val">2</span></div>
+          <div class="bar-row"><span class="bar-label">Riss / Bruch</span><div class="bar-track"><div class="bar-fill" style="width:6%;background:#0288d1"></div></div><span class="bar-val">2</span></div>
+          <div class="bar-row"><span class="bar-label">Hotspot</span><div class="bar-track"><div class="bar-fill" style="width:6%;background:#c0ca33"></div></div><span class="bar-val">2</span></div>
+          <div class="bar-row"><span class="bar-label">Verschmutzung</span><div class="bar-track"><div class="bar-fill" style="width:6%;background:#00897b"></div></div><span class="bar-val">2</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fault table -->
+    <table class="fault-table" aria-label="Fehlertypen-Tabelle">
+      <thead>
+        <tr>
+          <th>Fehlertyp</th>
+          <th>Anzahl</th>
+          <th>Ausstehend</th>
+          <th>In Bearbeitung</th>
+          <th>Abgeschlossen</th>
+          <th>Priorität</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>String-Fehler</td><td>24</td><td>24</td><td>0</td><td>0</td><td><span class="badge badge-high">Hoch</span></td></tr>
+        <tr><td>Multi-Zellen-Fehler</td><td>3</td><td>3</td><td>0</td><td>0</td><td><span class="badge badge-high">Hoch</span></td></tr>
+        <tr><td>Diodenfehler</td><td>2</td><td>2</td><td>0</td><td>0</td><td><span class="badge badge-med">Mittel</span></td></tr>
+        <tr><td>Riss / Bruch</td><td>2</td><td>2</td><td>0</td><td>0</td><td><span class="badge badge-high">Hoch</span></td></tr>
+        <tr><td>Hotspot</td><td>2</td><td>2</td><td>0</td><td>0</td><td><span class="badge badge-med">Mittel</span></td></tr>
+        <tr><td>Vegetationsabschattung</td><td>1</td><td>1</td><td>0</td><td>0</td><td><span class="badge badge-low">Niedrig</span></td></tr>
+        <tr><td>Verschmutzung</td><td>1</td><td>1</td><td>0</td><td>0</td><td><span class="badge badge-low">Niedrig</span></td></tr>
+        <tr><td><strong>Gesamt</strong></td><td><strong>35</strong></td><td><strong>35</strong></td><td><strong>0</strong></td><td><strong>0</strong></td><td>–</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── SECTION 3: FINANZIELLER VERLUST ── -->
+  <div class="rpt-section">
+    <div class="rpt-h2">3. Effizienz &amp; Finanzieller Verlust</div>
+    <p class="rpt-p">Auf Basis der detektierten Anomalien, der aktuellen Einspeisevergütung (0,082 €/kWh) und einer durchschnittlichen Sonnenscheindauer von 4,5 h/Tag ergibt sich folgender geschätzter Ertragsverlust:</p>
+
+    <div class="summary-bar" style="margin-bottom:20px">
+      <div class="summary-cell">
+        <div class="summary-num" style="font-size:1.4rem;color:#c62828">–18,50 €</div>
+        <div class="summary-label">Täglicher Verlust</div>
+      </div>
+      <div class="summary-cell">
+        <div class="summary-num" style="font-size:1.4rem;color:#c62828">–562 €</div>
+        <div class="summary-label">Monatlicher Verlust</div>
+      </div>
+      <div class="summary-cell">
+        <div class="summary-num" style="font-size:1.4rem;color:#c62828">–6.744 €</div>
+        <div class="summary-label">Jährlicher Verlust</div>
+      </div>
+      <div class="summary-cell">
+        <div class="summary-num" style="font-size:1.4rem;color:#2e7d32">2,81 %</div>
+        <div class="summary-label">Anomalie-Quote</div>
+      </div>
+    </div>
+
+    <table class="fin-table" aria-label="Finanzieller Verlust nach Fehlertyp">
+      <thead>
+        <tr>
+          <th>Fehlertyp</th>
+          <th>Anzahl</th>
+          <th>Tägl. Verlust</th>
+          <th>Monatl. Verlust</th>
+          <th>Jährl. Verlust</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>String-Fehler</td><td>24</td><td class="fin-highlight">–13,20 €</td><td class="fin-highlight">–401,40 €</td><td class="fin-highlight">–4.816,80 €</td></tr>
+        <tr><td>Multi-Zellen-Fehler</td><td>3</td><td>–2,10 €</td><td>–63,84 €</td><td>–766,08 €</td></tr>
+        <tr><td>Diodenfehler</td><td>2</td><td>–1,40 €</td><td>–42,56 €</td><td>–510,72 €</td></tr>
+        <tr><td>Riss / Bruch</td><td>2</td><td>–0,88 €</td><td>–26,78 €</td><td>–321,36 €</td></tr>
+        <tr><td>Hotspot</td><td>2</td><td>–0,52 €</td><td>–15,82 €</td><td>–189,84 €</td></tr>
+        <tr><td>Vegetationsabschattung</td><td>1</td><td>–0,24 €</td><td>–7,30 €</td><td>–87,60 €</td></tr>
+        <tr><td>Verschmutzung</td><td>1</td><td>–0,16 €</td><td>–4,87 €</td><td>–58,44 €</td></tr>
+        <tr><td><strong>Gesamt</strong></td><td><strong>35</strong></td><td><strong class="fin-highlight">–18,50 €</strong></td><td><strong class="fin-highlight">–562,57 €</strong></td><td><strong class="fin-highlight">–6.750,84 €</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── SECTION 4: DETAIL-BEFUNDE ── -->
+  <div class="rpt-section">
+    <div class="rpt-h2">4. Detailbefunde – Ausgewählte Module</div>
+    <p class="rpt-p">Die folgenden Seiten zeigen exemplarische Einzelbefunde mit RGB-Aufnahme, Thermalbild und technischen Messwerten. Im vollständigen Bericht wird jedes fehlerhafte Modul einzeln dokumentiert.</p>
+
+    <!-- Panel 1 -->
+    <div class="panel-detail">
+      <div class="panel-detail-header">
+        <div>
+          <div class="panel-id">Modul A-3-0047 <span>String 3 · Position 47</span></div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:2px">GPS: 48.22071° N, 13.15852° E</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge" style="background:#fff3e0;color:#e65100">Riss / Bruch</span>
+          <span class="panel-badge">Priorität: Hoch</span>
+        </div>
+      </div>
+      <div class="panel-images">
+        <div class="panel-img-wrap">
+          <div class="panel-img-label">RGB-Aufnahme</div>
+          <div class="panel-img-placeholder panel-img-rgb">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.15)">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+          </div>
+          <div class="panel-img-caption">DJI Mavic 3T Enterprise · 19.07.2025 11:21 · MPX-4236</div>
+        </div>
+        <div class="panel-img-wrap">
+          <div class="panel-img-label">Thermalbild (Ironbow-Palette)</div>
+          <div class="panel-img-placeholder panel-img-thermal">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;padding:8px">
+              <span style="color:#fff;font-size:.65rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.8)">98,5 °C</span>
+              <span style="color:#fff;font-size:.65rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.8)">31,8 °C</span>
+            </div>
+          </div>
+          <div class="panel-img-caption">640×512 IR · Emissivität 0,85 · ΔT = 58,4 K</div>
+        </div>
+      </div>
+      <div class="panel-data">
+        <div class="panel-data-cell">
+          <div class="panel-data-title">Elektrische Messwerte</div>
+          <div class="panel-kv"><span class="panel-kv-key">Strom</span><span class="panel-kv-val">–</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Spannung</span><span class="panel-kv-val">–</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Leistung</span><span class="panel-kv-val">–</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Messreferenz</span><span class="panel-kv-val">String 3</span></div>
+        </div>
+        <div class="panel-data-cell">
+          <div class="panel-data-title">Temperaturmessung</div>
+          <div class="panel-kv"><span class="panel-kv-key">Minimum</span><span class="panel-kv-val">40,1 °C</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Maximum</span><span class="panel-kv-val hot">98,5 °C</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Durchschnitt</span><span class="panel-kv-val warm">52,4 °C</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Delta T (ΔT)</span><span class="panel-kv-val hot">58,4 K</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Emissivität</span><span class="panel-kv-val">0,85</span></div>
+        </div>
+        <div class="panel-data-cell">
+          <div class="panel-data-title">Wetterdaten</div>
+          <div class="panel-kv"><span class="panel-kv-key">T<sub>ref</sub></span><span class="panel-kv-val">11 °C</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Wind</span><span class="panel-kv-val">1,1 km/h</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Sonnenschein</span><span class="panel-kv-val">12,2 h/Tag</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Bewölkung</span><span class="panel-kv-val">0 %</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Finanzieller Verlust/Jahr</span><span class="panel-kv-val hot">–120 €</span></div>
+        </div>
+      </div>
+      <div class="panel-explain">
+        <div class="panel-explain-box">
+          <div class="panel-explain-title">Fehlererklärung</div>
+          <div class="panel-explain-text">Risse oder Brüche im Solarmodul führen dazu, dass sich betroffene Bereiche erhitzen und die Gesamtleistung des Moduls sinkt. Zusätzlich ermöglichen Risse das Eindringen von Feuchtigkeit und anderen äußeren Einflüssen in das Modul, was zu einer Schädigung der internen Komponenten und Korrosion führen kann.</div>
+        </div>
+        <div class="panel-explain-box">
+          <div class="panel-explain-title">Handlungsempfehlung</div>
+          <div class="panel-explain-text">Bei Erkennung eines Risses ist eine Intervention unter Berücksichtigung von Größe und Lage des Schadens wichtig. Ist der Riss klein, kann das Ersetzen der gerissenen Deckschicht die Lebensdauer des Moduls verlängern und Leistungsverluste minimieren. Bei großflächigen Rissen wird der Austausch des gesamten Moduls empfohlen.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2 -->
+    <div class="panel-detail">
+      <div class="panel-detail-header">
+        <div>
+          <div class="panel-id">Modul A-96-4060 <span>String 96 · Position 60</span></div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:2px">GPS: 48.22334° N, 13.16007° E</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge" style="background:#fff3e0;color:#e65100">Riss / Bruch</span>
+          <span class="panel-badge">Priorität: Hoch</span>
+        </div>
+      </div>
+      <div class="panel-images">
+        <div class="panel-img-wrap">
+          <div class="panel-img-label">RGB-Aufnahme</div>
+          <div class="panel-img-placeholder panel-img-rgb">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.15)">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+          </div>
+          <div class="panel-img-caption">DJI Mavic 3T Enterprise · 19.07.2025 11:52 · MPX-4236</div>
+        </div>
+        <div class="panel-img-wrap">
+          <div class="panel-img-label">Thermalbild (Ironbow-Palette)</div>
+          <div class="panel-img-placeholder panel-img-thermal" style="background: linear-gradient(135deg, #1a1a3a 0%, #2a2a6a 15%, #1a4a8a 30%, #0a6a8a 45%, #0a8a6a 55%, #2aaa4a 65%, #8ad02a 78%, #caa030 90%, #e05010 100%)">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;padding:8px">
+              <span style="color:#fff;font-size:.65rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.8)">90,9 °C</span>
+              <span style="color:#fff;font-size:.65rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.8)">43,1 °C</span>
+            </div>
+          </div>
+          <div class="panel-img-caption">640×512 IR · Emissivität 0,85 · ΔT = 49,1 K</div>
+        </div>
+      </div>
+      <div class="panel-data">
+        <div class="panel-data-cell">
+          <div class="panel-data-title">Elektrische Messwerte</div>
+          <div class="panel-kv"><span class="panel-kv-key">Strom</span><span class="panel-kv-val">–</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Spannung</span><span class="panel-kv-val">–</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Leistung</span><span class="panel-kv-val">–</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Seriennummer</span><span class="panel-kv-val">ZSM1020160300</span></div>
+        </div>
+        <div class="panel-data-cell">
+          <div class="panel-data-title">Temperaturmessung</div>
+          <div class="panel-kv"><span class="panel-kv-key">Minimum</span><span class="panel-kv-val">40,1 °C</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Maximum</span><span class="panel-kv-val hot">90,9 °C</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Durchschnitt</span><span class="panel-kv-val warm">53,7 °C</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Delta T (ΔT)</span><span class="panel-kv-val hot">49,1 K</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Emissivität</span><span class="panel-kv-val">0,85</span></div>
+        </div>
+        <div class="panel-data-cell">
+          <div class="panel-data-title">Wetterdaten</div>
+          <div class="panel-kv"><span class="panel-kv-key">T<sub>ref</sub></span><span class="panel-kv-val">11 °C</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Wind</span><span class="panel-kv-val">1,1 km/h</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Sonnenschein</span><span class="panel-kv-val">12,2 h/Tag</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Bewölkung</span><span class="panel-kv-val">0 %</span></div>
+          <div class="panel-kv"><span class="panel-kv-key">Finanzieller Verlust/Jahr</span><span class="panel-kv-val hot">–120 €</span></div>
+        </div>
+      </div>
+      <div class="panel-explain">
+        <div class="panel-explain-box">
+          <div class="panel-explain-title">Fehlererklärung</div>
+          <div class="panel-explain-text">Der Riss im Modul führt zu einer lokalen Erhitzung auf bis zu 90,9 °C (ΔT = 49,1 K gegenüber der Umgebungstemperatur). Dies weist auf einen signifikanten Leistungsverlust hin. Die betroffene Zelle ist thermisch vom Rest des Strings isoliert und trägt nicht mehr zur Stromerzeugung bei.</div>
+        </div>
+        <div class="panel-explain-box">
+          <div class="panel-explain-title">Handlungsempfehlung</div>
+          <div class="panel-explain-text">Kurzfristige Überprüfung vor Ort empfohlen. Da ΔT &gt; 40 K (gemäß IEC 62446-3 als kritisch eingestuft), ist eine zeitnahe Reparatur oder ein Modulaustausch erforderlich. Das Modul sollte bis zur Reparatur regelmäßig überwacht werden, um Brandgefahr auszuschließen.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 5: HANDLUNGSEMPFEHLUNGEN ── -->
+  <div class="rpt-section">
+    <div class="rpt-h2">5. Zusammenfassung und Handlungsempfehlungen</div>
+    <p class="rpt-p" style="margin-bottom:20px">Die Inspektion der Anlage ergab 35 fehlerhafte Module bei einer Gesamtmodulanzahl von 1.247 (Anomalie-Quote: 2,81 %). Folgend die priorisierten Handlungsempfehlungen:</p>
+    <div class="rec-list">
+      <div class="rec-item">
+        <div class="rec-num">1</div>
+        <div class="rec-text"><strong>Sofortmaßnahme – String-Fehler (24 Module, Priorität Hoch):</strong> 24 Module zeigen String-Fehler mit signifikanten Temperaturerhöhungen. Vor-Ort-Überprüfung der betroffenen Strings innerhalb von 2 Wochen empfohlen. Prüfen ob Bypass-Dioden defekt oder Stringverschaltung unterbrochen.</div>
+      </div>
+      <div class="rec-item">
+        <div class="rec-num">2</div>
+        <div class="rec-text"><strong>Kurzfristig – Risse &amp; Brüche (2 Module, Priorität Hoch):</strong> Beide Module zeigen ΔT &gt; 40 K (kritischer Schwellenwert nach IEC 62446-3). Modulaustausch innerhalb von 4 Wochen empfohlen. Brandgefahr prüfen und Versicherung informieren.</div>
+      </div>
+      <div class="rec-item">
+        <div class="rec-num">3</div>
+        <div class="rec-text"><strong>Mittelfristig – Multi-Zellen- &amp; Diodenfehler (5 Module, Priorität Mittel):</strong> Elektrische Überprüfung aller betroffenen Module und Austausch defekter Bypass-Dioden. Zeitraum: innerhalb von 3 Monaten.</div>
+      </div>
+      <div class="rec-item">
+        <div class="rec-num">4</div>
+        <div class="rec-text"><strong>Langfristig – Verschmutzung &amp; Abschattung (2 Module, Priorität Niedrig):</strong> Gezielte Reinigung der betroffenen Module. Regelmäßige Reinigungsintervalle einplanen (1–2× jährlich). Ertragssteigerung von ca. 2–5 % durch konsequente Reinigung zu erwarten.</div>
+      </div>
+      <div class="rec-item">
+        <div class="rec-num">5</div>
+        <div class="rec-text"><strong>Jährliche Folgeinspektion empfohlen:</strong> Gemäß IEC 62446-3 und den Anforderungen der meisten Versicherungen wird eine jährliche Thermografie-Inspektion empfohlen. Dadurch lassen sich neue Defekte frühzeitig erkennen und der jährliche Ertragsverlust von derzeit ca. 6.750 € minimieren.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── REPORT FOOTER ── -->
+  <div class="rpt-footer">
+    <div>KolibriInspect · Dipl.-Ing. (FH) Friedrich Plöchinger · Eichenweg 8, 94121 Salzweg</div>
+    <div>Bericht KI-2025-0047 · DIN EN IEC 62446-3 · Seite 1 von 1</div>
+  </div>
+
+</div><!-- /report-card -->
+</div><!-- /report-wrap -->
+
+<footer>
+  <div class="foot-links">
+    <a href="index.html">Startseite</a>
+    <a href="preise.html">Preise</a>
+    <a href="anfrage.html">Anfrage</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="agb.html">AGB</a>
+  </div>
+  <p>© 2025 KolibriInspect · Dipl.-Ing. (FH) Friedrich Plöchinger · Eichenweg 8, 94121 Salzweg</p>
+</footer>
+
+</body>
+</html>
