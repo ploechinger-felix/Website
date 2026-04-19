@@ -18,9 +18,17 @@
   {"@context":"https://schema.org","@type":"LocalBusiness","name":"KolibriInspect","description":"Drohnengestützte Thermografie und KI-Auswertung für Photovoltaik-Anlagen","address":{"@type":"PostalAddress","streetAddress":"Passauer Str. 20","addressLocality":"Salzweg","postalCode":"94121","addressCountry":"DE"},"telephone":"+491732172753","email":"info@kolibri-inspect.de","url":"https://www.kolibri-inspect.de","openingHours":"Mo-Fr 07:00-18:00","geo":{"@type":"GeoCoordinates","latitude":48.634776,"longitude":13.4769482}}
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <!-- Google Fonts werden erst nach Cookie-Einwilligung geladen (DSGVO-konform) -->
+  <script>
+    (function () {
+      var consent = localStorage.getItem('ki_cookie_consent');
+      if (consent === 'accepted') {
+        var l1 = document.createElement('link'); l1.rel = 'preconnect'; l1.href = 'https://fonts.googleapis.com'; document.head.appendChild(l1);
+        var l2 = document.createElement('link'); l2.rel = 'preconnect'; l2.href = 'https://fonts.gstatic.com'; l2.crossOrigin = 'anonymous'; document.head.appendChild(l2);
+        var l3 = document.createElement('link'); l3.rel = 'stylesheet'; l3.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap'; document.head.appendChild(l3);
+      }
+    })();
+  </script>
 
   <style>
     :root {
@@ -559,9 +567,98 @@
       .footer-bottom { flex-direction: column; text-align: center; }
       .pin-tip { width: 155px; }
     }
+
+    /* ── COOKIE BANNER ── */
+    #ki-cookie-banner {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+      background: rgba(20, 23, 26, 0.97);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid rgba(22,126,116,.30);
+      box-shadow: 0 -8px 40px rgba(0,0,0,.55);
+      padding: 1.4rem 5vw;
+      display: flex; align-items: center; gap: 1.6rem;
+      flex-wrap: wrap;
+      transform: translateY(0);
+      transition: transform .4s cubic-bezier(.4,0,.2,1), opacity .4s;
+    }
+    #ki-cookie-banner.ki-hidden {
+      transform: translateY(120%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .ki-cookie-icon {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      background: rgba(22,126,116,.15);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ki-cookie-text { flex: 1; min-width: 220px; }
+    .ki-cookie-text p {
+      font-size: .82rem; color: #8a9aa8; line-height: 1.65; margin: 0;
+    }
+    .ki-cookie-text a { color: #22c2af; text-decoration: none; }
+    .ki-cookie-text a:hover { text-decoration: underline; }
+    .ki-cookie-actions {
+      display: flex; gap: 10px; flex-shrink: 0; flex-wrap: wrap; align-items: center;
+    }
+    .ki-btn-accept {
+      padding: 9px 20px;
+      background: #167e74; color: #fff;
+      border: none; border-radius: 8px;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      font-size: .82rem; font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+      white-space: nowrap;
+    }
+    .ki-btn-accept:hover { background: #1da897; transform: translateY(-1px); }
+    .ki-btn-decline {
+      padding: 9px 20px;
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,.12);
+      border-radius: 8px; color: #8a9aa8;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      font-size: .82rem; font-weight: 500;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+      white-space: nowrap;
+    }
+    .ki-btn-decline:hover { border-color: #22c2af; color: #22c2af; }
+    @media (max-width: 600px) {
+      #ki-cookie-banner { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .ki-cookie-icon { display: none; }
+      .ki-cookie-actions { width: 100%; }
+      .ki-btn-accept, .ki-btn-decline { flex: 1; text-align: center; }
+    }
   </style>
 </head>
 <body>
+
+<!-- ═══ COOKIE BANNER ═══ -->
+<div id="ki-cookie-banner" class="ki-hidden" role="dialog" aria-label="Cookie-Einstellungen" aria-live="polite">
+  <div class="ki-cookie-icon" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c2af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+      <circle cx="9" cy="10" r="1" fill="#22c2af" stroke="none"/>
+      <circle cx="14" cy="14" r="1" fill="#22c2af" stroke="none"/>
+      <circle cx="8" cy="15" r="1" fill="#22c2af" stroke="none"/>
+    </svg>
+  </div>
+  <div class="ki-cookie-text">
+    <p>
+      Wir verwenden <strong style="color:#f0f0f0">Google Fonts</strong>, um Schriftarten darzustellen (Poppins, Open Sans).
+      Dabei wird Ihre IP-Adresse an Google übertragen. Mit „Akzeptieren" stimmen Sie dem zu.
+      Sie können die Einstellung jederzeit ändern. Mehr Infos in unserer
+      <a href="datenschutz.html">Datenschutzerklärung</a>.
+    </p>
+  </div>
+  <div class="ki-cookie-actions">
+    <button class="ki-btn-decline" id="ki-btn-decline" aria-label="Nur notwendige Cookies verwenden">Nur notwendige</button>
+    <button class="ki-btn-accept" id="ki-btn-accept" aria-label="Alle Cookies akzeptieren">Alle akzeptieren</button>
+  </div>
+</div>
 
 <a href="#main" class="skip-link">Zum Hauptinhalt</a>
 
@@ -1043,6 +1140,7 @@
       <h3>Unternehmen</h3>
       <a href="impressum.html">Impressum</a>
       <a href="agb.html">AGB</a>
+      <a href="datenschutz.html">Datenschutz</a>
       <a href="anfrage.html">Kontakt &amp; Anfrage</a>
     </div>
     <div class="footer-col">
@@ -1058,6 +1156,8 @@
     <div class="footer-links">
       <a href="impressum.html">Impressum</a>
       <a href="agb.html">AGB</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <button onclick="window.ki_reopenCookieBanner && window.ki_reopenCookieBanner()" style="background:none;border:none;font:inherit;font-size:.76rem;color:#4a5560;cursor:pointer;padding:0;transition:color .2s" onmouseover="this.style.color='#22c2af'" onmouseout="this.style.color='#4a5560'">Cookie-Einstellungen</button>
     </div>
   </div>
 </footer>
@@ -1417,6 +1517,81 @@ document.querySelectorAll('.fault-pin').forEach(pin => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pin.classList.toggle('active'); }
   });
 });
+</script>
+
+<!-- ═══ COOKIE BANNER LOGIC ═══ -->
+<script>
+(function () {
+  var STORAGE_KEY = 'ki_cookie_consent';
+  var banner = document.getElementById('ki-cookie-banner');
+  var btnAccept = document.getElementById('ki-btn-accept');
+  var btnDecline = document.getElementById('ki-btn-decline');
+
+  function loadGoogleFonts() {
+    if (document.querySelector('link[href*="fonts.googleapis.com/css2"]')) return;
+    var l1 = document.createElement('link'); l1.rel = 'preconnect'; l1.href = 'https://fonts.googleapis.com'; document.head.appendChild(l1);
+    var l2 = document.createElement('link'); l2.rel = 'preconnect'; l2.href = 'https://fonts.gstatic.com'; l2.crossOrigin = 'anonymous'; document.head.appendChild(l2);
+    var l3 = document.createElement('link'); l3.rel = 'stylesheet';
+    l3.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap';
+    document.head.appendChild(l3);
+  }
+
+  function hideBanner() {
+    banner.classList.add('ki-hidden');
+  }
+
+  function showBanner() {
+    banner.classList.remove('ki-hidden');
+  }
+
+  function setConsent(value) {
+    try {
+      var expires = new Date();
+      expires.setFullYear(expires.getFullYear() + 1);
+      localStorage.setItem(STORAGE_KEY, value);
+      // Auch als Cookie speichern (Fallback für Safari ITP)
+      document.cookie = STORAGE_KEY + '=' + value + '; path=/; expires=' + expires.toUTCString() + '; SameSite=Lax';
+    } catch (e) {}
+  }
+
+  function getConsent() {
+    try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+  }
+
+  // Einwilligung prüfen
+  var consent = getConsent();
+  if (consent === 'accepted') {
+    loadGoogleFonts();
+  } else if (consent === null) {
+    // Kein Eintrag vorhanden → Banner anzeigen (kurze Verzögerung für Seitenaufbau)
+    setTimeout(showBanner, 800);
+    // Falls die URL #cookie-settings enthält (Redirect von Datenschutzseite)
+    if (window.location.hash === '#cookie-settings') {
+      showBanner();
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }
+
+  // Akzeptieren
+  btnAccept.addEventListener('click', function () {
+    setConsent('accepted');
+    hideBanner();
+    loadGoogleFonts();
+  });
+
+  // Ablehnen
+  btnDecline.addEventListener('click', function () {
+    setConsent('declined');
+    hideBanner();
+  });
+
+  // Global: Banner wieder öffnen (z.B. vom Footer-Link)
+  window.ki_reopenCookieBanner = function () {
+    setConsent(null);
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    showBanner();
+  };
+})();
 </script>
 </body>
 </html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Datenschutzerklärung – KolibriInspect</title>
+  <meta name="robots" content="noindex, follow" />
+  <link rel="icon" type="image/png" href="Bilder/Logo/nur Symbol.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#151515;--bg2:#1b1b1b;--card:#2b2f33;
+      --teal:#167e74;--tealB:#22c2af;
+      --border:rgba(22,126,116,.18);--borderM:rgba(255,255,255,.07);
+      --text:#f0f0f0;--muted:#8a9aa8;--dim:#4a5560;
+      --fd:'Poppins',sans-serif;--fb:'Open Sans',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;font-size:16px}
+    body{background:var(--bg);color:var(--text);font-family:var(--fb);line-height:1.7;min-height:100vh}
+    a{color:var(--tealB);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* NAV */
+    nav{
+      position:sticky;top:0;z-index:100;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 5vw;height:64px;
+      background:rgba(21,21,21,.95);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--borderM);
+    }
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo img{height:42px;width:auto;mix-blend-mode:screen}
+    .nav-logo-text{font-family:var(--fd);font-size:.95rem;font-weight:700;color:var(--text);line-height:1.2;letter-spacing:-.01em}
+    .nav-logo-text em{display:block;font-style:normal;color:var(--tealB)}
+    .back-btn{
+      display:inline-flex;align-items:center;gap:7px;
+      font-size:.85rem;font-weight:500;color:var(--muted);
+      transition:color .25s;
+    }
+    .back-btn:hover{color:var(--tealB);text-decoration:none}
+
+    /* CONTENT */
+    .page-wrap{max-width:760px;margin:0 auto;padding:60px 5vw 100px}
+    .page-tag{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:.7rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.14em;color:var(--tealB);margin-bottom:1rem;
+    }
+    .page-tag::before{content:'';width:20px;height:2px;background:var(--teal);border-radius:2px}
+    h1{
+      font-family:var(--fd);font-size:clamp(1.8rem,3vw,2.6rem);
+      font-weight:800;line-height:1.1;letter-spacing:-.025em;
+      margin-bottom:2.5rem;
+    }
+    h1 em{font-style:normal;color:var(--tealB)}
+
+    .section{margin-bottom:2.5rem}
+    h2{
+      font-family:var(--fd);font-size:1.05rem;font-weight:700;
+      color:var(--text);margin-bottom:.7rem;
+      padding-bottom:.5rem;
+      border-bottom:1px solid var(--borderM);
+    }
+    h3{
+      font-family:var(--fd);font-size:.9rem;font-weight:600;
+      color:var(--text);margin-bottom:.5rem;margin-top:1rem;
+    }
+    p{font-size:.92rem;color:var(--muted);line-height:1.8;margin-bottom:.8rem}
+    p:last-child{margin-bottom:0}
+    strong{color:var(--text);font-weight:600}
+    ul{padding-left:1.2rem;margin-bottom:.8rem}
+    ul li{font-size:.92rem;color:var(--muted);line-height:1.8;margin-bottom:.3rem;list-style:disc}
+
+    .info-card{
+      background:var(--card);
+      border:1px solid var(--borderM);
+      border-radius:14px;
+      padding:1.6rem 2rem;
+      margin-bottom:2rem;
+    }
+    .info-card p{margin-bottom:.35rem}
+    .info-card p:last-child{margin-bottom:0}
+
+    .legal-note{
+      background:rgba(22,126,116,.07);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:1rem 1.3rem;
+      font-size:.8rem;
+      color:var(--muted);
+      margin-bottom:1.5rem;
+    }
+
+    /* Cookie-Tabelle */
+    .cookie-table-wrap{overflow-x:auto;margin-bottom:1.2rem;border-radius:10px;border:1px solid var(--borderM)}
+    table{width:100%;border-collapse:collapse;font-size:.82rem}
+    thead tr{background:rgba(22,126,116,.1)}
+    th{padding:.65rem .9rem;text-align:left;font-family:var(--fd);font-weight:600;color:var(--text);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--borderM)}
+    td{padding:.6rem .9rem;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;line-height:1.6}
+    tr:last-child td{border-bottom:none}
+    .badge{
+      display:inline-block;padding:.2rem .55rem;border-radius:5px;
+      font-size:.7rem;font-weight:600;letter-spacing:.04em;
+    }
+    .badge-required{background:rgba(22,126,116,.18);color:var(--tealB)}
+    .badge-optional{background:rgba(240,192,0,.15);color:#f0c000}
+
+    /* Cookie-Einstellungen Button */
+    .cookie-settings-btn{
+      display:inline-flex;align-items:center;gap:8px;
+      margin-top:1rem;padding:10px 20px;
+      background:rgba(22,126,116,.15);
+      border:1px solid var(--border);
+      border-radius:9px;font-family:var(--fd);
+      font-size:.84rem;font-weight:600;color:var(--tealB);
+      cursor:pointer;transition:background .2s,border-color .2s;
+    }
+    .cookie-settings-btn:hover{background:rgba(22,126,116,.28);border-color:var(--tealB)}
+
+    /* FOOTER */
+    footer{
+      background:var(--card);
+      border-top:1px solid var(--borderM);
+      padding:2rem 5vw;
+      text-align:center;
+      font-size:.8rem;color:var(--dim);
+    }
+    footer a{color:var(--muted)}
+    footer a:hover{color:var(--tealB)}
+    .foot-links{display:flex;justify-content:center;gap:2rem;margin-bottom:.8rem;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
+    <img src="Bilder/Logo/nur Symbol.png" alt="" />
+    <span class="nav-logo-text">Kolibri<em>Inspect</em></span>
+  </a>
+  <a href="index.html" class="back-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Zurück zur Startseite
+  </a>
+</nav>
+
+<main>
+  <div class="page-wrap">
+    <div class="page-tag">Rechtliches</div>
+    <h1>Datenschutz<em>erklärung</em></h1>
+
+    <p style="font-size:.8rem;color:var(--dim);margin-bottom:1.8rem">
+      Stand: April 2025 · Gemäß DSGVO (EU) 2016/679 und BDSG
+    </p>
+
+    <!-- 1. Verantwortlicher -->
+    <div class="section">
+      <h2>1. Verantwortlicher</h2>
+      <div class="info-card">
+        <p><strong>Dipl.-Ing. (FH) Friedrich Plöchinger</strong></p>
+        <p>handelnd unter „KolibriInspect"</p>
+        <p>Eichenweg 8 · 94121 Salzweg · Deutschland</p>
+        <p style="margin-top:.7rem">
+          <strong>Telefon:</strong> <a href="tel:+491732172753">+49 173 2172753</a><br/>
+          <strong>E-Mail:</strong> <a href="mailto:info@kolibri-inspect.de">info@kolibri-inspect.de</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- 2. Allgemeine Hinweise -->
+    <div class="section">
+      <h2>2. Allgemeine Hinweise zur Datenverarbeitung</h2>
+      <p>Wir nehmen den Schutz Ihrer personenbezogenen Daten ernst und verarbeiten Ihre Daten ausschließlich auf Grundlage der gesetzlichen Bestimmungen (DSGVO, BDSG). Diese Datenschutzerklärung informiert Sie darüber, welche Daten wir erheben, wie wir sie verwenden und welche Rechte Sie haben.</p>
+      <p>Personenbezogene Daten werden nur in dem Umfang erhoben, der für den jeweiligen Zweck erforderlich ist. Eine Weitergabe an Dritte erfolgt nur, soweit dies gesetzlich zulässig oder durch Ihre Einwilligung gedeckt ist.</p>
+    </div>
+
+    <!-- 3. Hosting & Server-Logfiles -->
+    <div class="section">
+      <h2>3. Hosting und Server-Logfiles</h2>
+      <p>Diese Website wird bei einem professionellen Hosting-Anbieter gehostet. Beim Aufruf unserer Seiten werden durch den Webserver automatisch folgende Daten in sog. Server-Logfiles gespeichert:</p>
+      <ul>
+        <li>IP-Adresse des anfragenden Geräts</li>
+        <li>Datum und Uhrzeit des Zugriffs</li>
+        <li>Aufgerufene URL / Dateiname</li>
+        <li>Referrer-URL (zuvor besuchte Seite)</li>
+        <li>Verwendeter Browser und Betriebssystem</li>
+        <li>Übertragene Datenmenge und HTTP-Statuscode</li>
+      </ul>
+      <p>Diese Daten sind technisch notwendig für den Betrieb der Website und zur Erkennung und Abwehr von Angriffen. Eine Zusammenführung mit anderen Datenquellen findet nicht statt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse). Die Logfiles werden nach spätestens 30 Tagen gelöscht.</p>
+    </div>
+
+    <!-- 4. Cookies und lokaler Speicher -->
+    <div class="section">
+      <h2>4. Cookies und lokaler Speicher (LocalStorage)</h2>
+      <p>Unsere Website verwendet technisch notwendige LocalStorage-Einträge sowie – nach Ihrer Einwilligung – optionale Dienste, die eine Datenübertragung an externe Anbieter auslösen können.</p>
+      <p>LocalStorage-Einträge funktionieren ähnlich wie Cookies: Sie werden im Browser gespeichert und können beim nächsten Besuch ausgelesen werden. Anders als Cookies werden sie jedoch nicht bei jedem Request automatisch an den Server übertragen.</p>
+
+      <div class="cookie-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name / Dienst</th>
+              <th>Anbieter</th>
+              <th>Zweck</th>
+              <th>Typ</th>
+              <th>Laufzeit</th>
+              <th>Rechtsgrundlage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ki_cookie_consent</strong></td>
+              <td>KolibriInspect<br/>(lokal)</td>
+              <td>Speichert Ihre Cookie-Einwilligung (akzeptiert / abgelehnt), damit der Banner nur einmalig erscheint.</td>
+              <td><span class="badge badge-required">Notwendig</span></td>
+              <td>365 Tage</td>
+              <td>Art. 6 Abs. 1 lit. c DSGVO (gesetzliche Verpflichtung zur Einwilligungsverwaltung)</td>
+            </tr>
+            <tr>
+              <td><strong>Google Fonts API</strong><br/><em>fonts.googleapis.com</em></td>
+              <td>Google Ireland Ltd.<br/>Gordon House, Barrow Street, Dublin 4, Irland</td>
+              <td>Laden der Web-Schriftarten „Poppins" und „Open Sans" vom Google-CDN für ein einheitliches Erscheinungsbild. Dabei wird Ihre IP-Adresse an Google übertragen.</td>
+              <td><span class="badge badge-optional">Optional</span></td>
+              <td>Session (kein persistenter Cookie; IP-Übertragung je Seitenaufruf)</td>
+              <td>Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Google Fonts werden ausschließlich dann von Google-Servern geladen, wenn Sie im Cookie-Banner „Alle akzeptieren" gewählt haben. Bei Ablehnung werden stattdessen systemseitige Schriftarten verwendet; die Funktionalität der Website ist davon nicht beeinträchtigt.</p>
+      <p>Informationen zur Datenverarbeitung durch Google finden Sie in der <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Datenschutzerklärung</a>.</p>
+
+      <button class="cookie-settings-btn" onclick="window.ki_reopenCookieBanner && window.ki_reopenCookieBanner()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Cookie-Einstellungen ändern
+      </button>
+    </div>
+
+    <!-- 5. Kontaktformular -->
+    <div class="section">
+      <h2>5. Kontakt und Anfragen</h2>
+      <p>Wenn Sie uns über das Kontaktformular oder per E-Mail kontaktieren, werden Ihre Angaben (Name, E-Mail-Adresse, Nachricht sowie ggf. Telefonnummer und Anlagendetails) zur Bearbeitung Ihrer Anfrage und für den Fall von Anschlussfragen bei uns gespeichert. Diese Daten werden ohne Ihre Einwilligung nicht an Dritte weitergegeben.</p>
+      <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragsanbahnung) sowie Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Beantwortung von Anfragen). Die Daten werden gelöscht, sobald die Anfrage abschließend bearbeitet ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>
+    </div>
+
+    <!-- 6. Drittland-Transfer -->
+    <div class="section">
+      <h2>6. Datenübertragung in Drittländer</h2>
+      <p>Google LLC hat seinen Hauptsitz in den USA. Beim Laden von Google Fonts wird Ihre IP-Adresse an Google-Server übertragen, die sich auch außerhalb des EWR befinden können. Google ist unter dem EU-US Data Privacy Framework zertifiziert, sodass ein angemessenes Datenschutzniveau gemäß Art. 45 DSGVO besteht.</p>
+      <p>Diese Übertragung findet nur statt, wenn Sie im Cookie-Banner in das Laden von Google Fonts eingewilligt haben.</p>
+    </div>
+
+    <!-- 7. Ihre Rechte -->
+    <div class="section">
+      <h2>7. Ihre Rechte als betroffene Person</h2>
+      <p>Gemäß DSGVO stehen Ihnen folgende Rechte zu:</p>
+      <ul>
+        <li><strong>Auskunft (Art. 15 DSGVO):</strong> Sie können Auskunft über die von uns gespeicherten personenbezogenen Daten verlangen.</li>
+        <li><strong>Berichtigung (Art. 16 DSGVO):</strong> Sie können die Berichtigung unrichtiger Daten verlangen.</li>
+        <li><strong>Löschung (Art. 17 DSGVO):</strong> Sie können die Löschung Ihrer Daten verlangen, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</li>
+        <li><strong>Einschränkung (Art. 18 DSGVO):</strong> Sie können die Einschränkung der Verarbeitung verlangen.</li>
+        <li><strong>Datenübertragbarkeit (Art. 20 DSGVO):</strong> Sie können Ihre Daten in einem maschinenlesbaren Format erhalten.</li>
+        <li><strong>Widerspruch (Art. 21 DSGVO):</strong> Sie können der Verarbeitung auf Basis eines berechtigten Interesses widersprechen.</li>
+        <li><strong>Widerruf einer Einwilligung (Art. 7 Abs. 3 DSGVO):</strong> Eine erteilte Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen (z. B. über den Button „Cookie-Einstellungen ändern").</li>
+      </ul>
+      <p>Zur Ausübung Ihrer Rechte wenden Sie sich bitte an: <a href="mailto:info@kolibri-inspect.de">info@kolibri-inspect.de</a></p>
+
+      <div class="legal-note">
+        <strong>Beschwerderecht:</strong> Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.
+        Zuständig für Bayern ist das <strong>Bayerische Landesamt für Datenschutzaufsicht (BayLDA)</strong>,
+        Promenade 27, 91522 Ansbach · <a href="https://www.lda.bayern.de" target="_blank" rel="noopener noreferrer">www.lda.bayern.de</a>
+      </div>
+    </div>
+
+    <!-- 8. Änderungen -->
+    <div class="section">
+      <h2>8. Aktualität dieser Datenschutzerklärung</h2>
+      <p>Diese Datenschutzerklärung ist aktuell gültig (Stand: April 2025). Durch die Weiterentwicklung unserer Website oder aufgrund geänderter gesetzlicher Anforderungen kann es notwendig werden, diese Datenschutzerklärung zu ändern. Die jeweils aktuelle Version ist stets auf dieser Seite abrufbar.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="foot-links">
+    <a href="index.html">Startseite</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="agb.html">AGB</a>
+    <a href="datenschutz.html">Datenschutz</a>
+  </div>
+  <p>© 2025 KolibriInspect · Dipl. Ing. Friedrich Plöchinger · Eichenweg 8, 94121 Salzweg</p>
+</footer>
+
+<script>
+  // Erlaubt Neuöffnung des Cookie-Banners von dieser Seite aus
+  document.querySelector('.cookie-settings-btn').addEventListener('click', function () {
+    localStorage.removeItem('ki_cookie_consent');
+    window.location.href = 'index.html#cookie-settings';
+  });
+</script>
+
+</body>
+</html>
