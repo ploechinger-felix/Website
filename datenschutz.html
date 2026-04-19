@@ -6,9 +6,7 @@
   <title>Datenschutzerklärung – KolibriInspect</title>
   <meta name="robots" content="noindex, follow" />
   <link rel="icon" type="image/png" href="Bilder/Logo/nur Symbol.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="fonts/fonts.css" />
   <style>
     :root{
       --bg:#151515;--bg2:#1b1b1b;--card:#2b2f33;
@@ -110,18 +108,6 @@
     }
     .badge-required{background:rgba(22,126,116,.18);color:var(--tealB)}
     .badge-optional{background:rgba(240,192,0,.15);color:#f0c000}
-
-    /* Cookie-Einstellungen Button */
-    .cookie-settings-btn{
-      display:inline-flex;align-items:center;gap:8px;
-      margin-top:1.1rem;padding:10px 20px;
-      background:rgba(22,126,116,.15);
-      border:1px solid var(--border);
-      border-radius:9px;font-family:var(--fd);
-      font-size:.84rem;font-weight:600;color:var(--tealB);
-      cursor:pointer;transition:background .2s,border-color .2s;
-    }
-    .cookie-settings-btn:hover{background:rgba(22,126,116,.28);border-color:var(--tealB)}
 
     /* FOOTER */
     footer{
@@ -278,50 +264,13 @@
       <p>Unsere Website verwendet nach aktuellem Stand keine einwilligungsbedürftigen Analyse- oder Marketing-Cookies.</p>
       <p>Soweit auf dieser Website Cookies oder vergleichbare Technologien eingesetzt werden, erfolgt dies ausschließlich, soweit sie für den technischen Betrieb der Website oder für von Ihnen ausdrücklich gewünschte Funktionen erforderlich sind. Dazu kann insbesondere die Speicherung technischer Einstellungen oder Ihrer Cookie-Präferenzen gehören.</p>
 
-      <div class="cookie-table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Name / Dienst</th>
-              <th>Anbieter</th>
-              <th>Zweck</th>
-              <th>Typ</th>
-              <th>Laufzeit</th>
-              <th>Rechtsgrundlage</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>ki_cookie_consent</strong></td>
-              <td>KolibriInspect<br/>(lokal)</td>
-              <td>Speichert Ihre Cookie-Präferenz (akzeptiert / abgelehnt), damit der Hinweis-Banner nur einmalig erscheint.</td>
-              <td><span class="badge badge-required">Technisch notwendig</span></td>
-              <td>365 Tage</td>
-              <td>§ 25 Abs. 2 TDDDG;<br/>Art. 6 Abs. 1 lit. f DSGVO</td>
-            </tr>
-            <tr>
-              <td><strong>Google Fonts</strong><br/><em>fonts.googleapis.com</em></td>
-              <td>Google Ireland Ltd.,<br/>Dublin, Irland</td>
-              <td>Laden der Web-Schriftarten „Poppins" und „Open Sans". Dabei wird Ihre IP-Adresse an Google übertragen. Wird nur nach Ihrer ausdrücklichen Einwilligung aktiviert.</td>
-              <td><span class="badge badge-optional">Optional</span></td>
-              <td>Session</td>
-              <td>§ 25 Abs. 1 TDDDG;<br/>Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <p>Die auf dieser Website verwendeten Schriftarten (Poppins, Open Sans) werden <strong>lokal vom eigenen Server</strong> ausgeliefert. Es findet keine Datenübertragung an externe Anbieter (z.&nbsp;B. Google) statt. Es werden keine einwilligungsbedürftigen Cookies oder vergleichbare Speichertechniken eingesetzt.</p>
 
       <p>
-        <strong>Rechtsgrundlage für technisch erforderliche Speicherungen/Zugriffe:</strong> § 25 Abs. 2 TDDDG<br/>
-        <strong>Rechtsgrundlage für die anschließende Datenverarbeitung:</strong> Art. 6 Abs. 1 lit. f DSGVO<br/>
-        <strong>Berechtigtes Interesse:</strong> technisch sichere und nutzerfreundliche Bereitstellung der Website
+        <strong>Rechtsgrundlage:</strong> § 25 Abs. 2 Nr. 2 TDDDG (technisch erforderlich); Art. 6 Abs. 1 lit. f DSGVO<br/>
+        <strong>Berechtigtes Interesse:</strong> technisch sichere und fehlerfreie Darstellung der Website
       </p>
-      <p>Sollten künftig nicht technisch erforderliche Cookies oder ähnliche Technologien, etwa zu Analyse-, Statistik- oder Marketingzwecken, eingesetzt werden, erfolgt dies ausschließlich auf Grundlage Ihrer vorherigen Einwilligung (§ 25 Abs. 1 TDDDG; Art. 6 Abs. 1 lit. a DSGVO). Eine erteilte Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen.</p>
-
-      <button class="cookie-settings-btn" id="cookie-settings-btn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-        Cookie-Einstellungen ändern
-      </button>
+      <p>Sollten künftig nicht technisch erforderliche Cookies oder ähnliche Technologien eingesetzt werden, erfolgt dies ausschließlich auf Grundlage Ihrer vorherigen Einwilligung (§ 25 Abs. 1 TDDDG; Art. 6 Abs. 1 lit. a DSGVO).</p>
     </div>
 
     <!-- 8. Empfänger -->
@@ -407,13 +356,6 @@
   </div>
   <p>© 2025 KolibriInspect · Dipl. Ing. Friedrich Plöchinger · Eichenweg 8, 94121 Salzweg</p>
 </footer>
-
-<script>
-  document.getElementById('cookie-settings-btn').addEventListener('click', function () {
-    localStorage.removeItem('ki_cookie_consent');
-    window.location.href = 'index.html#cookie-settings';
-  });
-</script>
 
 </body>
 </html>
