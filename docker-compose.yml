@@ -22,6 +22,9 @@ services:
       - DATA_FILE=/data/anfragen.json
       - ADMIN_TOKEN=changeme          # <-- VOR GO-LIVE ändern!
       - N8N_WEBHOOK=${N8N_WEBHOOK:-}  # In .env auf VPS setzen
+      - SMTP_USER=${SMTP_USER:-}      # In .env auf VPS setzen
+      - SMTP_PASS=${SMTP_PASS:-}      # In .env auf VPS setzen
+      - MAIL_TO=${MAIL_TO:-info@kolibri-inspect.de}
     labels:
       - "traefik.enable=true"
       # Pfad-basiertes Routing: /api/* → API-Container
