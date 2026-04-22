@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Direkt beauftragen – Einmalige Inspektion (B2B) | KolibriInspect</title>
+  <meta name="description" content="Gewerbetreibende können die Einmalige Drohnen-Thermografie-Inspektion sofort digital beauftragen. Angebot in Echtzeit, verbindliche Auftragserteilung per Willenserklärung." />
+  <link rel="icon" type="image/png" href="Bilder/Logo/nur Symbol.png" />
+  <link rel="stylesheet" href="fonts/fonts.css" />
+  <style>
+    :root {
+      --bg:#151515; --bg2:#1a1c1f; --card:#222628; --card2:#1d2022;
+      --teal:#167e74; --tealM:#1da897; --tealB:#22c2af; --tealDim:rgba(22,126,116,.13);
+      --sun:#f0c000; --sunDim:rgba(240,192,0,.12); --red:#e05252;
+      --border:rgba(22,126,116,.22); --borderM:rgba(255,255,255,.07);
+      --text:#f0f0f0; --muted:#8a9aa8; --dim:#4a5560;
+      --fd:'Poppins',sans-serif; --fb:'Open Sans',sans-serif;
+      --ease:cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { background: var(--bg); color: var(--text); font-family: var(--fb); line-height: 1.65; overflow-x: hidden; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 3px; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 68px;
+      background: rgba(21,21,21,.96);
+      backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+      border-bottom: 1px solid var(--borderM);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo img { height: 42px; width: auto; mix-blend-mode: screen; }
+    .nav-logo-text { font-family: var(--fd); font-size: .95rem; font-weight: 700; color: var(--text); line-height: 1.2; letter-spacing: -.01em; }
+    .nav-logo-text em { display: block; font-style: normal; color: var(--tealB); }
+    .nav-links { display: flex; gap: 2.2rem; align-items: center; }
+    .nav-links a { font-size: .875rem; font-weight: 500; color: var(--muted); transition: color .25s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 20px; background: var(--teal); color: #fff !important;
+      border-radius: 8px; font-weight: 600 !important; font-size: .84rem !important;
+    }
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 4px; }
+    .hamburger span { width: 24px; height: 2px; background: var(--text); border-radius: 2px; }
+    #mob-nav {
+      display: none; position: fixed; top: 68px; left: 0; right: 0;
+      background: rgba(21,21,21,.97); backdrop-filter: blur(22px);
+      padding: 1.5rem 5vw 2rem; z-index: 199;
+      border-bottom: 1px solid var(--borderM);
+      flex-direction: column; gap: 1.1rem;
+    }
+    #mob-nav.open { display: flex; }
+    #mob-nav a { font-size: 1rem; font-weight: 500; color: var(--muted); }
+
+    /* PAGE LAYOUT */
+    .page-wrap {
+      max-width: 1160px; margin: 0 auto;
+      padding: 70px 5vw 100px;
+      display: grid; grid-template-columns: 1fr 440px; gap: 5rem; align-items: start;
+    }
+
+    /* LEFT – INFO */
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: .67rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .15em; color: var(--tealB); margin-bottom: .85rem;
+    }
+    .section-tag::before { content: ''; width: 20px; height: 2px; background: var(--teal); border-radius: 2px; }
+    h1 {
+      font-family: var(--fd); font-size: clamp(2rem, 3.5vw, 2.9rem);
+      font-weight: 800; line-height: 1.1; letter-spacing: -.03em; margin-bottom: 1.1rem;
+    }
+    h1 em { font-style: normal; color: var(--tealB); }
+    .info-lead { font-size: .95rem; color: var(--muted); line-height: 1.78; margin-bottom: 2.5rem; }
+
+    .trust-list { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 2.8rem; }
+    .trust-item { display: flex; align-items: flex-start; gap: .9rem; }
+    .trust-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: var(--tealDim); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--tealB);
+    }
+    .trust-title { font-family: var(--fd); font-weight: 600; font-size: .88rem; margin-bottom: .1rem; }
+    .trust-sub { font-size: .78rem; color: var(--muted); line-height: 1.55; }
+
+    .contact-card {
+      background: var(--card2); border: 1px solid var(--borderM);
+      border-radius: 14px; padding: 1.6rem 1.8rem;
+    }
+    .contact-card h3 { font-family: var(--fd); font-weight: 700; font-size: .93rem; margin-bottom: 1rem; }
+    .contact-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .65rem; font-size: .83rem; color: var(--muted); }
+    .contact-row:last-child { margin-bottom: 0; }
+    .contact-row a { color: var(--tealB); transition: color .2s; }
+    .contact-row a:hover { color: var(--tealM); }
+    .contact-row svg { color: var(--tealB); flex-shrink: 0; }
+
+    /* RIGHT – FORM */
+    .form-col { position: sticky; top: 88px; }
+    .form-card {
+      background: var(--card); border: 1px solid var(--borderM);
+      border-radius: 20px; padding: 2.2rem 2.2rem 2rem;
+    }
+    .form-title { font-family: var(--fd); font-weight: 700; font-size: 1.05rem; margin-bottom: .3rem; }
+    .form-sub { font-size: .8rem; color: var(--muted); margin-bottom: 1.4rem; }
+    .form-progress { display: flex; gap: 5px; margin-bottom: 2rem; }
+    .progress-step {
+      flex: 1; height: 3px; border-radius: 2px;
+      background: var(--borderM); transition: background .4s;
+    }
+    .progress-step.active { background: var(--tealB); }
+    .progress-step.done { background: var(--teal); }
+
+    /* B2B-Hinweis */
+    .b2b-notice {
+      display: flex; align-items: flex-start; gap: .75rem;
+      padding: .85rem 1rem; margin-bottom: 1.5rem;
+      background: rgba(240,192,0,.07);
+      border: 1px solid rgba(240,192,0,.22); border-radius: 10px;
+    }
+    .b2b-notice-icon { flex-shrink: 0; color: var(--sun); margin-top: 1px; }
+    .b2b-notice p { font-size: .77rem; color: var(--muted); line-height: 1.6; }
+    .b2b-notice a { color: var(--tealB); }
+
+    /* Steps */
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+    .step-label {
+      font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em;
+      color: var(--dim); margin-bottom: 1.2rem;
+    }
+
+    /* Fields */
+    .field { margin-bottom: 1.1rem; }
+    .field label {
+      display: block; font-size: .78rem; font-weight: 600; color: var(--muted);
+      margin-bottom: .35rem;
+    }
+    .field label .req { color: var(--tealB); }
+    .field input, .field select, .field textarea {
+      width: 100%; background: var(--card2); border: 1.5px solid var(--borderM);
+      border-radius: 9px; padding: 11px 14px;
+      font-family: var(--fb); font-size: .88rem; color: var(--text);
+      transition: border-color .25s, box-shadow .25s; outline: none;
+      appearance: none;
+    }
+    .field input::placeholder, .field textarea::placeholder { color: var(--dim); }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--tealB); box-shadow: 0 0 0 3px rgba(34,194,175,.14);
+    }
+    .field input.error, .field select.error, .field textarea.error { border-color: var(--red); }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a5560' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+    }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+    .field-row-3 { display: grid; grid-template-columns: 2fr 1fr; gap: .9rem; }
+    .field-hint { font-size: .72rem; color: var(--dim); margin-top: .3rem; }
+    .field-error { font-size: .72rem; color: var(--red); margin-top: .3rem; display: none; }
+    .field input.error ~ .field-error,
+    .field select.error ~ .field-error { display: block; }
+
+    /* Inspektionstyp static display */
+    .insp-static {
+      background: var(--card2); border: 1.5px solid var(--border);
+      border-radius: 9px; padding: 11px 14px;
+      font-size: .88rem; color: var(--tealB); font-weight: 600;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .insp-static span { font-size: .73rem; color: var(--dim); font-weight: 400; }
+    .jahres-link { font-size: .72rem; color: var(--dim); margin-top: .35rem; }
+    .jahres-link a { color: var(--tealB); }
+
+    /* Checkbox rows */
+    .check-row {
+      display: flex; align-items: flex-start; gap: .75rem;
+      margin-bottom: 1rem; padding: 1rem; background: var(--card2);
+      border-radius: 10px; border: 1px solid var(--borderM);
+    }
+    .check-row input[type=checkbox] {
+      width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+      accent-color: var(--teal); cursor: pointer;
+    }
+    .check-row label { font-size: .78rem; color: var(--muted); line-height: 1.55; cursor: pointer; }
+    .check-row label a { color: var(--tealB); }
+
+    /* Auto field info */
+    .auto-field-info {
+      font-size: .7rem; color: var(--dim); display: flex; align-items: center; gap: 5px;
+      margin-bottom: 1.2rem; padding: .6rem .8rem; background: var(--tealDim);
+      border-radius: 7px;
+    }
+    .auto-field-info svg { color: var(--tealB); flex-shrink: 0; }
+
+    /* Step 4: Angebots-Vorschau */
+    .angebot-preview {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.4rem 1.6rem; margin-bottom: 1rem;
+    }
+    .angebot-preview-header {
+      font-family: var(--fd); font-weight: 700; font-size: .88rem; color: var(--tealB);
+      margin-bottom: 1rem; padding-bottom: .75rem; border-bottom: 1px solid var(--borderM);
+      display: flex; align-items: center; gap: 7px;
+    }
+    .angebot-meta { font-size: .8rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.7; }
+    .price-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: .32rem 0; font-size: .85rem;
+    }
+    .price-row .label { color: var(--muted); }
+    .price-row .value { color: var(--text); }
+    .price-sep { border: none; border-top: 1px solid var(--borderM); margin: .5rem 0; }
+    .price-row.netto .label, .price-row.netto .value {
+      font-family: var(--fd); font-weight: 700; font-size: 1.05rem; color: var(--text);
+    }
+    .price-row.brutto .label, .price-row.brutto .value { font-size: .78rem; color: var(--dim); }
+    .angebot-note {
+      font-size: .7rem; color: var(--dim); margin-top: .8rem;
+      padding-top: .7rem; border-top: 1px solid var(--borderM);
+    }
+
+    /* Step 5: Willenserklärung */
+    .legal-notice {
+      padding: 1rem; background: rgba(22,126,116,.08);
+      border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.3rem;
+    }
+    .legal-notice p { font-size: .79rem; color: var(--muted); line-height: 1.65; }
+    .legal-notice strong { color: var(--tealB); }
+
+    /* Signature input */
+    .sig-field { margin-bottom: 1.3rem; }
+    .sig-field label { display: block; font-size: .78rem; font-weight: 600; color: var(--muted); margin-bottom: .4rem; }
+    .sig-field label .req { color: var(--tealB); }
+    .sig-field input {
+      width: 100%; background: transparent !important;
+      border: none !important; border-bottom: 2px solid var(--tealB) !important;
+      border-radius: 0 !important; padding: 8px 4px 6px !important;
+      font-family: Georgia, 'Times New Roman', serif !important;
+      font-size: 1.1rem !important; font-style: italic;
+      color: var(--text); outline: none;
+      transition: border-bottom-color .25s;
+    }
+    .sig-field input::placeholder { color: var(--dim); font-style: italic; }
+    .sig-field input:focus { box-shadow: none !important; border-bottom-color: var(--tealM) !important; }
+    .sig-field input.error { border-bottom-color: var(--red) !important; }
+    .sig-hint { font-size: .69rem; color: var(--dim); margin-top: .3rem; }
+
+    /* Buttons */
+    .form-nav { display: flex; gap: .75rem; align-items: center; margin-top: .5rem; }
+    .btn-next {
+      flex: 1; padding: 13px; background: var(--teal); color: #fff;
+      border-radius: 10px; font-family: var(--fd); font-weight: 700; font-size: .9rem;
+      transition: background .25s, transform .25s;
+      box-shadow: 0 4px 18px rgba(22,126,116,.28);
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .btn-next:hover { background: var(--tealM); transform: translateY(-1px); }
+    .btn-submit {
+      flex: 1; padding: 14px; background: var(--teal); color: #fff;
+      border-radius: 10px; font-family: var(--fd); font-weight: 700; font-size: .92rem;
+      transition: background .25s, transform .25s;
+      box-shadow: 0 4px 22px rgba(22,126,116,.38);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { background: var(--tealM); transform: translateY(-1px); box-shadow: 0 8px 30px rgba(22,126,116,.48); }
+    .btn-submit:disabled { opacity: .65; transform: none; cursor: not-allowed; }
+    .btn-back {
+      padding: 13px 16px; border: 1.5px solid var(--borderM);
+      border-radius: 10px; color: var(--muted); font-size: .88rem;
+      transition: border-color .2s, color .2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-back:hover { border-color: var(--tealB); color: var(--tealB); }
+
+    /* Success */
+    .form-success { display: none; text-align: center; padding: 2rem 1rem; }
+    .form-success.show { display: block; }
+    .success-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--tealDim); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.2rem; color: var(--tealB);
+    }
+    .success-title { font-family: var(--fd); font-weight: 700; font-size: 1.1rem; margin-bottom: .5rem; }
+    .success-text { font-size: .85rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.2rem; }
+    .success-ref { font-size: .78rem; color: var(--dim); }
+    .success-ref strong { color: var(--tealB); }
+
+    /* FOOTER */
+    footer { background: #0e1214; border-top: 1px solid var(--borderM); padding: 2rem 5vw; }
+    .footer-bottom {
+      max-width: 1160px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-bottom p { font-size: .76rem; color: var(--dim); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: .76rem; color: var(--dim); transition: color .2s; }
+    .footer-links a:hover { color: var(--tealB); }
+
+    @media (max-width: 900px) {
+      .page-wrap { grid-template-columns: 1fr; gap: 3rem; }
+      .form-col { position: static; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .field-row, .field-row-3 { grid-template-columns: 1fr; }
+      .page-wrap { padding: 50px 5vw 80px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav aria-label="Hauptnavigation">
+  <a href="index.html" class="nav-logo" aria-label="KolibriInspect – Startseite">
+    <img src="Bilder/Logo/nur Symbol.png" alt="" />
+    <span class="nav-logo-text">Kolibri<em>Inspect</em></span>
+  </a>
+  <ul class="nav-links" role="list">
+    <li><a href="index.html#about">Leistungen</a></li>
+    <li><a href="index.html#defects">Fehlerarten</a></li>
+    <li><a href="preise.html">Preise</a></li>
+    <li><a href="anfrage.html" class="nav-cta" style="color:#fff!important">Anfrage stellen</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menü öffnen" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div id="mob-nav">
+  <a href="index.html#about">Leistungen</a>
+  <a href="index.html#defects">Fehlerarten</a>
+  <a href="preise.html">Preise</a>
+  <a href="anfrage.html">Anfrage stellen</a>
+</div>
+
+<main>
+  <div class="page-wrap">
+
+    <!-- LEFT: Info -->
+    <div class="info-col">
+      <div class="section-tag">Nur für Gewerbetreibende · Einmalige Inspektion</div>
+      <h1>Sofort digital<br><em>beauftragen</em></h1>
+      <p class="info-lead">Preis bekannt, Entscheidung gefallen? Tragen Sie Ihre Anlagendaten ein, sehen Sie Ihr Angebot in Echtzeit und erteilen Sie den Auftrag direkt – 100 % digital, rechtsverbindlich, ohne Wartezeit.</p>
+
+      <div class="trust-list">
+        <div class="trust-item">
+          <div class="trust-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 13 9 20 9"/><path d="M20 14.5v5.5a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2h7"/><path d="M7 14h10M7 17h6"/></svg>
+          </div>
+          <div>
+            <div class="trust-title">Angebot sofort, kein Warten</div>
+            <div class="trust-sub">Der Preis wird direkt auf Basis Ihrer Modulanzahl berechnet – transparent und nachvollziehbar nach unserer Preisliste.</div>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="trust-title">Rechtlich sicher – § 126b BGB</div>
+            <div class="trust-sub">Ihre digitale Willenserklärung gilt als Textform gemäß BGB. Zeitstempel, IP-Adresse und Ihre Unterschrift werden gespeichert.</div>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="trust-title">Auftragsbestätigung per E-Mail</div>
+            <div class="trust-sub">Sie erhalten sofort eine Bestätigungs-E-Mail mit dem signierten Angebot als PDF – als Nachweis für Ihre Unterlagen.</div>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div>
+            <div class="trust-title">Netto-Preise, alle ausgewiesen</div>
+            <div class="trust-sub">Alle Beträge zzgl. 19 % MwSt. Anfahrt, Inspektion und KI-Bericht sind im Preis enthalten – kein Kleingedrucktes.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-card">
+        <h3>Lieber direkt sprechen?</h3>
+        <div class="contact-row">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.7 10.9a19.79 19.79 0 01-3.07-8.67A2 2 0 012.618 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.96-.96a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+          <a href="tel:+4915156054911">+49 151 56054911</a>
+        </div>
+        <div class="contact-row">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <a href="mailto:info@kolibri-inspect.de">info@kolibri-inspect.de</a>
+        </div>
+        <div class="contact-row">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Mo – Fr · 07:00 – 18:00 Uhr
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Form -->
+    <div class="form-col">
+      <div class="form-card">
+
+        <div class="b2b-notice" role="note">
+          <span class="b2b-notice-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </span>
+          <p>Dieses Formular richtet sich ausschließlich an <strong style="color:var(--sun)">Gewerbetreibende, Unternehmen und Anlagenbetreiber</strong>. Privatpersonen bitten wir, das <a href="anfrage.html">Anfrage-Formular</a> zu nutzen.</p>
+        </div>
+
+        <div class="form-title">Direkt beauftragen</div>
+        <div class="form-sub">5 Schritte · Einmalige Inspektion · digital &amp; verbindlich</div>
+
+        <div class="form-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="5">
+          <div class="progress-step active" id="ps1"></div>
+          <div class="progress-step" id="ps2"></div>
+          <div class="progress-step" id="ps3"></div>
+          <div class="progress-step" id="ps4"></div>
+          <div class="progress-step" id="ps5"></div>
+        </div>
+
+        <form id="offer-form" novalidate>
+          <!-- Hidden fields -->
+          <input type="hidden" name="angebot_id"        id="angebot_id" />
+          <input type="hidden" name="erstellt_am"       id="erstellt_am" />
+          <input type="hidden" name="client_zeitstempel" id="client_zeitstempel" />
+          <input type="hidden" name="volladresse"       id="volladresse" />
+          <input type="hidden" name="inspektionstyp"    value="Einmalig" />
+          <input type="hidden" name="netto_gesamt"      id="netto_gesamt" />
+          <input type="hidden" name="mwst_betrag"       id="mwst_betrag" />
+          <input type="hidden" name="brutto_gesamt"     id="brutto_gesamt" />
+          <input type="hidden" name="modulkosten"       id="modulkosten" />
+          <input type="hidden" name="rate_per_module"   id="rate_per_module" />
+          <input type="hidden" name="pauschale"         value="190" />
+
+          <!-- Schritt 1: Anlage -->
+          <div class="form-step active" id="step1">
+            <div class="step-label">Schritt 1 von 5 · Ihre Anlage</div>
+            <div class="auto-field-info">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Angebot-ID und Zeitstempel werden automatisch vergeben.
+            </div>
+            <div class="field">
+              <label for="company_name">Unternehmen / Betreiber <span class="req">*</span></label>
+              <input type="text" id="company_name" name="company_name" placeholder="Mustermann GmbH" autocomplete="organization" required />
+              <div class="field-error">Bitte Unternehmen / Betreiber angeben.</div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="kwp">Anlagenleistung (kWp) <span class="req">*</span></label>
+                <input type="number" id="kwp" name="kwp" placeholder="z. B. 250" min="1" step="any" required />
+                <div class="field-error">Bitte kWp angeben.</div>
+              </div>
+              <div class="field">
+                <label for="module_count">Anzahl Module <span class="req">*</span></label>
+                <input type="number" id="module_count" name="module_count" placeholder="z. B. 500" min="1" required />
+                <div class="field-hint">Für Preisberechnung benötigt.</div>
+                <div class="field-error">Bitte Modulanzahl angeben.</div>
+              </div>
+            </div>
+            <div class="field" id="module-estimate-hint" style="display:none">
+              <div class="field-hint" style="color:var(--tealB)">
+                <span id="module-estimate-text"></span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="anlage_typ">Anlagentyp <span class="req">*</span></label>
+              <select id="anlage_typ" name="anlage_typ" required>
+                <option value="" disabled selected>Bitte wählen …</option>
+                <option value="Schrägdach">Schrägdachanlage</option>
+                <option value="Flachdach">Flachdachanlage</option>
+                <option value="Freiflaeche">Freiflächenanlage</option>
+                <option value="Fassade">Fassadenanlage</option>
+                <option value="Sonstiges">Sonstiges</option>
+              </select>
+              <div class="field-error">Bitte Anlagentyp wählen.</div>
+            </div>
+            <div class="field">
+              <label>Gewünschte Leistung</label>
+              <div class="insp-static">
+                Einmalige Inspektion
+                <span>fest ausgewählt</span>
+              </div>
+              <div class="jahres-link">Jahresvertrag (48 Monate) gewünscht? <a href="anfrage.html">Hier unverbindlich anfragen →</a></div>
+            </div>
+            <div class="form-nav">
+              <button type="button" class="btn-next" id="next1">
+                Weiter
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Schritt 2: Standort -->
+          <div class="form-step" id="step2">
+            <div class="step-label">Schritt 2 von 5 · Standort der Anlage</div>
+            <div class="field">
+              <label for="Strasse_Hausnummer">Straße und Hausnummer <span class="req">*</span></label>
+              <input type="text" id="Strasse_Hausnummer" name="Strasse_Hausnummer" placeholder="Musterstraße 12" autocomplete="street-address" required />
+              <div class="field-hint">Standort der PV-Anlage (nicht zwingend Firmensitz)</div>
+              <div class="field-error">Bitte Straße angeben.</div>
+            </div>
+            <div class="field-row-3">
+              <div class="field">
+                <label for="stadt">Ort <span class="req">*</span></label>
+                <input type="text" id="stadt" name="stadt" placeholder="Musterstadt" autocomplete="address-level2" required />
+                <div class="field-error">Bitte Ort angeben.</div>
+              </div>
+              <div class="field">
+                <label for="Postleitzahl">PLZ <span class="req">*</span></label>
+                <input type="text" id="Postleitzahl" name="Postleitzahl" placeholder="12345" pattern="[0-9]{5}" maxlength="5" required />
+                <div class="field-error">Bitte gültige PLZ eingeben.</div>
+              </div>
+            </div>
+            <div class="form-nav">
+              <button type="button" class="btn-back" id="back2" aria-label="Zurück zu Schritt 1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </button>
+              <button type="button" class="btn-next" id="next2">
+                Weiter
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Schritt 3: Kontakt -->
+          <div class="form-step" id="step3">
+            <div class="step-label">Schritt 3 von 5 · Ihre Kontaktdaten</div>
+            <div class="field">
+              <label for="contact_name">Ihr vollständiger Name <span class="req">*</span></label>
+              <input type="text" id="contact_name" name="contact_name" placeholder="Max Mustermann" autocomplete="name" required />
+              <div class="field-error">Bitte Namen angeben.</div>
+            </div>
+            <div class="field">
+              <label for="email">E-Mail-Adresse <span class="req">*</span></label>
+              <input type="email" id="email" name="email" placeholder="max@mustermann.de" autocomplete="email" required />
+              <div class="field-error">Bitte gültige E-Mail-Adresse angeben.</div>
+            </div>
+            <div class="field">
+              <label for="phone">Telefon (optional)</label>
+              <input type="tel" id="phone" name="phone" placeholder="+49 151 12345678" autocomplete="tel" />
+              <div class="field-hint">Für Terminabstimmung und Rückfragen.</div>
+            </div>
+            <div class="check-row">
+              <input type="checkbox" id="b2b_check" name="b2b_check" required />
+              <label for="b2b_check">
+                Ich beauftrage im Namen eines Unternehmens oder als Gewerbetreibende/r. Mir ist bekannt, dass dieses Formular ausschließlich für geschäftliche Auftraggeber gilt. <span class="req">*</span>
+              </label>
+            </div>
+            <div class="form-nav">
+              <button type="button" class="btn-back" id="back3" aria-label="Zurück zu Schritt 2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </button>
+              <button type="button" class="btn-next" id="next3">
+                Weiter zum Angebot
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Schritt 4: Angebots-Vorschau -->
+          <div class="form-step" id="step4">
+            <div class="step-label">Schritt 4 von 5 · Ihr Angebot</div>
+            <div class="angebot-preview">
+              <div class="angebot-preview-header">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Angebot – KolibriInspect
+              </div>
+              <div class="angebot-meta" id="angebot-meta">–</div>
+              <div class="price-row">
+                <span class="label">Anfahrtspauschale (inkl. bis 100 km)</span>
+                <span class="value">190,00 €</span>
+              </div>
+              <div class="price-row">
+                <span class="label" id="pr-module-label">Module × Preis/Modul</span>
+                <span class="value" id="pr-module-value">–</span>
+              </div>
+              <hr class="price-sep" />
+              <div class="price-row netto">
+                <span class="label">Nettobetrag</span>
+                <span class="value" id="pr-netto">–</span>
+              </div>
+              <div class="price-row">
+                <span class="label">zzgl. MwSt. 19 %</span>
+                <span class="value" id="pr-mwst">–</span>
+              </div>
+              <div class="price-row brutto">
+                <span class="label">(Bruttobetrag inkl. MwSt.)</span>
+                <span class="value" id="pr-brutto">–</span>
+              </div>
+              <div class="angebot-note">Alle Preise verstehen sich als Nettobeträge zzgl. der gesetzlichen Umsatzsteuer. Anfahrt über 100 km auf Anfrage.</div>
+            </div>
+            <div class="form-nav">
+              <button type="button" class="btn-back" id="back4" aria-label="Zurück zu Schritt 3">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </button>
+              <button type="button" class="btn-next" id="next4">
+                Weiter zur Unterschrift
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Schritt 5: Willenserklärung -->
+          <div class="form-step" id="step5">
+            <div class="step-label">Schritt 5 von 5 · Auftragserteilung</div>
+            <div class="legal-notice" role="note">
+              <p>Mit Ihrer Unterschrift erteilen Sie <strong>KolibriInspect</strong> einen <strong>verbindlichen Auftrag</strong> zur Einmaligen Drohnen-Thermografie-Inspektion zum angezeigten Nettopreis. Diese Erklärung gilt als Textform gemäß <strong>§ 126b BGB</strong> und ist rechtsverbindlich.</p>
+            </div>
+            <div class="sig-field">
+              <label for="sig_name">Ihre Unterschrift (Vor- und Nachname tippen) <span class="req">*</span></label>
+              <input type="text" id="sig_name" name="sig_name" placeholder="Vor- und Nachname" autocomplete="off" required />
+              <div class="sig-hint">Tragen Sie Ihren vollständigen Namen ein – dieser gilt als Ihre digitale Unterschrift.</div>
+            </div>
+            <div class="check-row">
+              <input type="checkbox" id="agb_akzeptiert" name="agb_akzeptiert" required />
+              <label for="agb_akzeptiert">
+                Ich habe die <a href="agb.html" target="_blank">Allgemeinen Geschäftsbedingungen</a> gelesen und akzeptiere diese. <span class="req">*</span>
+              </label>
+            </div>
+            <div class="check-row">
+              <input type="checkbox" id="dsgvo_akzeptiert" name="dsgvo_akzeptiert" required />
+              <label for="dsgvo_akzeptiert">
+                Ich habe die <a href="datenschutz.html" target="_blank">Datenschutzerklärung</a> gelesen und stimme der Verarbeitung meiner Daten zur Auftragsabwicklung zu. <span class="req">*</span>
+              </label>
+            </div>
+            <div class="form-nav">
+              <button type="button" class="btn-back" id="back5" aria-label="Zurück zu Schritt 4">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </button>
+              <button type="submit" class="btn-submit" id="submit-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                Angebot verbindlich beauftragen
+              </button>
+            </div>
+            <p style="font-size:.7rem;color:var(--dim);margin-top:.85rem;text-align:center">
+              Mit dem Absenden erteilen Sie einen verbindlichen Auftrag gemäß <a href="agb.html" style="color:var(--tealB)">AGB</a> · § 126b BGB (Textform)
+            </p>
+          </div>
+
+          <!-- Erfolg -->
+          <div class="form-success" id="form-success" role="alert">
+            <div class="success-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="success-title">Auftrag erteilt!</div>
+            <p class="success-text">Vielen Dank für Ihren Auftrag. Sie erhalten sofort eine Auftragsbestätigung mit PDF an Ihre E-Mail-Adresse. Wir melden uns innerhalb eines Werktages zur Terminabstimmung.</p>
+            <p class="success-ref">Ihre Angebot-ID: <strong id="success-angebot-id"></strong></p>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="footer-bottom">
+    <p>© 2025 KolibriInspect · Dipl. Ing. Friedrich Plöchinger · Eichenweg 8, 94121 Salzweg</p>
+    <div class="footer-links">
+      <a href="index.html">Startseite</a>
+      <a href="impressum.html">Impressum</a>
+      <a href="agb.html">AGB</a>
+      <a href="datenschutz.html">Datenschutz</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* NAV */
+const hamburger = document.getElementById('hamburger');
+const mobNav    = document.getElementById('mob-nav');
+hamburger.addEventListener('click', () => {
+  const open = mobNav.classList.toggle('open');
+  hamburger.setAttribute('aria-expanded', String(open));
+});
+
+/* ── Auto fields ── */
+function genId() {
+  const d = new Date();
+  const date = d.getFullYear().toString() +
+    String(d.getMonth() + 1).padStart(2, '0') +
+    String(d.getDate()).padStart(2, '0');
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `ANG-${date}-${rand}`;
+}
+const angebot_id = genId();
+document.getElementById('angebot_id').value    = angebot_id;
+document.getElementById('erstellt_am').value   = new Date().toISOString();
+
+function updateVolladresse() {
+  const str = document.getElementById('Strasse_Hausnummer').value.trim();
+  const plz = document.getElementById('Postleitzahl').value.trim();
+  const ort = document.getElementById('stadt').value.trim();
+  document.getElementById('volladresse').value = [str, plz + ' ' + ort].filter(Boolean).join(', ');
+}
+['Strasse_Hausnummer', 'Postleitzahl', 'stadt'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateVolladresse);
+});
+
+/* ── Preisberechnung ── */
+const PRICE_TIERS = [
+  { max: 500,      rate: 0.80 },
+  { max: 1500,     rate: 0.70 },
+  { max: 3000,     rate: 0.60 },
+  { max: 5000,     rate: 0.50 },
+  { max: Infinity, rate: 0.40 },
+];
+function calculatePrice(moduleCount) {
+  const m    = parseInt(moduleCount, 10);
+  const tier = PRICE_TIERS.find(t => m <= t.max);
+  const modulkosten  = Math.round(m * tier.rate * 100) / 100;
+  const nettoGesamt  = Math.round((190 + modulkosten) * 100) / 100;
+  const mwstBetrag   = Math.round(nettoGesamt * 0.19 * 100) / 100;
+  const bruttoGesamt = Math.round((nettoGesamt + mwstBetrag) * 100) / 100;
+  return { m, rate: tier.rate, modulkosten, nettoGesamt, mwstBetrag, bruttoGesamt };
+}
+function fmtEur(n) {
+  return new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n) + ' €';
+}
+
+/* ── Schritt 4: Angebot befüllen ── */
+function updateStep4() {
+  const modules   = document.getElementById('module_count').value;
+  const company   = document.getElementById('company_name').value.trim();
+  const kwp       = document.getElementById('kwp').value;
+  const typ       = document.getElementById('anlage_typ');
+  const typLabel  = typ.options[typ.selectedIndex]?.text || '-';
+  const addr      = document.getElementById('volladresse').value;
+
+  const pr = calculatePrice(modules);
+
+  // Meta
+  document.getElementById('angebot-meta').innerHTML =
+    `<strong>${company}</strong><br>` +
+    `${kwp} kWp · ${modules} Module · ${typLabel}<br>` +
+    `${addr}`;
+
+  // Preiszeilen
+  document.getElementById('pr-module-label').textContent =
+    `${modules} Module × ${pr.rate.toFixed(2).replace('.', ',')} €/Modul`;
+  document.getElementById('pr-module-value').textContent = fmtEur(pr.modulkosten);
+  document.getElementById('pr-netto').textContent   = fmtEur(pr.nettoGesamt);
+  document.getElementById('pr-mwst').textContent    = fmtEur(pr.mwstBetrag);
+  document.getElementById('pr-brutto').textContent  = `(${fmtEur(pr.bruttoGesamt)})`;
+
+  // Hidden fields für Server-Übertragung
+  document.getElementById('netto_gesamt').value    = pr.nettoGesamt;
+  document.getElementById('mwst_betrag').value     = pr.mwstBetrag;
+  document.getElementById('brutto_gesamt').value   = pr.bruttoGesamt;
+  document.getElementById('modulkosten').value     = pr.modulkosten;
+  document.getElementById('rate_per_module').value = pr.rate;
+}
+
+/* ── kWp → Modul-Schätzung ── */
+document.getElementById('kwp').addEventListener('input', function () {
+  const kwpVal = parseFloat(this.value);
+  const mField = document.getElementById('module_count');
+  const hint   = document.getElementById('module-estimate-hint');
+  const hintTxt = document.getElementById('module-estimate-text');
+  if (kwpVal > 0 && !mField.value) {
+    const est = Math.round(kwpVal * 1000 / 350);
+    hintTxt.textContent = `Tipp: Bei ${kwpVal} kWp wären das ca. ${est} Module (Schätzung, bitte prüfen).`;
+    hint.style.display = 'block';
+  } else {
+    hint.style.display = 'none';
+  }
+});
+document.getElementById('module_count').addEventListener('input', function () {
+  if (this.value) document.getElementById('module-estimate-hint').style.display = 'none';
+});
+
+/* ── Multi-Step Logic ── */
+let currentStep = 1;
+const TOTAL     = 5;
+
+function getStep(n) { return document.getElementById('step' + n); }
+function getPS(n)   { return document.getElementById('ps'   + n); }
+
+function goTo(n) {
+  getStep(currentStep).classList.remove('active');
+  getPS(currentStep).classList.remove('active');
+  getPS(currentStep).classList.add('done');
+  currentStep = n;
+  getStep(currentStep).classList.add('active');
+  getPS(currentStep).classList.add('active');
+  document.querySelector('.form-progress').setAttribute('aria-valuenow', currentStep);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goBack(n) {
+  getStep(currentStep).classList.remove('active');
+  getPS(currentStep).classList.remove('active');
+  getPS(currentStep).classList.remove('done');
+  currentStep = n;
+  getStep(currentStep).classList.add('active');
+  getPS(currentStep).classList.remove('done');
+  getPS(currentStep).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── Validation ── */
+function validateField(input) {
+  const valid = input.checkValidity();
+  input.classList.toggle('error', !valid);
+  return valid;
+}
+function validateStep(stepNum) {
+  const step = getStep(stepNum);
+  const required = step.querySelectorAll('[required]');
+  let ok = true;
+  required.forEach(el => { if (!validateField(el)) ok = false; });
+  if (!ok) {
+    const first = step.querySelector('[required].error, [required]:invalid');
+    if (first) first.focus();
+  }
+  return ok;
+}
+
+document.querySelectorAll('input, select').forEach(el => {
+  el.addEventListener('blur',  () => { if (el.required) validateField(el); });
+  el.addEventListener('input', () => { if (el.classList.contains('error')) validateField(el); });
+});
+
+document.getElementById('next1').addEventListener('click', () => {
+  if (validateStep(1)) goTo(2);
+});
+document.getElementById('next2').addEventListener('click', () => {
+  updateVolladresse();
+  if (validateStep(2)) goTo(3);
+});
+document.getElementById('next3').addEventListener('click', () => {
+  if (!validateStep(3)) return;
+  const b2b = document.getElementById('b2b_check');
+  if (!b2b.checked) { b2b.focus(); return; }
+  updateVolladresse();
+  updateStep4();
+  goTo(4);
+});
+document.getElementById('next4').addEventListener('click', () => goTo(5));
+
+document.getElementById('back2').addEventListener('click', () => goBack(1));
+document.getElementById('back3').addEventListener('click', () => goBack(2));
+document.getElementById('back4').addEventListener('click', () => goBack(3));
+document.getElementById('back5').addEventListener('click', () => goBack(4));
+
+/* ── Submit ── */
+document.getElementById('offer-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  if (!validateStep(5)) return;
+
+  const agb  = document.getElementById('agb_akzeptiert');
+  const dsgvo = document.getElementById('dsgvo_akzeptiert');
+  if (!agb.checked)  { agb.focus();  return; }
+  if (!dsgvo.checked){ dsgvo.focus(); return; }
+
+  document.getElementById('client_zeitstempel').value = new Date().toISOString();
+  updateVolladresse();
+
+  const submitBtn = document.getElementById('submit-btn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Wird übermittelt …';
+
+  const fd   = new FormData(this);
+  const data = Object.fromEntries(fd.entries());
+
+  // Lokaler Vorschau-Modus: kein API-Server nötig
+  const isLocalFile = location.protocol === 'file:';
+
+  try {
+    let json;
+    if (isLocalFile) {
+      await new Promise(r => setTimeout(r, 800)); // kurze Verzögerung simulieren
+      json = { ok: true, angebot_id: angebot_id };
+    } else {
+      const res = await fetch('/api/angebot', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(data),
+      });
+      json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || 'Serverfehler');
+    }
+
+    // Erfolg
+    document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+    document.querySelectorAll('.form-progress, .form-title, .form-sub, .b2b-notice').forEach(el => {
+      el.style.display = 'none';
+    });
+    document.getElementById('success-angebot-id').textContent = angebot_id;
+    document.getElementById('form-success').classList.add('show');
+
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'form_submit', { event_category: 'Angebot', event_label: angebot_id });
+    }
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg> Angebot verbindlich beauftragen';
+    alert('Der Auftrag konnte leider nicht übermittelt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt: info@kolibri-inspect.de');
+    console.error('Angebot-Fehler:', err.message);
+  }
+});
+</script>
+</body>
+</html>
