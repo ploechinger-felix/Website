@@ -87,14 +87,14 @@ const PRICE_TIERS = [
   { max: 5000,     rate: 0.50 },
   { max: Infinity, rate: 0.40 },
 ];
-function computePrice(moduleCount) {
+function computePrice(moduleCount, anfahrtZuschlag = 0) {
   const m = parseInt(moduleCount, 10);
   const tier = PRICE_TIERS.find(t => m <= t.max);
   const modulkosten  = Math.round(m * tier.rate * 100) / 100;
-  const nettoGesamt  = Math.round((190 + modulkosten) * 100) / 100;
+  const nettoGesamt  = Math.round((190 + modulkosten + anfahrtZuschlag) * 100) / 100;
   const mwstBetrag   = Math.round(nettoGesamt * 0.19 * 100) / 100;
   const bruttoGesamt = Math.round((nettoGesamt + mwstBetrag) * 100) / 100;
-  return { pauschale: 190, ratePerModule: tier.rate, modulkosten, nettoGesamt, mwstBetrag, bruttoGesamt };
+  return { pauschale: 190, ratePerModule: tier.rate, modulkosten, anfahrtZuschlag, nettoGesamt, mwstBetrag, bruttoGesamt };
 }
 
 // ── PDF-Generierung ────────────────────────────────────────
@@ -173,7 +173,11 @@ function generatePDF(entry) {
       y += 16;
     };
 
-    priceRow(`Anfahrtspauschale (inkl. bis 100 km)`, fmt(p.pauschale));
+    priceRow(`Anfahrtspauschale (bis 100 km Luftlinie)`, fmt(p.pauschale));
+    if (p.anfahrtZuschlag > 0) {
+      const extraKm = Math.round(p.anfahrtZuschlag / 0.50);
+      priceRow(`Anfahrtszuschlag (${extraKm} km × 0,50 EUR/km)`, fmt(p.anfahrtZuschlag));
+    }
     priceRow(`Modulinspektion (${entry.module_count} Module × ${p.ratePerModule.toFixed(2).replace('.', ',')} EUR/Modul)`, fmt(p.modulkosten));
 
     y += 4;
@@ -280,7 +284,7 @@ E-Mail:       ${e.email}
 Telefon:      ${e.phone || '–'}
 
 ── Preis ────────────────────────────────────────
-Pauschale:    ${fmt(p.pauschale)}
+Pauschale:    ${fmt(p.pauschale)}${p.anfahrtZuschlag > 0 ? `\nAnfahrtszuschlag: ${fmt(p.anfahrtZuschlag)} (Luftlinie: ${e.distance_km} km)` : ''}
 Modulkosten:  ${e.module_count} × ${p.ratePerModule.toFixed(2)} EUR = ${fmt(p.modulkosten)}
 Netto:        ${fmt(p.nettoGesamt)}
 MwSt. 19 %:  ${fmt(p.mwstBetrag)}
@@ -360,8 +364,9 @@ app.post('/angebot', async (req, res) => {
     if (b.b2b_check        !== 'on') return res.status(400).json({ ok: false, error: 'B2B-Bestätigung fehlt' });
 
     // Preisverifikation
-    const serverPrice  = computePrice(b.module_count);
-    const clientNetto  = parseFloat(b.netto_gesamt);
+    const clientAnfahrt = Math.max(0, parseFloat(b.anfahrt_zuschlag) || 0);
+    const serverPrice   = computePrice(b.module_count, clientAnfahrt);
+    const clientNetto   = parseFloat(b.netto_gesamt);
     if (isNaN(clientNetto) || Math.abs(serverPrice.nettoGesamt - clientNetto) > 0.01)
       return res.status(400).json({ ok: false, error: 'Preisberechnung konnte nicht verifiziert werden.' });
 
@@ -383,6 +388,7 @@ app.post('/angebot', async (req, res) => {
       contact_name: b.contact_name,
       email:        b.email,
       phone:        b.phone || '',
+      distance_km:  parseInt(b.distance_km, 10) || 0,
       preisdetails: serverPrice,
       willenserklarung: {
         getippter_name:     b.sig_name.trim(),

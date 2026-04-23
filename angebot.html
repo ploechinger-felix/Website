@@ -360,11 +360,11 @@
         </div>
         <div class="trust-item">
           <div class="trust-icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
           <div>
-            <div class="trust-title">Rechtlich sicher – § 126b BGB</div>
-            <div class="trust-sub">Ihre digitale Willenserklärung gilt als Textform gemäß BGB. Zeitstempel, IP-Adresse und Ihre Unterschrift werden gespeichert.</div>
+            <div class="trust-title">Rückmeldung innerhalb von 24 h</div>
+            <div class="trust-sub">Nach Ihrem Auftrag melden wir uns mit einem vorläufigen Termin. Die genaue Abstimmung erfolgt direkt per Telefon oder E-Mail.</div>
           </div>
         </div>
         <div class="trust-item">
@@ -439,6 +439,8 @@
           <input type="hidden" name="modulkosten"       id="modulkosten" />
           <input type="hidden" name="rate_per_module"   id="rate_per_module" />
           <input type="hidden" name="pauschale"         value="190" />
+          <input type="hidden" name="anfahrt_zuschlag"  id="anfahrt_zuschlag" value="0" />
+          <input type="hidden" name="distance_km"       id="distance_km" value="0" />
 
           <!-- Schritt 1: Anlage -->
           <div class="form-step active" id="step1">
@@ -548,12 +550,6 @@
               <input type="tel" id="phone" name="phone" placeholder="+49 151 12345678" autocomplete="tel" />
               <div class="field-hint">Für Terminabstimmung und Rückfragen.</div>
             </div>
-            <div class="check-row">
-              <input type="checkbox" id="b2b_check" name="b2b_check" required />
-              <label for="b2b_check">
-                Ich beauftrage im Namen eines Unternehmens oder als Gewerbetreibende/r. Mir ist bekannt, dass dieses Formular ausschließlich für geschäftliche Auftraggeber gilt. <span class="req">*</span>
-              </label>
-            </div>
             <div class="form-nav">
               <button type="button" class="btn-back" id="back3" aria-label="Zurück zu Schritt 2">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -575,8 +571,12 @@
               </div>
               <div class="angebot-meta" id="angebot-meta">–</div>
               <div class="price-row">
-                <span class="label">Anfahrtspauschale (inkl. bis 100 km)</span>
+                <span class="label">Anfahrtspauschale (bis 100 km Luftlinie)</span>
                 <span class="value">190,00 €</span>
+              </div>
+              <div class="price-row" id="pr-anfahrt-row" style="display:none">
+                <span class="label" id="pr-anfahrt-label">Anfahrtszuschlag</span>
+                <span class="value" id="pr-anfahrt-value">–</span>
               </div>
               <div class="price-row">
                 <span class="label" id="pr-module-label">Module × Preis/Modul</span>
@@ -595,7 +595,7 @@
                 <span class="label">(Bruttobetrag inkl. MwSt.)</span>
                 <span class="value" id="pr-brutto">–</span>
               </div>
-              <div class="angebot-note">Alle Preise verstehen sich als Nettobeträge zzgl. der gesetzlichen Umsatzsteuer. Anfahrt über 100 km auf Anfrage.</div>
+              <div class="angebot-note" id="angebot-note">Alle Preise verstehen sich als Nettobeträge zzgl. der gesetzlichen Umsatzsteuer.</div>
             </div>
             <div class="form-nav">
               <button type="button" class="btn-back" id="back4" aria-label="Zurück zu Schritt 3">
@@ -618,6 +618,12 @@
               <label for="sig_name">Ihre Unterschrift (Vor- und Nachname tippen) <span class="req">*</span></label>
               <input type="text" id="sig_name" name="sig_name" placeholder="Vor- und Nachname" autocomplete="off" required />
               <div class="sig-hint">Tragen Sie Ihren vollständigen Namen ein – dieser gilt als Ihre digitale Unterschrift.</div>
+            </div>
+            <div class="check-row">
+              <input type="checkbox" id="b2b_check" name="b2b_check" required />
+              <label for="b2b_check">
+                Ich beauftrage im Namen eines Unternehmens oder als Gewerbetreibende/r. Mir ist bekannt, dass dieses Formular ausschließlich für geschäftliche Auftraggeber gilt. <span class="req">*</span>
+              </label>
             </div>
             <div class="check-row">
               <input type="checkbox" id="agb_akzeptiert" name="agb_akzeptiert" required />
@@ -714,14 +720,46 @@ const PRICE_TIERS = [
   { max: 5000,     rate: 0.50 },
   { max: Infinity, rate: 0.40 },
 ];
-function calculatePrice(moduleCount) {
+const SALZWEG = { lat: 48.5577, lng: 13.4442 };
+const ANFAHRT_ZUSCHLAG_RATE = 0.50;
+let distanceKm = 0;
+
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+async function geocodeAddress(strasse, plz, stadt) {
+  const q = encodeURIComponent(`${strasse}, ${plz} ${stadt}, Deutschland`);
+  const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {
+    headers: { 'User-Agent': 'KolibriInspect/1.0 (info@kolibri-inspect.de)' }
+  });
+  const data = await res.json();
+  if (data.length) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  return null;
+}
+
+async function resolveDistanceKm() {
+  const str = document.getElementById('Strasse_Hausnummer').value.trim();
+  const plz = document.getElementById('Postleitzahl').value.trim();
+  const ort = document.getElementById('stadt').value.trim();
+  const coords = await geocodeAddress(str, plz, ort);
+  distanceKm = coords ? Math.round(haversine(SALZWEG.lat, SALZWEG.lng, coords.lat, coords.lng)) : 0;
+}
+
+function calculatePrice(moduleCount, extraKm = 0) {
   const m    = parseInt(moduleCount, 10);
   const tier = PRICE_TIERS.find(t => m <= t.max);
-  const modulkosten  = Math.round(m * tier.rate * 100) / 100;
-  const nettoGesamt  = Math.round((190 + modulkosten) * 100) / 100;
-  const mwstBetrag   = Math.round(nettoGesamt * 0.19 * 100) / 100;
-  const bruttoGesamt = Math.round((nettoGesamt + mwstBetrag) * 100) / 100;
-  return { m, rate: tier.rate, modulkosten, nettoGesamt, mwstBetrag, bruttoGesamt };
+  const modulkosten     = Math.round(m * tier.rate * 100) / 100;
+  const anfahrtZuschlag = extraKm > 0 ? Math.round(extraKm * ANFAHRT_ZUSCHLAG_RATE * 100) / 100 : 0;
+  const nettoGesamt     = Math.round((190 + modulkosten + anfahrtZuschlag) * 100) / 100;
+  const mwstBetrag      = Math.round(nettoGesamt * 0.19 * 100) / 100;
+  const bruttoGesamt    = Math.round((nettoGesamt + mwstBetrag) * 100) / 100;
+  return { m, rate: tier.rate, modulkosten, anfahrtZuschlag, nettoGesamt, mwstBetrag, bruttoGesamt };
 }
 function fmtEur(n) {
   return new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n) + ' €';
@@ -736,13 +774,25 @@ function updateStep4() {
   const typLabel  = typ.options[typ.selectedIndex]?.text || '-';
   const addr      = document.getElementById('volladresse').value;
 
-  const pr = calculatePrice(modules);
+  const extraKm = Math.max(0, distanceKm - 100);
+  const pr      = calculatePrice(modules, extraKm);
 
   // Meta
   document.getElementById('angebot-meta').innerHTML =
     `<strong>${company}</strong><br>` +
     `${kwp} kWp · ${modules} Module · ${typLabel}<br>` +
     `${addr}`;
+
+  // Anfahrtszuschlag-Zeile
+  const anfahrtRow = document.getElementById('pr-anfahrt-row');
+  if (pr.anfahrtZuschlag > 0) {
+    anfahrtRow.style.display = 'flex';
+    document.getElementById('pr-anfahrt-label').textContent =
+      `Anfahrtszuschlag (${extraKm} km × ${ANFAHRT_ZUSCHLAG_RATE.toFixed(2).replace('.', ',')} €/km)`;
+    document.getElementById('pr-anfahrt-value').textContent = fmtEur(pr.anfahrtZuschlag);
+  } else {
+    anfahrtRow.style.display = 'none';
+  }
 
   // Preiszeilen
   document.getElementById('pr-module-label').textContent =
@@ -753,11 +803,13 @@ function updateStep4() {
   document.getElementById('pr-brutto').textContent  = `(${fmtEur(pr.bruttoGesamt)})`;
 
   // Hidden fields für Server-Übertragung
-  document.getElementById('netto_gesamt').value    = pr.nettoGesamt;
-  document.getElementById('mwst_betrag').value     = pr.mwstBetrag;
-  document.getElementById('brutto_gesamt').value   = pr.bruttoGesamt;
-  document.getElementById('modulkosten').value     = pr.modulkosten;
-  document.getElementById('rate_per_module').value = pr.rate;
+  document.getElementById('netto_gesamt').value      = pr.nettoGesamt;
+  document.getElementById('mwst_betrag').value       = pr.mwstBetrag;
+  document.getElementById('brutto_gesamt').value     = pr.bruttoGesamt;
+  document.getElementById('modulkosten').value       = pr.modulkosten;
+  document.getElementById('rate_per_module').value   = pr.rate;
+  document.getElementById('anfahrt_zuschlag').value  = pr.anfahrtZuschlag;
+  document.getElementById('distance_km').value       = distanceKm;
 }
 
 /* ── kWp → Modul-Schätzung ── */
@@ -837,12 +889,17 @@ document.getElementById('next2').addEventListener('click', () => {
   updateVolladresse();
   if (validateStep(2)) goTo(3);
 });
-document.getElementById('next3').addEventListener('click', () => {
+document.getElementById('next3').addEventListener('click', async () => {
   if (!validateStep(3)) return;
-  const b2b = document.getElementById('b2b_check');
-  if (!b2b.checked) { b2b.focus(); return; }
+  const btn = document.getElementById('next3');
+  btn.disabled = true;
+  const origHTML = btn.innerHTML;
+  btn.innerHTML = 'Standort wird berechnet …';
+  try { await resolveDistanceKm(); } catch (e) { distanceKm = 0; }
   updateVolladresse();
   updateStep4();
+  btn.disabled = false;
+  btn.innerHTML = origHTML;
   goTo(4);
 });
 document.getElementById('next4').addEventListener('click', () => goTo(5));
