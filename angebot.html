@@ -226,6 +226,40 @@
       padding-top: .7rem; border-top: 1px solid var(--borderM);
     }
 
+    /* Step 4: Aktionscode-Box */
+    .promo-box {
+      margin: 1.1rem 0 .2rem;
+      padding: 1rem 1.1rem;
+      background: var(--card2);
+      border: 1px dashed var(--border);
+      border-radius: 11px;
+    }
+    .promo-label {
+      display: block; font-size: .76rem; font-weight: 600;
+      color: var(--muted); margin-bottom: .5rem;
+      text-transform: uppercase; letter-spacing: .08em;
+    }
+    .promo-row { display: flex; gap: .5rem; align-items: stretch; }
+    .promo-row input {
+      flex: 1; background: var(--card); border: 1.5px solid var(--borderM);
+      border-radius: 9px; padding: 11px 14px;
+      font-family: var(--fb); font-size: .92rem;
+      color: var(--text); outline: none;
+      letter-spacing: .04em; text-transform: uppercase;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .promo-row input:focus { border-color: var(--tealB); box-shadow: 0 0 0 3px rgba(34,194,175,.14); }
+    .btn-promo {
+      padding: 0 1.2rem; background: transparent;
+      color: var(--tealB); border: 1.5px solid var(--tealB);
+      border-radius: 9px; font-family: var(--fd); font-weight: 600; font-size: .85rem;
+      transition: background .2s, color .2s;
+    }
+    .btn-promo:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .promo-feedback { margin-top: .55rem; font-size: .78rem; min-height: 1.1em; }
+    .promo-feedback.ok    { color: var(--tealB); }
+    .promo-feedback.error { color: var(--red); }
+
     /* Step 5: Willenserklärung */
     .legal-notice {
       padding: 1rem; background: rgba(22,126,116,.08);
@@ -608,6 +642,18 @@
               </div>
               <div class="angebot-note" id="angebot-note">Alle Preise verstehen sich als Nettobeträge zzgl. der gesetzlichen Umsatzsteuer.</div>
             </div>
+
+            <!-- Aktionscode-Eingabe -->
+            <div class="promo-box">
+              <label for="promo_code_input" class="promo-label">Aktionscode (optional)</label>
+              <div class="promo-row">
+                <input type="text" id="promo_code_input" placeholder="z. B. NACHBAR-EI-2026"
+                       autocomplete="off" autocapitalize="characters" spellcheck="false" />
+                <button type="button" id="promo_apply_btn" class="btn-promo">Anwenden</button>
+              </div>
+              <div id="promo_feedback" class="promo-feedback" role="status" aria-live="polite"></div>
+            </div>
+
             <div class="form-nav">
               <button type="button" class="btn-back" id="back4" aria-label="Zurück zu Schritt 3">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -976,12 +1022,63 @@ document.getElementById('next3').addEventListener('click', async () => {
   btn.innerHTML = 'Standort wird berechnet …';
   try { await resolveDistanceKm(); } catch (e) { distanceKm = 0; }
   updateVolladresse();
+  syncPromoInputFromHidden();
   updateStep4();
   btn.disabled = false;
   btn.innerHTML = origHTML;
   goTo(4);
 });
 document.getElementById('next4').addEventListener('click', () => goTo(5));
+
+/* ── Aktionscode-Eingabe in Schritt 4 ── */
+function applyPromoCode() {
+  const inputEl    = document.getElementById('promo_code_input');
+  const hiddenEl   = document.getElementById('promo_code');
+  const feedbackEl = document.getElementById('promo_feedback');
+  const code = inputEl.value.trim().toUpperCase();
+  inputEl.value = code;
+
+  if (!code) {
+    hiddenEl.value = '';
+    feedbackEl.className = 'promo-feedback';
+    feedbackEl.textContent = '';
+    updateStep4();
+    return;
+  }
+
+  const promo = resolvePromo(code);
+  if (!promo) {
+    hiddenEl.value = '';
+    feedbackEl.className = 'promo-feedback error';
+    feedbackEl.textContent = 'Aktionscode unbekannt oder abgelaufen.';
+    updateStep4();
+    return;
+  }
+
+  hiddenEl.value = code;
+  feedbackEl.className = 'promo-feedback ok';
+  feedbackEl.textContent = `✓ ${promo.label} angewendet.`;
+  updateStep4();
+}
+document.getElementById('promo_apply_btn').addEventListener('click', applyPromoCode);
+document.getElementById('promo_code_input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); applyPromoCode(); }
+});
+
+/* Promo-Feld bei Step-4-Eintritt mit ggf. URL-vorbefülltem Hidden-Wert synchronisieren */
+function syncPromoInputFromHidden() {
+  const hidden = document.getElementById('promo_code').value.trim();
+  const input  = document.getElementById('promo_code_input');
+  const feedback = document.getElementById('promo_feedback');
+  if (hidden && !input.value) {
+    input.value = hidden.toUpperCase();
+    const promo = resolvePromo(hidden);
+    if (promo) {
+      feedback.className = 'promo-feedback ok';
+      feedback.textContent = `✓ ${promo.label} angewendet.`;
+    }
+  }
+}
 
 document.getElementById('back2').addEventListener('click', () => goBack(1));
 document.getElementById('back3').addEventListener('click', () => goBack(2));
@@ -1035,6 +1132,7 @@ document.getElementById('back5').addEventListener('click', () => goBack(4));
     // Distanz async ermitteln, dann Step 4 rendern + dorthin springen
     (async () => {
       try { await resolveDistanceKm(); } catch (_) { distanceKm = 0; }
+      syncPromoInputFromHidden();
       updateStep4();
       goTo(4);
     })();
