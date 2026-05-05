@@ -4,6 +4,7 @@ const fs         = require('fs');
 const path       = require('path');
 const crypto     = require('crypto');
 const nodemailer = require('nodemailer');
+const { resolvePromo } = require('./promo-codes');
 
 const app          = express();
 const PORT         = process.env.PORT          || 3000;
@@ -12,15 +13,19 @@ const ANGEBOTE_DATA = process.env.ANGEBOTE_FILE || '/data/angebote.json';
 const N8N          = process.env.N8N_WEBHOOK   || '';
 const TOKEN        = process.env.ADMIN_TOKEN   || 'changeme';
 
-// ── E-Mail-Konfiguration (IONOS) ───────────────────────────
-const SMTP_USER = process.env.SMTP_USER || '';
-const SMTP_PASS = process.env.SMTP_PASS || '';
-const MAIL_TO   = process.env.MAIL_TO   || 'info@kolibri-inspect.de';
+// ── E-Mail-Konfiguration (Hostinger / via .env austauschbar) ───────
+const SMTP_HOST   = process.env.SMTP_HOST   || 'smtp.hostinger.com';
+const SMTP_PORT   = parseInt(process.env.SMTP_PORT || '465', 10);
+const SMTP_SECURE = process.env.SMTP_SECURE !== 'false'; // true = SSL/465, false = STARTTLS/587
+const SMTP_USER   = process.env.SMTP_USER   || '';
+const SMTP_PASS   = process.env.SMTP_PASS   || '';
+const MAIL_FROM   = process.env.MAIL_FROM   || SMTP_USER;
+const MAIL_TO     = process.env.MAIL_TO     || 'info@kolibri-inspect.de';
 
 const transporter = SMTP_USER ? nodemailer.createTransport({
-  host: 'smtp.ionos.de',
-  port: 587,
-  secure: false,
+  host:   SMTP_HOST,
+  port:   SMTP_PORT,
+  secure: SMTP_SECURE,
   auth: { user: SMTP_USER, pass: SMTP_PASS },
 }) : null;
 
@@ -50,12 +55,52 @@ Telefon:        ${a.phone || '–'}
 `.trim();
 
   await transporter.sendMail({
-    from:    `"Kolibri Inspect Website" <${SMTP_USER}>`,
+    from:    `"Kolibri Inspect Website" <${MAIL_FROM}>`,
+    replyTo: a.email || undefined,
     to:      MAIL_TO,
     subject: `Neue Anfrage ${a.anfrage_id || ''} – ${a.company_name || 'unbekannt'} (${a.kwp || '?'} kWp)`,
     text,
   });
   console.log(`[✉] E-Mail gesendet an ${MAIL_TO}`);
+
+  // Bestätigung an den Anfragenden
+  if (a.email) {
+    const kundenText = `
+Sehr geehrte/r ${a.contact_name || 'Interessent/in'},
+
+vielen Dank für Ihre Anfrage über kolibri-inspect.de. Wir haben Ihre
+Daten erhalten und melden uns innerhalb eines Werktages mit einem
+individuellen Angebot bzw. einer Terminabstimmung bei Ihnen.
+
+── Ihre Anfrage im Überblick ─────────
+Anfrage-ID:     ${a.anfrage_id || '–'}
+Unternehmen:    ${a.company_name || '–'}
+Leistung:       ${a.kwp || '–'} kWp
+Module:         ${a.module_count || '–'}
+Anlagentyp:     ${a.anlage_typ || '–'}
+Inspektionstyp: ${a.inspektionstyp || '–'}
+Standort:       ${a.volladresse || [a.Strasse_Hausnummer, a.Postleitzahl, a.stadt].filter(Boolean).join(', ') || '–'}
+Wunschtermin:   ${a.wunschtermin || '–'}
+Anmerkungen:    ${a.anmerkungen || '–'}
+
+Falls sich Angaben geändert haben oder Sie Rückfragen haben,
+antworten Sie einfach auf diese E-Mail.
+
+Mit freundlichen Grüßen
+Friedrich Plöchinger
+KolibriInspect
+${MAIL_TO} | +49 151 56054911
+`.trim();
+
+    await transporter.sendMail({
+      from:    `"KolibriInspect" <${MAIL_FROM}>`,
+      replyTo: MAIL_TO,
+      to:      a.email,
+      subject: `Ihre Anfrage bei KolibriInspect${a.anfrage_id ? ` – ${a.anfrage_id}` : ''}`,
+      text:    kundenText,
+    });
+    console.log(`[✉] Bestätigung an Kunde ${a.email}`);
+  }
 }
 
 // ── Middleware ─────────────────────────────────────────────
@@ -87,14 +132,52 @@ const PRICE_TIERS = [
   { max: 5000,     rate: 0.50 },
   { max: Infinity, rate: 0.40 },
 ];
-function computePrice(moduleCount, anfahrtZuschlag = 0) {
+const ANFAHRT_ZUSCHLAG_RATE = 0.50;        // €/km > Freikilometer
+function computePrice(moduleCount, anfahrtZuschlag = 0, promoCode = null, kwp = null, distanceKm = 0) {
   const m = parseInt(moduleCount, 10);
   const tier = PRICE_TIERS.find(t => m <= t.max);
   const modulkosten  = Math.round(m * tier.rate * 100) / 100;
-  const nettoGesamt  = Math.round((190 + modulkosten + anfahrtZuschlag) * 100) / 100;
+  const promo = resolvePromo(promoCode);
+
+  // Pauschale + Freikilometer ggf. via Promo überschreiben (Aktion „Nachbarschaft" etc.)
+  let pauschale = 190;
+  let freikm    = 100;
+  if (promo && promo.type === 'pauschale-override') {
+    const kwpNum = parseFloat(kwp) || 0;
+    pauschale = (kwpNum >= (promo.schwelleKwp || 500))
+      ? promo.pauschaleAb500 ?? 0
+      : promo.pauschaleUnter500 ?? 95;
+    freikm = promo.freikilometer || freikm;
+    // Anfahrtszuschlag ggf. neu berechnen, falls Distanz bekannt
+    if (distanceKm > 0) {
+      const extraKm = Math.max(0, distanceKm - freikm);
+      anfahrtZuschlag = Math.round(extraKm * ANFAHRT_ZUSCHLAG_RATE * 100) / 100;
+    }
+  }
+
+  const nettoVorRabatt = Math.round((pauschale + modulkosten + anfahrtZuschlag) * 100) / 100;
+  const rabatt = (promo && promo.type === 'percent')
+    ? Math.round(nettoVorRabatt * promo.discount * 100) / 100
+    : 0;
+  const nettoGesamt  = Math.round((nettoVorRabatt - rabatt) * 100) / 100;
   const mwstBetrag   = Math.round(nettoGesamt * 0.19 * 100) / 100;
   const bruttoGesamt = Math.round((nettoGesamt + mwstBetrag) * 100) / 100;
-  return { pauschale: 190, ratePerModule: tier.rate, modulkosten, anfahrtZuschlag, nettoGesamt, mwstBetrag, bruttoGesamt };
+
+  return {
+    pauschale,
+    freikilometer: freikm,
+    ratePerModule: tier.rate,
+    modulkosten,
+    anfahrtZuschlag,
+    nettoVorRabatt,
+    rabatt,
+    rabattCode:    promo ? promo.code  : null,
+    rabattLabel:   promo ? promo.label : null,
+    rabattProzent: promo && promo.type === 'percent' ? promo.discount : 0,
+    nettoGesamt,
+    mwstBetrag,
+    bruttoGesamt,
+  };
 }
 
 // ── PDF-Generierung ────────────────────────────────────────
@@ -180,6 +263,14 @@ function generatePDF(entry) {
     }
     priceRow(`Modulinspektion (${entry.module_count} Module × ${p.ratePerModule.toFixed(2).replace('.', ',')} EUR/Modul)`, fmt(p.modulkosten));
 
+    if (p.rabatt && p.rabatt > 0) {
+      const lbl = p.rabattLabel || `Kampagnen-Rabatt ${Math.round(p.rabattProzent * 100)} %`;
+      doc.fontSize(10).font('Helvetica').fillColor('#167e74')
+        .text(`${lbl} (Code: ${p.rabattCode})`, L, y, { width: 340 });
+      doc.fillColor('#167e74').text(`− ${fmt(p.rabatt)}`, VX, y, { width: 145, align: 'right' });
+      y += 16;
+    }
+
     y += 4;
     doc.moveTo(L, y).lineTo(R, y).strokeColor('#444').lineWidth(0.5).stroke();
     y += 10;
@@ -245,6 +336,10 @@ async function sendAngebotMails(entry, pdfBuffer) {
     contentType: 'application/pdf',
   }] : [];
 
+  const rabattZeile = p.rabatt && p.rabatt > 0
+    ? `\nRabatt:         − ${fmt(p.rabatt)} (${p.rabattLabel}, Code: ${p.rabattCode})`
+    : '';
+
   const bodyKunde = `Sehr geehrte/r ${e.contact_name},
 
 vielen Dank für Ihren Auftrag! Im Anhang finden Sie Ihre Auftragsbestätigung als PDF-Dokument.
@@ -252,7 +347,7 @@ vielen Dank für Ihren Auftrag! Im Anhang finden Sie Ihre Auftragsbestätigung a
 Angebot-Nr.:    ${e.angebot_id}
 Datum:          ${new Date(e.empfangen_am).toLocaleDateString('de-DE')}
 Leistung:       Einmalige Drohnen-Thermografie-Inspektion
-Standort:       ${e.volladresse || '-'}
+Standort:       ${e.volladresse || '-'}${rabattZeile}
 Nettobetrag:    ${fmt(p.nettoGesamt)}
 Bruttobetrag:   ${fmt(p.bruttoGesamt)}
 
@@ -285,10 +380,10 @@ Telefon:      ${e.phone || '–'}
 
 ── Preis ────────────────────────────────────────
 Pauschale:    ${fmt(p.pauschale)}${p.anfahrtZuschlag > 0 ? `\nAnfahrtszuschlag: ${fmt(p.anfahrtZuschlag)} (Luftlinie: ${e.distance_km} km)` : ''}
-Modulkosten:  ${e.module_count} × ${p.ratePerModule.toFixed(2)} EUR = ${fmt(p.modulkosten)}
+Modulkosten:  ${e.module_count} × ${p.ratePerModule.toFixed(2)} EUR = ${fmt(p.modulkosten)}${p.rabatt && p.rabatt > 0 ? `\nRabatt:       − ${fmt(p.rabatt)} (${p.rabattCode})` : ''}
 Netto:        ${fmt(p.nettoGesamt)}
 MwSt. 19 %:  ${fmt(p.mwstBetrag)}
-Brutto:       ${fmt(p.bruttoGesamt)}
+Brutto:       ${fmt(p.bruttoGesamt)}${e.campaign_ref ? `\nKampagne:     ${e.campaign_ref}` : ''}
 
 ── Willenserklärung ─────────────────────────────
 Getippter Name: ${e.willenserklarung.getippter_name}
@@ -298,14 +393,14 @@ Datenschutz:    ${e.willenserklarung.dsgvo_akzeptiert ? 'Ja' : 'Nein'}`.trim();
 
   await Promise.all([
     transporter.sendMail({
-      from:    `"KolibriInspect" <${SMTP_USER}>`,
+      from:    `"KolibriInspect" <${MAIL_FROM}>`,
       to:      e.email,
       subject: `Ihre Auftragsbestätigung – ${e.angebot_id} · KolibriInspect`,
       text:    bodyKunde,
       attachments,
     }),
     transporter.sendMail({
-      from:    `"Kolibri Inspect Website" <${SMTP_USER}>`,
+      from:    `"Kolibri Inspect Website" <${MAIL_FROM}>`,
       to:      MAIL_TO,
       subject: `[NEUER AUFTRAG] ${e.angebot_id} – ${e.company_name} (${e.module_count} Module / ${fmt(p.bruttoGesamt)} brutto)`,
       text:    bodyOp,
@@ -363,9 +458,11 @@ app.post('/angebot', async (req, res) => {
     if (b.dsgvo_akzeptiert !== 'on') return res.status(400).json({ ok: false, error: 'DSGVO nicht akzeptiert' });
     if (b.b2b_check        !== 'on') return res.status(400).json({ ok: false, error: 'B2B-Bestätigung fehlt' });
 
-    // Preisverifikation
+    // Preisverifikation (inkl. optionalem Kampagnen-Rabattcode)
     const clientAnfahrt = Math.max(0, parseFloat(b.anfahrt_zuschlag) || 0);
-    const serverPrice   = computePrice(b.module_count, clientAnfahrt);
+    const distanceKm    = parseInt(b.distance_km, 10) || 0;
+    const promoCode     = (b.promo_code || '').trim() || null;
+    const serverPrice   = computePrice(b.module_count, clientAnfahrt, promoCode, b.kwp, distanceKm);
     const clientNetto   = parseFloat(b.netto_gesamt);
     if (isNaN(clientNetto) || Math.abs(serverPrice.nettoGesamt - clientNetto) > 0.01)
       return res.status(400).json({ ok: false, error: 'Preisberechnung konnte nicht verifiziert werden.' });
@@ -390,6 +487,8 @@ app.post('/angebot', async (req, res) => {
       phone:        b.phone || '',
       distance_km:  parseInt(b.distance_km, 10) || 0,
       preisdetails: serverPrice,
+      promo_code:   serverPrice.rabattCode || null,
+      campaign_ref: (b.campaign_ref || '').trim() || null,
       willenserklarung: {
         getippter_name:     b.sig_name.trim(),
         client_zeitstempel: b.client_zeitstempel || '',

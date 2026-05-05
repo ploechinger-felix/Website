@@ -1,3 +1,24 @@
 .git
+.github
+.claude
 CLAUDE.md
 skills-lock.json
+
+# lokale Toolchain (Generator-Skripte, Mail-Merge, FTP-Helfer)
+node_modules
+package.json
+package-lock.json
+scripts
+ftp_*.py
+ftp_*.log
+
+# Mail-Merge-Quellen + 46-GB-MaStR-Export — gehören nicht ins Web-Image
+Anschreiben
+kampagne
+
+# nicht-Kolibri-Projekte im selben Repo
+NES-Raumgestaltung
+
+# generierte Word-Dateien
+Bestellung_KolibriInspect.docx
+Bestellungen

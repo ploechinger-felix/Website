@@ -415,6 +415,11 @@
           <p>Dieses Formular richtet sich ausschließlich an <strong style="color:var(--sun)">Gewerbetreibende, Unternehmen und Anlagenbetreiber</strong>. Privatpersonen bitten wir, das <a href="anfrage.html">Anfrage-Formular</a> zu nutzen.</p>
         </div>
 
+        <div id="prefill-banner" role="note" style="display:none; margin: 0 0 18px 0; padding: 14px 16px; background: #e9f7f3; border: 1px solid #167e74; border-left: 4px solid #167e74; border-radius: 8px; color: #0f4c45;">
+          <strong style="display:block; margin-bottom:4px;">Ihre Anlagendaten sind bereits hinterlegt.</strong>
+          <span id="prefill-banner-text">Bitte nur prüfen und unten verbindlich bestätigen — Aktionsrabatt <strong id="prefill-banner-code">NEU2026</strong> (<span id="prefill-banner-pct">−10&nbsp;%</span>) ist automatisch berücksichtigt.</span>
+        </div>
+
         <div class="form-title">Direkt beauftragen</div>
         <div class="form-sub">5 Schritte · Einmalige Inspektion · digital &amp; verbindlich</div>
 
@@ -441,6 +446,8 @@
           <input type="hidden" name="pauschale"         value="190" />
           <input type="hidden" name="anfahrt_zuschlag"  id="anfahrt_zuschlag" value="0" />
           <input type="hidden" name="distance_km"       id="distance_km" value="0" />
+          <input type="hidden" name="promo_code"        id="promo_code"  value="" />
+          <input type="hidden" name="campaign_ref"      id="campaign_ref" value="" />
 
           <!-- Schritt 1: Anlage -->
           <div class="form-step active" id="step1">
@@ -581,6 +588,10 @@
               <div class="price-row">
                 <span class="label" id="pr-module-label">Module × Preis/Modul</span>
                 <span class="value" id="pr-module-value">–</span>
+              </div>
+              <div class="price-row" id="pr-rabatt-row" style="display:none; color:#167e74;">
+                <span class="label" id="pr-rabatt-label">Aktionsrabatt</span>
+                <span class="value" id="pr-rabatt-value">–</span>
               </div>
               <hr class="price-sep" />
               <div class="price-row netto">
@@ -751,15 +762,54 @@ async function resolveDistanceKm() {
   distanceKm = coords ? Math.round(haversine(SALZWEG.lat, SALZWEG.lng, coords.lat, coords.lng)) : 0;
 }
 
-function calculatePrice(moduleCount, extraKm = 0) {
+/* Kampagnen-Rabattcodes (Spiegel von api/promo-codes.js — Server bleibt Source of Truth) */
+const PROMO_CODES = {
+  NEU2026: { type: 'percent', discount: 0.10, validUntil: '2026-09-30',
+    label: 'Erstinspektions-Rabatt 10 %' },
+  'NACHBAR-EI-2026': { type: 'pauschale-override',
+    pauschaleUnter500: 95, pauschaleAb500: 0,
+    freikilometer: 200, schwelleKwp: 500,
+    validUntil: '2026-09-30', label: 'Aktion „Nachbarschaft Eichstätt"' },
+};
+function resolvePromo(code) {
+  if (!code) return null;
+  const e = PROMO_CODES[String(code).trim().toUpperCase()];
+  if (!e) return null;
+  if (e.validUntil && new Date(e.validUntil) < new Date()) return null;
+  return { code: String(code).trim().toUpperCase(), type: 'percent', ...e };
+}
+
+function calculatePrice(moduleCount, distanceKm = 0, promoCode = null, kwp = null) {
   const m    = parseInt(moduleCount, 10);
   const tier = PRICE_TIERS.find(t => m <= t.max);
   const modulkosten     = Math.round(m * tier.rate * 100) / 100;
+  const promo  = resolvePromo(promoCode);
+
+  // Pauschale + Freikilometer ggf. per Promo überschreiben
+  let pauschale = 190, freikm = 100;
+  if (promo && promo.type === 'pauschale-override') {
+    const kwpNum = parseFloat(kwp) || 0;
+    pauschale = (kwpNum >= (promo.schwelleKwp || 500))
+      ? (promo.pauschaleAb500 ?? 0)
+      : (promo.pauschaleUnter500 ?? 95);
+    freikm = promo.freikilometer || freikm;
+  }
+
+  const extraKm         = Math.max(0, distanceKm - freikm);
   const anfahrtZuschlag = extraKm > 0 ? Math.round(extraKm * ANFAHRT_ZUSCHLAG_RATE * 100) / 100 : 0;
-  const nettoGesamt     = Math.round((190 + modulkosten + anfahrtZuschlag) * 100) / 100;
+  const nettoVorRabatt  = Math.round((pauschale + modulkosten + anfahrtZuschlag) * 100) / 100;
+  const rabatt = (promo && promo.type === 'percent')
+    ? Math.round(nettoVorRabatt * promo.discount * 100) / 100 : 0;
+  const nettoGesamt     = Math.round((nettoVorRabatt - rabatt) * 100) / 100;
   const mwstBetrag      = Math.round(nettoGesamt * 0.19 * 100) / 100;
   const bruttoGesamt    = Math.round((nettoGesamt + mwstBetrag) * 100) / 100;
-  return { m, rate: tier.rate, modulkosten, anfahrtZuschlag, nettoGesamt, mwstBetrag, bruttoGesamt };
+  return {
+    m, rate: tier.rate, pauschale, freikilometer: freikm, modulkosten, anfahrtZuschlag,
+    nettoVorRabatt, rabatt, rabattCode: promo ? promo.code : null,
+    rabattLabel: promo ? promo.label : null,
+    rabattProzent: promo && promo.type === 'percent' ? promo.discount : 0,
+    nettoGesamt, mwstBetrag, bruttoGesamt,
+  };
 }
 function fmtEur(n) {
   return new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n) + ' €';
@@ -774,8 +824,9 @@ function updateStep4() {
   const typLabel  = typ.options[typ.selectedIndex]?.text || '-';
   const addr      = document.getElementById('volladresse').value;
 
-  const extraKm = Math.max(0, distanceKm - 100);
-  const pr      = calculatePrice(modules, extraKm);
+  const promoCode = document.getElementById('promo_code').value.trim() || null;
+  const pr        = calculatePrice(modules, distanceKm, promoCode, kwp);
+  const extraKm   = Math.max(0, distanceKm - pr.freikilometer);
 
   // Meta
   document.getElementById('angebot-meta').innerHTML =
@@ -783,7 +834,23 @@ function updateStep4() {
     `${kwp} kWp · ${modules} Module · ${typLabel}<br>` +
     `${addr}`;
 
-  // Anfahrtszuschlag-Zeile
+  // Anfahrtspauschale-Zeile (Aktion-Override sichtbar machen)
+  const pauschaleLabel = document.querySelector('.angebot-preview .price-row:first-of-type .label');
+  const pauschaleValue = document.querySelector('.angebot-preview .price-row:first-of-type .value');
+  if (pauschaleLabel && pauschaleValue) {
+    if (pr.pauschale === 190) {
+      pauschaleLabel.textContent = 'Anfahrtspauschale (bis 100 km Luftlinie)';
+      pauschaleValue.textContent = '190,00 €';
+    } else if (pr.pauschale === 0) {
+      pauschaleLabel.textContent = `Anfahrt (Aktion „${pr.rabattLabel || 'Sonderaktion'}")`;
+      pauschaleValue.textContent = '0,00 € (entfällt)';
+    } else {
+      pauschaleLabel.textContent = `Anfahrtspauschale (Aktion, ${pr.freikilometer} km frei)`;
+      pauschaleValue.textContent = fmtEur(pr.pauschale);
+    }
+  }
+
+  // Anfahrtszuschlag-Zeile (über Freikilometer hinaus)
   const anfahrtRow = document.getElementById('pr-anfahrt-row');
   if (pr.anfahrtZuschlag > 0) {
     anfahrtRow.style.display = 'flex';
@@ -798,6 +865,18 @@ function updateStep4() {
   document.getElementById('pr-module-label').textContent =
     `${modules} Module × ${pr.rate.toFixed(2).replace('.', ',')} €/Modul`;
   document.getElementById('pr-module-value').textContent = fmtEur(pr.modulkosten);
+
+  // Rabatt-Zeile
+  const rabattRow = document.getElementById('pr-rabatt-row');
+  if (pr.rabatt > 0) {
+    rabattRow.style.display = 'flex';
+    document.getElementById('pr-rabatt-label').textContent =
+      `${pr.rabattLabel} (Code: ${pr.rabattCode})`;
+    document.getElementById('pr-rabatt-value').textContent = `− ${fmtEur(pr.rabatt)}`;
+  } else {
+    rabattRow.style.display = 'none';
+  }
+
   document.getElementById('pr-netto').textContent   = fmtEur(pr.nettoGesamt);
   document.getElementById('pr-mwst').textContent    = fmtEur(pr.mwstBetrag);
   document.getElementById('pr-brutto').textContent  = `(${fmtEur(pr.bruttoGesamt)})`;
@@ -908,6 +987,59 @@ document.getElementById('back2').addEventListener('click', () => goBack(1));
 document.getElementById('back3').addEventListener('click', () => goBack(2));
 document.getElementById('back4').addEventListener('click', () => goBack(3));
 document.getElementById('back5').addEventListener('click', () => goBack(4));
+
+/* ── Kampagnen-Vorbefüllung via URL-Parameter ── */
+(function applyCampaignPrefill() {
+  const params = new URLSearchParams(location.search);
+  const PREFILL_MAP = {
+    company_name: 'company_name', kwp: 'kwp', module_count: 'module_count',
+    anlage_typ: 'anlage_typ', Strasse_Hausnummer: 'Strasse_Hausnummer',
+    Postleitzahl: 'Postleitzahl', stadt: 'stadt',
+    contact_name: 'contact_name', email: 'email', phone: 'phone',
+  };
+  let prefillCount = 0;
+  for (const [param, fieldId] of Object.entries(PREFILL_MAP)) {
+    const v = params.get(param);
+    if (v != null && v !== '') {
+      const el = document.getElementById(fieldId);
+      if (el) { el.value = v; prefillCount++; }
+    }
+  }
+  const promo = (params.get('promo') || '').trim();
+  const ref   = (params.get('ref')   || '').trim();
+  if (promo) document.getElementById('promo_code').value   = promo;
+  if (ref)   document.getElementById('campaign_ref').value = ref;
+
+  // Mindestens 5 Felder → Direkt zu Schritt 4 mit Banner
+  if (prefillCount >= 5) {
+    const banner = document.getElementById('prefill-banner');
+    if (banner) {
+      const promoMeta = resolvePromo(promo);
+      if (promoMeta) {
+        const txt = document.getElementById('prefill-banner-text');
+        if (promoMeta.type === 'pauschale-override' && txt) {
+          txt.innerHTML =
+            `Bitte nur prüfen und unten verbindlich bestätigen — <strong>${promoMeta.label}</strong> ` +
+            `(Anfahrt &lt; 500 kWp: 95 €, ab 500 kWp: 0 €) ist automatisch berücksichtigt.`;
+        }
+        const codeEl = document.getElementById('prefill-banner-code');
+        const pctEl  = document.getElementById('prefill-banner-pct');
+        if (codeEl) codeEl.textContent = promoMeta.code;
+        if (pctEl && promoMeta.type === 'percent') {
+          pctEl.textContent = '−' + Math.round(promoMeta.discount * 100) + ' %';
+        }
+      }
+      banner.style.display = 'block';
+    }
+    updateVolladresse();
+    // Distanz async ermitteln, dann Step 4 rendern + dorthin springen
+    (async () => {
+      try { await resolveDistanceKm(); } catch (_) { distanceKm = 0; }
+      updateStep4();
+      goTo(4);
+    })();
+  }
+})();
 
 /* ── Submit ── */
 document.getElementById('offer-form').addEventListener('submit', async function (e) {
