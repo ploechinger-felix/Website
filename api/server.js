@@ -89,7 +89,7 @@ antworten Sie einfach auf diese E-Mail.
 Mit freundlichen Grüßen
 Friedrich Plöchinger
 KolibriInspect
-${MAIL_TO} | +49 173 2172753
+${MAIL_TO} | +49 179 1599311
 `.trim();
 
     await transporter.sendMail({
@@ -210,7 +210,7 @@ function generatePDF(entry) {
       .text('Drohnen-Thermografie & KI-Auswertung für PV-Anlagen', L, 74)
       .text('TGA Plöchinger GmbH · handelnd unter KolibriInspect', L, 85)
       .text('Passauer Str. 20, 94121 Salzweg', L, 96)
-      .text('info@kolibri-inspect.de | +49 173 2172753', L, 107);
+      .text('info@kolibri-inspect.de | +49 179 1599311', L, 107);
 
     doc.fontSize(9).font('Helvetica-Bold').fillColor('#222628')
       .text('Angebot-Nr.:', 380, 50).text('Datum:', 380, 63);
@@ -356,7 +356,7 @@ Wir werden uns innerhalb eines Werktages bei Ihnen melden, um den Inspektionster
 Mit freundlichen Grüßen
 Friedrich Plöchinger
 KolibriInspect
-info@kolibri-inspect.de | +49 173 2172753`.trim();
+info@kolibri-inspect.de | +49 179 1599311`.trim();
 
   const bodyOp = `Neuer digitaler Auftrag über kolibri-inspect.de
 
