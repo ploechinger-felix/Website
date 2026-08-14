@@ -14,6 +14,27 @@ const PROMO_CODES = {
     validUntil:        '2026-09-30',
     label:             'Aktion „Nachbarschaft Eichstätt"',
   },
+  'NACHBAR-86-2026': {
+    type: 'pauschale-override',
+    pauschaleUnter500: 95,
+    pauschaleAb500:    0,
+    freikilometer:     200,
+    schwelleKwp:       500,
+    validUntil:        '2026-09-30',
+    label:             'Aktion „Schwaben/PLZ 86 — Gewährleistungsfrist"',
+  },
+  'SAISON-94-2026': {
+    type: 'pauschale-override',
+    pauschaleUnter500: 95,            // < 500 kWp: Anfahrt 95 € statt 190 €
+    pauschaleAb500:    0,             // ≥ 500 kWp: Anfahrt entfällt komplett
+    freikilometer:     200,
+    schwelleKwp:       500,
+    // Saisonabschluss: das Messfenster nach DIN EN IEC 62446-3 (≥ 600 W/m²)
+    // schließt Ende Oktober. Wir bündeln die letzten Termine der Saison und
+    // geben die eingesparte Anfahrt weiter.
+    validUntil:        '2026-10-31',
+    label:             'Aktion „Saisonabschluss 2026"',
+  },
 };
 
 function resolvePromo(code) {

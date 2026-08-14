@@ -22,3 +22,23 @@ NES-Raumgestaltung
 # generierte Word-Dateien
 Bestellung_KolibriInspect.docx
 Bestellungen
+
+# Zugangsdaten — dürfen niemals ins Web-Image
+.env
+.env.example
+.gitignore
+.dockerignore
+.agents
+
+# API-Quellcode und Infrastruktur (eigener Container, nicht ins Webroot)
+api
+docker-compose.yml
+Dockerfile
+
+# Ausgelieferte Kundenberichte und Rechnungen im Wurzelverzeichnis
+*full_report.pdf
+*Hon-Rech*.pdf
+Muster KI-Bericht
+
+# Für den Druck entpackte Schriften; die woff2 der Website bleiben drin
+fonts/print

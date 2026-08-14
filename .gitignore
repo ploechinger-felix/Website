@@ -1,0 +1,38 @@
+node_modules/
+.env
+*.log
+.claude/settings.local.json
+
+# ── Geschäftsdaten: gehören nicht ins Repository ──
+# Das Repo ist öffentlich, und der web-Container baut aus dem
+# Wurzelverzeichnis (COPY . /usr/share/nginx/html).
+
+# Leadlisten und Kampagnendaten (Firmenanschriften aus dem MaStR)
+Anschreiben/*
+# ...die Runbooks aber schon, die enthalten keine Empfängerdaten
+!Anschreiben/KAMPAGNE-94.md
+!Anschreiben/VERSAND-ANLEITUNG.md
+
+# Kundenaufträge, ausgelieferte Berichte, Rechnungen
+Bestellungen/
+*full_report.pdf
+*Hon-Rech*.pdf
+
+# Zwischenstände der Extraktion
+scripts/.cache/
+
+# Kurzlink-Tabelle: enthält Empfänger-Firmennamen.
+# Kommt per docker compose cp ins /data-Volume, nicht über git.
+api/short-links.json
+
+# Druckschriften werden aus fonts/*.woff2 erzeugt:
+# node scripts/build-print-fonts.js
+fonts/print/
+
+# Deploy-Skripte eines anderen Kunden mit Klartext-Zugangsdaten.
+# Gehören nicht in dieses Repo — siehe Hinweis in KAMPAGNE-94.md.
+scripts/ftp_*.py
+
+# Kundenspezifische Dokumentgeneratoren (enthalten Namen und Anschriften)
+scripts/generate-merkblatt-daiichi.js
+scripts/extract-nachbarschaft-eichstaett.js

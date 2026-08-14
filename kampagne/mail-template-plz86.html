@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{subject}}</title>
+</head>
+<body style="margin:0; padding:0; background:#f5f7f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#222628;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f7f8; padding: 24px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#167e74; padding: 20px 28px; color:#ffffff;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="font-size:18px; font-weight:700; letter-spacing:0.3px;">Kolibri Inspect</td>
+                  <td align="right" style="font-size:12px; opacity:0.9;">Drohnen-Thermografie für PV-Anlagen</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px 28px 16px 28px;">
+
+              <p style="margin:0 0 14px 0; font-size:15px; line-height:1.55;">{{anrede}},</p>
+
+              <p style="margin:0 0 14px 0; font-size:15px; line-height:1.55;">
+                Ihre Photovoltaikanlage in <strong>{{ort_anlage}}</strong> ({{kwp}}&nbsp;kWp) wurde {{ibn_satz}}.
+                Nach <strong>§&nbsp;634a&nbsp;BGB</strong> endet die Gewährleistung des Errichters
+                fünf Jahre nach Abnahme — in Ihrem Fall {{gewaehr_status_html}}
+                (voraussichtlich {{gewaehr_ende_datum}}). Ab diesem Zeitpunkt liegen Mängelbeseitigung
+                und Ertragsausfälle wirtschaftlich bei Ihnen.
+              </p>
+
+              <p style="margin:0 0 14px 0; font-size:15px; line-height:1.55;">
+                Aus ingenieurfachlicher Sicht ist es sinnvoll, vor Fristablauf eine unabhängige
+                thermografische Bestandsaufnahme zu haben — als belastbaren Mängelnachweis,
+                falls später Ertragsabweichungen oder Folgeschäden auftreten.
+              </p>
+
+              <!-- Konkret für Ihre Anlage — hervorgehoben -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0; background:#fff8e1; border-left:4px solid #f0c000; border-radius:6px;">
+                <tr>
+                  <td style="padding: 14px 18px; font-size:14px; line-height:1.55;">
+                    <div style="font-weight:700; color:#5d4a00; margin-bottom:6px; font-size:15px;">Konkret für Ihre Anlage</div>
+                    Bei <strong>{{module}}&nbsp;Modulen</strong> und {{kwp}}&nbsp;kWp installierter Leistung in
+                    {{ort_anlage}} sind nach Studie von <strong>TÜV&nbsp;Rheinland und DB&nbsp;Schenker</strong>
+                    statistisch <strong>{{betroffene_module_min}}–{{betroffene_module_max}} Module</strong>
+                    bereits durch Transport und Handling mit Mikrorissen vorbelastet — visuell nicht erkennbar,
+                    führen aber unter Betriebslast zu dauerhaftem Ertragsverlust.
+                  </td>
+                </tr>
+              </table>
+
+              <h2 style="margin:22px 0 10px 0; font-size:15px; color:#167e74;">Typische Befunde — nur per Infrarot-Thermografie erkennbar</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 16px 0;">
+                <tr>
+                  <td align="center" width="25%" style="padding:4px;">
+                    <img src="cid:img_zellfehler" alt="Zellfehler" width="120" style="display:block; width:120px; height:auto; border-radius:4px;">
+                    <div style="font-size:11px; color:#5e6e7a; margin-top:4px;">Zellfehler / Hot-Spot</div>
+                  </td>
+                  <td align="center" width="25%" style="padding:4px;">
+                    <img src="cid:img_diodenfehler" alt="Diodenfehler" width="120" style="display:block; width:120px; height:auto; border-radius:4px;">
+                    <div style="font-size:11px; color:#5e6e7a; margin-top:4px;">Defekte Bypass-Diode</div>
+                  </td>
+                  <td align="center" width="25%" style="padding:4px;">
+                    <img src="cid:img_stringfehler" alt="Stringausfall" width="120" style="display:block; width:120px; height:auto; border-radius:4px;">
+                    <div style="font-size:11px; color:#5e6e7a; margin-top:4px;">Stringausfall</div>
+                  </td>
+                  <td align="center" width="25%" style="padding:4px;">
+                    <img src="cid:img_verschmutzung" alt="Verschmutzung" width="120" style="display:block; width:120px; height:auto; border-radius:4px;">
+                    <div style="font-size:11px; color:#5e6e7a; margin-top:4px;">Lokale Verschmutzung</div>
+                  </td>
+                </tr>
+              </table>
+
+              <h2 style="margin:22px 0 10px 0; font-size:15px; color:#167e74;">Was Sie bekommen</h2>
+              <ul style="margin:0 0 14px 22px; padding:0; font-size:14px; line-height:1.6;">
+                <li>Drohnen-Befliegung im laufenden Betrieb (kein Anlagenstillstand)</li>
+                <li>Befundbericht (PDF) mit Thermogrammen, Klassifizierung A/B/C, Ursachen-Hypothese</li>
+                <li>Georeferenzierte Daten zur exakten Modulzuordnung</li>
+                <li>Handlungsempfehlungen — verwendbar als Mängelnachweis gegenüber dem Errichter</li>
+              </ul>
+
+              <!-- Musterbericht-Link -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 8px 0 18px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="{{musterbericht_url}}"
+                       style="display:inline-block; background:#ffffff; color:#167e74; border:1px solid #167e74; text-decoration:none; padding:10px 22px; border-radius:6px; font-size:14px; font-weight:600;">
+                      Musterbericht (PDF) ansehen
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Angebots-Box (Aktion Schwaben / PLZ 86) -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 18px 0; background:#f2f8ee; border:1px solid #c6e0b4; border-radius:8px;">
+                <tr>
+                  <td style="padding: 14px 18px; font-size:14px; line-height:1.5;">
+                    <div style="font-weight:600; color:#1B5E20; margin-bottom:8px;">Ihr Angebot — Aktion „Schwaben/PLZ&nbsp;86"</div>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;">
+                      <tr>
+                        <td style="padding:3px 0;">Anfahrtspauschale</td>
+                        <td align="right" style="padding:3px 0; text-decoration:line-through; color:#8a9aa8;">190,00&nbsp;€</td>
+                        <td align="right" style="padding:3px 0 3px 10px; font-weight:600; color:#1B5E20;">{{pauschale_aktion_label}}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:3px 0;">Thermografie {{module}}&nbsp;Module × {{preis_pro_modul}}&nbsp;€</td>
+                        <td align="right" style="padding:3px 0; color:#8a9aa8;">{{preis_module}}&nbsp;€</td>
+                        <td align="right" style="padding:3px 0 3px 10px; color:#1B5E20;">{{preis_module}}&nbsp;€</td>
+                      </tr>
+                      <tr>
+                        <td colspan="3" style="padding:4px 0 6px 0; font-size:12px; color:#5e6e7a; font-style:italic;">Befundbericht (PDF, georeferenziert, A/B/C-Klassifizierung) inklusive</td>
+                      </tr>
+                      <tr style="border-top:1px solid #c6e0b4;">
+                        <td style="padding:8px 0 2px 0; font-weight:700;">Gesamt netto zzgl. MwSt.</td>
+                        <td align="right" style="padding:8px 0 2px 0; text-decoration:line-through; color:#8a9aa8;">{{preis_netto_liste}}&nbsp;€</td>
+                        <td align="right" style="padding:8px 0 2px 10px; font-size:16px; font-weight:700; color:#1B5E20;">{{preis_netto}}&nbsp;€</td>
+                      </tr>
+                    </table>
+                    <div style="margin-top:6px; font-size:12px; color:#5e6e7a;">
+                      Aktion gültig bis {{aktion_bis}}. Modul-Staffel: ≤500&nbsp;0,80&nbsp;€ · ≤1.500&nbsp;0,70&nbsp;€ · ≤3.000&nbsp;0,60&nbsp;€ · ≤5.000&nbsp;0,50&nbsp;€ · &gt;5.000&nbsp;0,40&nbsp;€ pro Modul.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 22px 0 10px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="{{cta_url}}"
+                       style="display:inline-block; background:#167e74; color:#ffffff; text-decoration:none; padding:14px 28px; border-radius:8px; font-size:15px; font-weight:600; line-height:1.2;">
+                      Vorausgefülltes Angebot prüfen →
+                    </a>
+                    <div style="margin-top:8px; font-size:12px; color:#5e6e7a;">
+                      Aktionscode <strong>{{promo_code}}</strong> ist hinterlegt — Anfahrt wird automatisch reduziert.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:18px 0 0 0; font-size:13px; line-height:1.5; color:#5e6e7a;">
+                Bei fachlichen Rückfragen erreichen Sie mich direkt unter
+                <a href="mailto:info@kolibri-inspect.de" style="color:#167e74;">info@kolibri-inspect.de</a>
+                oder telefonisch unter <a href="tel:+491791599311" style="color:#167e74;">+49&nbsp;179&nbsp;1599311</a>.
+              </p>
+
+              <p style="margin:16px 0 0 0; font-size:14px; line-height:1.55;">
+                Mit freundlichen Grüßen<br>
+                <strong>Dipl.-Ing. Friedrich Plöchinger</strong><br>
+                TGA Plöchinger GmbH · Kolibri Inspect
+              </p>
+
+              <p style="margin:18px 0 0 0; font-size:11px; color:#8a9aa8; line-height:1.4;">
+                <em>Quelle: TÜV&nbsp;Rheinland / DB&nbsp;Schenker Logistikstudie PV-Module.
+                Hinweis: Wir liefern technische Befunde, keine Rechtsberatung. Die Gewährleistungslage variiert je nach Vertragsgestaltung (BGB/VOB).</em>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f7f9fa; padding: 18px 28px; font-size:11px; color:#8a9aa8; line-height:1.55; border-top:1px solid #e6ebef;">
+              <strong>Kolibri Inspect</strong> · TGA Plöchinger GmbH · Passauer Str.&nbsp;20 · 94121 Salzweg · USt-IdNr. DE&nbsp;322&nbsp;015&nbsp;971<br>
+              <a href="https://kolibri-inspect.de/impressum.html" style="color:#8a9aa8;">Impressum</a> ·
+              <a href="https://kolibri-inspect.de/datenschutz.html" style="color:#8a9aa8;">Datenschutz</a><br><br>
+              Sie erhalten diese E-Mail als Betreiber einer im Marktstammdatenregister gelisteten Photovoltaikanlage.
+              Wenn Sie keine weiteren Nachrichten von uns wünschen, antworten Sie bitte mit dem Stichwort <strong>Abmelden</strong> —
+              wir nehmen Sie umgehend aus dem Verteiler.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

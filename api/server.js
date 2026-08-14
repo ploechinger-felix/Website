@@ -531,6 +531,84 @@ app.post('/angebot', async (req, res) => {
   }
 });
 
+// ── GET /a/:token — Kurzlink aus dem Postmailing ───────────
+// Der QR-Code und die abtippbare Zeile auf dem Anschreiben zeigen hierher.
+// Weiterleitung auf die vorbefüllte angebot.html; jeder Aufruf wird
+// protokolliert, das ist die Response-Messung der Kampagne.
+//
+// Die Tabelle enthält Empfänger-Firmennamen und liegt deshalb nicht im
+// (öffentlichen) Repository, sondern im /data-Volume.
+const SHORT_LINKS_FILE = process.env.SHORT_LINKS_FILE || path.join(path.dirname(DATA), 'short-links.json');
+const SHORT_HITS_FILE  = process.env.SHORT_HITS_FILE  || path.join(path.dirname(DATA), 'kurzlink-hits.json');
+
+let shortLinks = {};
+let shortLinksMtime = 0;
+function loadShortLinks() {
+  let st;
+  try {
+    st = fs.statSync(SHORT_LINKS_FILE);
+  } catch {
+    // Datei fehlt vor der ersten Extraktion — kein Fehlerfall.
+    return shortLinks;
+  }
+  if (st.mtimeMs === shortLinksMtime) return shortLinks;
+  try {
+    // BOM entfernen: unter Windows erzeugte Dateien haben oft einen, und
+    // JSON.parse scheitert daran. Ohne diesen Schritt liefe jeder QR-Scan
+    // stillschweigend auf die generische Seite.
+    const roh = fs.readFileSync(SHORT_LINKS_FILE, 'utf8').replace(/^﻿/, '');
+    shortLinks = JSON.parse(roh);
+    shortLinksMtime = st.mtimeMs;
+    console.log(`[↗] ${Object.keys(shortLinks).length} Kurzlinks geladen`);
+  } catch (e) {
+    // Nicht still schlucken – sonst ist eine kaputte Datei unsichtbar und
+    // die ganze Kampagne läuft ins Leere.
+    shortLinksMtime = st.mtimeMs;
+    console.error(`[↗] ${SHORT_LINKS_FILE} nicht lesbar: ${e.message}`);
+  }
+  return shortLinks;
+}
+loadShortLinks();
+
+app.get('/a/:token', (req, res) => {
+  // Grossschreibung, weil der Token vom Papier abgetippt werden kann.
+  const token = String(req.params.token || '').trim().toUpperCase();
+  const entry = loadShortLinks()[token];
+  if (!entry) return res.redirect(302, 'https://www.kolibri-inspect.de/angebot.html');
+
+  try {
+    const hits = fs.existsSync(SHORT_HITS_FILE)
+      ? JSON.parse(fs.readFileSync(SHORT_HITS_FILE, 'utf8')) : [];
+    hits.push({
+      token,
+      firma:      entry.firma,
+      mastr:      entry.mastr,
+      kampagne:   entry.kampagne,
+      welle:      entry.welle,
+      zeitpunkt:  new Date().toISOString(),
+      user_agent: req.headers['user-agent'] || '',
+    });
+    fs.writeFileSync(SHORT_HITS_FILE, JSON.stringify(hits, null, 2));
+  } catch (e) {
+    // Protokollieren darf die Weiterleitung nie blockieren.
+    console.error('[↗] Kurzlink-Log fehlgeschlagen:', e.message);
+  }
+
+  res.redirect(302, entry.url);
+});
+
+// ── GET /kurzlink-hits (Admin, Bearer-Token) ───────────────
+app.get('/kurzlink-hits', (req, res) => {
+  const auth = req.headers['authorization'] || '';
+  if (auth.replace('Bearer ', '') !== TOKEN) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const hits = fs.existsSync(SHORT_HITS_FILE)
+    ? JSON.parse(fs.readFileSync(SHORT_HITS_FILE, 'utf8')) : [];
+  const eindeutig = new Set(hits.map(h => h.token)).size;
+  res.json({ aufrufe: hits.length, eindeutige_briefe: eindeutig, hits });
+});
+
 // ── GET /anfragen (Admin, Bearer-Token) ────────────────────
 app.get('/anfragen', (req, res) => {
   const auth = req.headers['authorization'] || '';

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{subject}}</title>
+</head>
+<body style="margin:0; padding:0; background:#f5f7f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#222628;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f7f8; padding: 24px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; background:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#167e74; padding: 20px 28px; color:#ffffff;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="font-size:18px; font-weight:700; letter-spacing:0.3px;">Kolibri Inspect</td>
+                  <td align="right" style="font-size:12px; opacity:0.9;">Drohnen-Thermografie für PV-Anlagen</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px 28px 16px 28px;">
+
+              <h1 style="margin:0 0 16px 0; font-size:20px; line-height:1.3; color:#222628;">
+                Ihre neue PV-Anlage ({{kwp}}&nbsp;kWp): Erstinspektion sichert Ihre Gewährleistung
+              </h1>
+
+              <p style="margin:0 0 14px 0; font-size:15px; line-height:1.55;">{{anrede}},</p>
+
+              <p style="margin:0 0 14px 0; font-size:15px; line-height:1.55;">
+                Ihre Photovoltaikanlage in <strong>{{ort_anlage}}</strong> wurde {{ibn_satz}}.
+                Aus fachlicher Sicht ist <strong>der Zeitraum kurz nach Inbetriebnahme der ideale Zeitpunkt</strong>
+                für eine unabhängige thermografische Erstinspektion — bevor sich Montage- oder Installationsmängel zu echten Ertragsverlusten entwickeln.
+              </p>
+
+              <h2 style="margin:24px 0 8px 0; font-size:15px; color:#167e74;">Worum es konkret geht</h2>
+              <p style="margin:0 0 12px 0; font-size:14px; line-height:1.55;">
+                Laut einer Untersuchung von <strong>TÜV Rheinland und DB Schenker</strong> werden
+                <strong>5–10 % aller PV-Module</strong> bereits während Transport und Handling beschädigt —
+                überwiegend durch Mikrorisse, die visuell nicht erkennbar sind.
+                Hinzu kommen typische Installationsfehler:
+              </p>
+              <ul style="margin:0 0 14px 22px; padding:0; font-size:14px; line-height:1.6;">
+                <li>fehlerhafte MC4-Steckverbindungen</li>
+                <li>erhöhte Übergangswiderstände</li>
+                <li>Verpolungen auf Stringebene</li>
+              </ul>
+              <p style="margin:0 0 14px 0; font-size:14px; line-height:1.55;">
+                Eine frühzeitige Thermografie-Dokumentation schafft eine belastbare <strong>Baseline</strong>
+                für künftige Vergleichsinspektionen und sichert gleichzeitig Ihre
+                <strong>Gewährleistungsansprüche gegenüber dem Errichter</strong>.
+              </p>
+
+              <h2 style="margin:24px 0 8px 0; font-size:15px; color:#167e74;">Was Sie erhalten</h2>
+              <ul style="margin:0 0 18px 22px; padding:0; font-size:14px; line-height:1.6;">
+                <li>Vollständige Drohnen-Befliegung im laufenden Betrieb (kein Anlagenstillstand)</li>
+                <li>Befundbericht (PDF) mit Thermogrammen, Klassifizierung A/B/C, Ursachen-Hypothese</li>
+                <li>Georeferenzierte Daten + 3D-Modell zur exakten Modulzuordnung</li>
+                <li>Handlungsempfehlungen mit Priorisierung — „ready-to-send" an den Errichter</li>
+              </ul>
+
+              <!-- Preis-Teaser -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 18px 0; background:#e9f7f3; border:1px solid #bfe3da; border-radius:8px;">
+                <tr>
+                  <td style="padding: 14px 18px; font-size:14px; line-height:1.5;">
+                    <div style="font-weight:600; color:#0f4c45; margin-bottom:4px;">Ihr persönliches Angebot</div>
+                    <div>Für Ihre Anlage ({{module}}&nbsp;Module) inkl. <strong>{{rabatt_prozent}}&nbsp;%&nbsp;Erstinspektions-Rabatt</strong>:</div>
+                    <div style="margin-top:6px; font-size:18px; font-weight:700; color:#167e74;">{{brutto_mit_rabatt}}&nbsp;€ brutto</div>
+                    <div style="font-size:12px; color:#5e6e7a; margin-top:2px;">(statt regulär {{brutto_ohne_rabatt}}&nbsp;€)</div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 26px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="{{cta_url}}"
+                       style="display:inline-block; background:#167e74; color:#ffffff; text-decoration:none; padding:14px 28px; border-radius:8px; font-size:15px; font-weight:600; line-height:1.2;">
+                      Jetzt Angebot in 30 Sek. abrufen →
+                    </a>
+                    <div style="margin-top:8px; font-size:12px; color:#5e6e7a;">
+                      Rabattcode <strong>{{promo_code}}</strong> ist hinterlegt — nur prüfen &amp; bestätigen.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:18px 0 0 0; font-size:13px; line-height:1.5; color:#5e6e7a;">
+                Bei Rückfragen erreichen Sie mich direkt unter <a href="mailto:info@kolibri-inspect.de" style="color:#167e74;">info@kolibri-inspect.de</a>
+                oder telefonisch unter <a href="tel:+491791599311" style="color:#167e74;">+49&nbsp;179&nbsp;1599311</a>.
+              </p>
+
+              <p style="margin:16px 0 0 0; font-size:14px; line-height:1.55;">
+                Mit freundlichen Grüßen<br>
+                <strong>Dipl.-Ing. Friedrich Plöchinger</strong><br>
+                Kolibri Inspect
+              </p>
+
+              <p style="margin:18px 0 0 0; font-size:11px; color:#8a9aa8; line-height:1.4;">
+                <em>Quellen: IEA PVPS Task 13 Report T13-30:2025; TÜV Rheinland/DB Schenker Logistikstudie PV-Module.
+                Hinweis: Gewährleistungslage variiert je nach Vertragsgestaltung (BGB/VOB). Wir liefern technische Befunde, keine Rechtsberatung.</em>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f7f9fa; padding: 18px 28px; font-size:11px; color:#8a9aa8; line-height:1.55; border-top:1px solid #e6ebef;">
+              <strong>Kolibri Inspect</strong> · TGA Plöchinger GmbH · Passauer Str. 20 · 94121 Salzweg<br>
+              <a href="https://kolibri-inspect.de/impressum.html" style="color:#8a9aa8;">Impressum</a> ·
+              <a href="https://kolibri-inspect.de/datenschutz.html" style="color:#8a9aa8;">Datenschutz</a><br><br>
+              Sie erhalten diese E-Mail als Betreiber einer im Marktstammdatenregister gelisteten Photovoltaikanlage.
+              Wenn Sie keine weiteren Nachrichten von uns wünschen, antworten Sie bitte mit dem Stichwort <strong>Abmelden</strong> —
+              wir nehmen Sie umgehend aus dem Verteiler.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

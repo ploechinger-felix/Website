@@ -1,0 +1,16 @@
+{
+  "name": "kolibri-kampagne",
+  "version": "1.0.0",
+  "private": true,
+  "main": "send-neuanlage.js",
+  "scripts": {
+    "dry": "node send-neuanlage.js --dry-run",
+    "test-one": "node send-neuanlage.js --send --only=$npm_config_email",
+    "send": "node send-neuanlage.js --send"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.9",
+    "xlsx": "^0.18.5"
+  }
+}
