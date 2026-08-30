@@ -824,6 +824,12 @@ const PROMO_CODES = {
     pauschaleUnter500: 95, pauschaleAb500: 0,
     freikilometer: 200, schwelleKwp: 500,
     validUntil: '2026-10-31', label: 'Aktion „Saisonabschluss 2026"' },
+  /* E-Mail-Kampagne PLZ 83/84/85 — Kondition identisch, eigener Code nur zur
+     Trennung von Brief- und Mailantworten. */
+  'SAISON-2026': { type: 'pauschale-override',
+    pauschaleUnter500: 95, pauschaleAb500: 0,
+    freikilometer: 200, schwelleKwp: 500,
+    validUntil: '2026-10-31', label: 'Aktion „Saisonabschluss 2026"' },
 };
 function resolvePromo(code) {
   if (!code) return null;

@@ -35,6 +35,18 @@ const PROMO_CODES = {
     validUntil:        '2026-10-31',
     label:             'Aktion „Saisonabschluss 2026"',
   },
+  /* Gleiche Kondition wie SAISON-94-2026, aber für die E-Mail-Kampagne in
+     PLZ 83/84/85. Eigener Code nur zur Trennung der Antwortwege: so ist an
+     jeder Anfrage ablesbar, ob sie aus dem Brief oder aus dem Mailing kommt. */
+  'SAISON-2026': {
+    type: 'pauschale-override',
+    pauschaleUnter500: 95,
+    pauschaleAb500:    0,
+    freikilometer:     200,
+    schwelleKwp:       500,
+    validUntil:        '2026-10-31',
+    label:             'Aktion „Saisonabschluss 2026"',
+  },
 };
 
 function resolvePromo(code) {
