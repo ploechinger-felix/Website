@@ -294,6 +294,14 @@ function kennzahl(label, wertText, farbe) {
     + '</td>';
 }
 
+/* „September 2021" bricht in einer Fünftel-Spalte um und reißt die Zeile
+   auseinander. Im Band steht deshalb die Kurzform; im Fließtext und in der
+   Betreffzeile bleibt der Monat ausgeschrieben. */
+function monatKurz(s) {
+  const m = /^(\w{3})\w*\s+(\d{4})$/.exec(String(s || ''));
+  return m ? m[1] + '.&nbsp;' + m[2] : esc(s || 'unbekannt');
+}
+
 /* Kennzahlenband wie im gedruckten Brief: fünf Werte zwischen zwei
    Haarlinien, keine gefüllte Fläche. Der Ertrag steht bewusst dabei — er
    macht die Eurobeträge weiter unten nachvollziehbar, statt sie einfach
@@ -303,10 +311,10 @@ function datenband(e) {
   return [
     kennzahl('Leistung', L.fmtKwp(e.kwp) + '&nbsp;kWp'),
     kennzahl('Module', L.fmtInt(e.module)),
-    kennzahl('Am Netz seit', esc(e.ibnMonatJahr || 'unbekannt')),
+    kennzahl('Am Netz seit', monatKurz(e.ibnMonatJahr)),
     kennzahl('Ertrag/Jahr', L.fmtInt(ertrag) + '&nbsp;MWh'),
     kennzahl(e.gwMonateRest > 0 ? 'Frist bis' : 'Frist endete',
-      esc(e.gwEndeMonat || 'unbekannt'),
+      monatKurz(e.gwEndeMonat),
       e.gwMonateRest > 0 ? '#B5730C' : '#7A8886'),
   ].join('\n');
 }
