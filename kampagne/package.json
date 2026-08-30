@@ -2,11 +2,16 @@
   "name": "kolibri-kampagne",
   "version": "1.0.0",
   "private": true,
-  "main": "send-neuanlage.js",
+  "main": "send-saison.js",
   "scripts": {
-    "dry": "node send-neuanlage.js --dry-run",
-    "test-one": "node send-neuanlage.js --send --only=$npm_config_email",
-    "send": "node send-neuanlage.js --send"
+    "saison:vorbereiten": "node send-saison.js --vorbereiten",
+    "saison:pruefen": "node send-saison.js --pruefen",
+    "saison:plan": "node send-saison.js --plan",
+    "saison:trocken": "node send-saison.js",
+    "saison:heute": "node send-saison.js --send --heute",
+    "plz94:vorbereiten": "node send-saison.js --kampagne plz94 --vorbereiten",
+    "plz94:plan": "node send-saison.js --kampagne plz94 --plan",
+    "plz94:heute": "node send-saison.js --kampagne plz94 --send --heute"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
