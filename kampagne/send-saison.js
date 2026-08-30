@@ -111,7 +111,10 @@ const ABMELDE_MAIL   = process.env.ABMELDE_MAIL   || MAIL_REPLY_TO;
 
 const BASIS_URL       = process.env.CAMPAIGN_BASE_URL || 'https://www.kolibri-inspect.de/angebot.html';
 const MUSTERBERICHT   = process.env.MUSTERBERICHT_URL || 'https://www.kolibri-inspect.de/musterbericht.pdf';
-const BILD_BASIS      = process.env.BILD_BASIS_URL    || 'https://www.kolibri-inspect.de/Bilder/';
+/* Die Thermogramme liegen in einer eigenen, auf Anzeigegröße gerechneten
+   Fassung unter Bilder/mail/ — die Originale wiegen zusammen 538 kB und
+   werden auf 76 px dargestellt. */
+const BILD_BASIS      = process.env.BILD_BASIS_URL    || 'https://www.kolibri-inspect.de/Bilder/mail/';
 const CAMPAIGN_REF    = process.env.CAMPAIGN_REF      || 'saison-mail-2026';
 
 /* Zufälliger Abstand zwischen zwei Nachrichten. Ein fester Takt ist für
@@ -199,11 +202,16 @@ function ladeSperrliste() {
    Kein Ausrufezeichen, keine Prozentzeichen, keine Versalien: die drei
    Merkmale, auf die jeder Filter zuerst schaut.
    ══════════════════════════════════════════════════════════════ */
-/* Rund 70 Zeichen zeigt Gmail in der Trefferliste, mobil eher 45. Was
-   dahinter steht, ist geschrieben und nie gelesen — deshalb trägt die
-   Aussage vorn, und die Leistungsangabe ist aus dem Betreff heraus. Sie
-   steht zwei Zeilen später im Datenband. */
-const BETREFF_MAX = 72;
+/* Mobil zeigt die Trefferliste rund 45 Zeichen, Gmail am Rechner gut 70.
+   Auf 45 kommt man mit einem deutschen Ortsnamen plus Monatsangabe nicht,
+   ohne dass der Betreff kryptisch wird — und ein Kaltkontakt muss im
+   Betreff sagen, worum es geht, sonst ist die Kürze wertlos. Der Kompromiss:
+   Deckel bei 60, Median um 50, und „PV-Anlage" nur dort, wo der Rest der
+   Zeile das Thema nicht schon trägt.
+
+   Der Paragraf ist aus dem Betreff heraus. Er belegt gut, aber er liest
+   sich im Posteingang wie Behördenpost. Im Text steht er weiterhin. */
+const BETREFF_MAX = 60;
 
 function betreff(e) {
   const ort = e.ort;
@@ -211,27 +219,27 @@ function betreff(e) {
   let liste;
   if (e.neuanlage) {
     liste = [
-      'PV-Anlage ' + ort + ': Montagekontrolle vor Saisonende',
-      ort + ': Sind Strings und Modulmontage je geprüft worden?',
-      'Ihre neue PV-Anlage in ' + ort + ': Kontrolle in der Frist',
+      'PV-Anlage ' + ort + ': Montagekontrolle',
+      ort + ': Wurde die Modulmontage je geprüft?',
+      'Neue PV-Anlage in ' + ort + ': Kontrolle in der Frist',
     ];
   } else if (e.gwMonateRest <= 0) {
     liste = [
-      'PV-Anlage ' + ort + ': Thermografie zum Saisonabschluss',
-      ort + ': Befund für Versicherung und Wartungsvertrag',
-      'Ihre PV-Anlage in ' + ort + ': Messsaison endet im Oktober',
+      'PV-Anlage ' + ort + ': Thermografie zum Saisonende',
+      ort + ': Befund für Versicherung und Wartung',
+      'PV-Anlage ' + ort + ': Messsaison endet im Oktober',
     ];
   } else if (e.gwMonateRest <= 8) {
     liste = [
       'PV-Anlage ' + ort + ': Frist endet ' + monat,
-      ort + ': Mängelhaftung Ihrer PV-Anlage endet ' + monat,
-      'Ihre PV-Anlage in ' + ort + ': letzte Messgelegenheit',
+      ort + ': Mängelhaftung endet ' + monat,
+      'PV-Anlage ' + ort + ': letzte Messgelegenheit',
     ];
   } else {
     liste = [
-      'PV-Anlage ' + ort + ': Frist nach § 634a BGB endet ' + monat,
-      ort + ': Befund vor Ablauf der Errichter-Mängelhaftung',
-      'Ihre PV-Anlage in ' + ort + ': Bestandsaufnahme vor ' + monat,
+      ort + ': Errichterfrist endet ' + monat,
+      'PV-Anlage ' + ort + ': Befund vor Fristablauf',
+      ort + ': Bestandsaufnahme vor ' + monat,
     ];
   }
 
@@ -751,7 +759,7 @@ async function pruefen() {
   const mb = await status(MUSTERBERICHT);
   mb.code === 200 ? ok('Musterbericht', 'erreichbar') : bad('Musterbericht', 'HTTP ' + mb.code);
 
-  for (const b of ['Zellfehler.PNG', 'Diodenfehler.PNG', 'Stringfehler.PNG', 'Verschmutzung.PNG']) {
+  for (const b of ['Zellfehler.jpg', 'Diodenfehler.jpg', 'Stringfehler.jpg', 'Verschmutzung.jpg']) {
     const r = await status(BILD_BASIS + encodeURIComponent(b));
     if (r.code !== 200) bad('Bild ' + b, 'HTTP ' + r.code);
   }

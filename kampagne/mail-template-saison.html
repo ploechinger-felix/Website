@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
-<meta name="color-scheme" content="light">
-<meta name="supported-color-schemes" content="light">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
 <title>{{subject}}</title>
 <!--[if mso]>
 <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
@@ -20,23 +20,40 @@
   @media only screen and (max-width:620px) {
     .huelle { width:100% !important; }
     .luft   { padding-left:20px !important; padding-right:20px !important; }
+    .prosa  { padding-left:20px !important; padding-right:20px !important; }
     .stapel { display:block !important; width:100% !important; }
     .kennzahl { padding-bottom:12px !important; }
     .befund-bild { width:64px !important; }
     .h1 { font-size:23px !important; line-height:30px !important; }
     .cta a { display:block !important; }
   }
+  /* Dunkelmodus.
+     Bewusst zurückhaltend: nur Flächen und Fließtext werden gesetzt, die
+     Markenfarben bleiben. Wer hier jedes Detail nachbaut, riskiert in den
+     Clients, die zusätzlich eigenmächtig invertieren, ein schlechteres
+     Ergebnis als eine Vorlage, die den Umschlag einfach aushält. Das
+     helle Türkis der Website trägt auf dunklem Grund besser als das
+     dunklere der Drucksachen. */
+  @media (prefers-color-scheme: dark) {
+    .grund  { background:#0E1614 !important; }
+    .huelle { background:#16211F !important; }
+    .txt, .txt p, .txt div, .txt strong { color:#E6EFED !important; }
+    .flaeche { background:#1E2E2B !important; }
+    .zart   { color:#9FB3AF !important; }
+    .rahmen { border-color:#2C3E3A !important; }
+    .akzent { color:#22C2AF !important; }
+  }
 </style>
 </head>
-<body style="margin:0; padding:0; background:#EFF5F3;">
+<body class="grund" style="margin:0; padding:0; background:#EFF5F3;">
 
 <!-- Vorschauzeile. Begründung der Umsetzung in VERSAND-MAIL-SAISON.md. -->
 <div style="display:none; max-height:0; overflow:hidden;">{{preheader}}</div>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#EFF5F3;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="grund" style="background:#EFF5F3;">
 <tr><td align="center" style="padding:28px 10px 36px 10px;">
 
-<table role="presentation" class="huelle" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background:#FFFFFF; border-radius:14px; overflow:hidden; box-shadow:0 2px 10px rgba(22,126,116,0.10);">
+<table role="presentation" class="huelle" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background:#FCFDFC; border-radius:14px; overflow:hidden; box-shadow:0 2px 10px rgba(22,126,116,0.10);">
 
   <!-- ══ Kopfband ══ -->
   <tr>
@@ -69,7 +86,7 @@
   <!-- ══ Datenband ══ -->
   <tr>
     <td class="luft" style="padding:20px 32px 0 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#EFF5F3; border-radius:8px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="flaeche" style="background:#EFF5F3; border-radius:8px;">
         <tr>
           <td style="padding:14px 16px;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -85,7 +102,7 @@
 
   <!-- ══ Anrede und Aufhänger ══ -->
   <tr>
-    <td class="luft" style="padding:24px 32px 0 32px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:15px; line-height:24px; color:#16211F;">
+    <td class="luft prosa txt" style="padding:24px 48px 0 48px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:16px; line-height:26px; color:#16211F;">
       <p style="margin:0 0 16px 0;">{{anrede}},</p>
       {{absatz_aufhaenger}}
     </td>
@@ -100,7 +117,7 @@
 
   <!-- ══ Messung ══ -->
   <tr>
-    <td class="luft" style="padding:22px 32px 0 32px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:15px; line-height:24px; color:#16211F;">
+    <td class="luft prosa txt" style="padding:22px 48px 0 48px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:16px; line-height:26px; color:#16211F;">
       <p style="margin:0;">
         Wir messen im laufenden Betrieb die Oberflächentemperatur jedes Moduls, georeferenziert,
         ohne Anlagenstillstand. {{spezifisch}} Was solche Befunde bei Ihrer Anlage kosten:
@@ -126,7 +143,7 @@
         {{befund_zeilen}}
         <tr>
           <td style="padding:12px 0 0 0;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#EFF5F3; border-radius:6px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="flaeche" style="background:#EFF5F3; border-radius:6px;">
               <tr>
                 <td style="padding:11px 12px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; font-weight:700; color:#16211F;">
                   Summe, wenn alle vier Befunde zutreffen
@@ -138,7 +155,7 @@
           </td>
         </tr>
       </table>
-      <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:11px; line-height:17px; color:#5C6B69; padding-top:8px;">
+      <div class="zart" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:11px; line-height:17px; color:#5C6B69; padding-top:8px;">
         {{befund_basis}}
       </div>
     </td>
@@ -147,7 +164,7 @@
   <!-- ══ Angebot ══ -->
   <tr>
     <td class="luft" style="padding:30px 32px 0 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #D3E0DD; border-radius:10px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="rahmen" style="border:1px solid #D3E0DD; border-radius:10px;">
         <tr>
           <td style="padding:20px 22px 4px 22px;">
             <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:1.4px; color:#5C6B69; text-transform:uppercase;">Ihr Aktionsangebot</div>
@@ -169,7 +186,7 @@
         </tr>
         <tr>
           <td style="padding:14px 22px 0 22px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#EFF5F3; border-radius:6px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="flaeche" style="background:#EFF5F3; border-radius:6px;">
               <tr>
                 <td style="padding:13px 14px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:#16211F;">Gesamt netto zzgl. MwSt.</td>
                 <td align="right" width="92" style="padding:13px 0; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; color:#5C6B69; text-decoration:line-through; white-space:nowrap;">{{preis_liste}}</td>
@@ -215,7 +232,7 @@
   <!-- ══ Musterbericht ══ -->
   <tr>
     <td class="luft" style="padding:18px 32px 0 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FBFDFC; border:1px solid #D3E0DD; border-radius:10px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="flaeche rahmen" style="background:#FBFDFC; border:1px solid #D3E0DD; border-radius:10px;">
         <tr>
           <td style="padding:15px 18px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; line-height:20px; color:#16211F;">
             <strong>Vorher ansehen, was Sie bekommen:</strong>
@@ -229,7 +246,7 @@
 
   <!-- ══ Grußformel ══ -->
   <tr>
-    <td class="luft" style="padding:24px 32px 0 32px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:15px; line-height:24px; color:#16211F;">
+    <td class="luft prosa txt" style="padding:24px 48px 0 48px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:16px; line-height:26px; color:#16211F;">
       <p style="margin:0 0 4px 0;">Für Rückfragen erreichen Sie mich direkt.</p>
       <p style="margin:16px 0 0 0;">Mit freundlichen Grüßen</p>
       <p style="margin:6px 0 0 0;">
@@ -265,7 +282,7 @@
         Sie erhalten diese Nachricht als Betreiber einer im Marktstammdatenregister
         veröffentlichten Photovoltaikanlage ab 100&nbsp;kWp. Kein Newsletter, keine
         Weitergabe Ihrer Daten, keine Zählpixel.<br>
-        <a href="{{abmelden_url}}" style="color:#BFE6E0; font-weight:700;">Keine weiteren Nachrichten erhalten</a>
+        <a href="{{abmelden_url}}" style="color:#BFE6E0; font-weight:700;">Abmelden</a>
         — eine Antwort mit „Abmelden" genügt ebenso, wir löschen Ihre Adresse dann dauerhaft.
       </div>
     </td>

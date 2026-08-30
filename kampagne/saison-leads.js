@@ -129,16 +129,16 @@ function befundRechnung(l, heute) {
   const eur = kwpAnteil => Math.round(Math.round(kwpAnteil * ERTRAG_KWH_PRO_KWP) * preis);
 
   const posten = [
-    { bild: 'Zellfehler.PNG',    name: 'Zellfehler / Hot-Spot',
+    { bild: 'Zellfehler.jpg',    name: 'Zellfehler / Hot-Spot',
       annahme: fmtInt(module * ANOMALIEQUOTE) + ' Module auffällig (2,8 %), je −15 %',
       kwp: module * ANOMALIEQUOTE * VERLUST_HOTSPOT * kwpModul },
-    { bild: 'Diodenfehler.PNG',  name: 'Defekte Bypass-Diode',
+    { bild: 'Diodenfehler.jpg',  name: 'Defekte Bypass-Diode',
       annahme: fmtInt(Math.max(1, Math.round(module * QUOTE_DIODE))) + ' Module betroffen (1 %), je −30 %',
       kwp: module * QUOTE_DIODE * VERLUST_DIODE * kwpModul },
-    { bild: 'Stringfehler.PNG',  name: 'Ausgefallener String',
+    { bild: 'Stringfehler.jpg',  name: 'Ausgefallener String',
       annahme: 'ein Strang à ' + MODULE_JE_STRING + ' Module ohne Ertrag',
       kwp: MODULE_JE_STRING * kwpModul },
-    { bild: 'Verschmutzung.PNG', name: 'Verschmutzung',
+    { bild: 'Verschmutzung.jpg', name: 'Verschmutzung',
       annahme: '5 % Minderertrag auf rund 20 % der Fläche',
       kwp: kwp * VERLUST_VERSCHMUTZ },
   ].map(p => {
