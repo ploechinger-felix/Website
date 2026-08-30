@@ -830,6 +830,12 @@ const PROMO_CODES = {
     pauschaleUnter500: 95, pauschaleAb500: 0,
     freikilometer: 200, schwelleKwp: 500,
     validUntil: '2026-10-31', label: 'Aktion „Saisonabschluss 2026"' },
+  /* Nachbarschaftsflug: dieselbe Pauschalenregel plus 15 %, damit das
+     Nachfassangebot besser ist als der Brief, den die Empfaenger halten. */
+  'NACHBAR-2026': { type: 'pauschale-override',
+    pauschaleUnter500: 95, pauschaleAb500: 0,
+    freikilometer: 200, schwelleKwp: 500, discount: 0.15,
+    validUntil: '2026-10-31', label: 'Aktion „Nachbarschaftsflug“ − 15 %' },
 };
 function resolvePromo(code) {
   if (!code) return null;
@@ -858,7 +864,9 @@ function calculatePrice(moduleCount, distanceKm = 0, promoCode = null, kwp = nul
   const extraKm         = Math.max(0, distanceKm - freikm);
   const anfahrtZuschlag = extraKm > 0 ? Math.round(extraKm * ANFAHRT_ZUSCHLAG_RATE * 100) / 100 : 0;
   const nettoVorRabatt  = Math.round((pauschale + modulkosten + anfahrtZuschlag) * 100) / 100;
-  const rabatt = (promo && promo.type === 'percent')
+  /* Prozentsatz am Feld discount, nicht am Typ - Spiegel von api/server.js.
+     Eine Aktion darf Pauschale ueberschreiben UND Prozente geben. */
+  const rabatt = (promo && promo.discount > 0)
     ? Math.round(nettoVorRabatt * promo.discount * 100) / 100 : 0;
   const nettoGesamt     = Math.round((nettoVorRabatt - rabatt) * 100) / 100;
   const mwstBetrag      = Math.round(nettoGesamt * 0.19 * 100) / 100;
@@ -867,7 +875,7 @@ function calculatePrice(moduleCount, distanceKm = 0, promoCode = null, kwp = nul
     m, rate: tier.rate, pauschale, freikilometer: freikm, modulkosten, anfahrtZuschlag,
     nettoVorRabatt, rabatt, rabattCode: promo ? promo.code : null,
     rabattLabel: promo ? promo.label : null,
-    rabattProzent: promo && promo.type === 'percent' ? promo.discount : 0,
+    rabattProzent: promo && promo.discount > 0 ? promo.discount : 0,
     nettoGesamt, mwstBetrag, bruttoGesamt,
   };
 }

@@ -156,7 +156,12 @@ function computePrice(moduleCount, anfahrtZuschlag = 0, promoCode = null, kwp = 
   }
 
   const nettoVorRabatt = Math.round((pauschale + modulkosten + anfahrtZuschlag) * 100) / 100;
-  const rabatt = (promo && promo.type === 'percent')
+  /* Der Prozentsatz haengt am Feld discount, nicht am Typ: eine Aktion darf
+     die Pauschale ueberschreiben UND zusaetzlich Prozente geben. Sonst
+     muesste die Nachbarschaftsaktion sich entscheiden — und ein reiner
+     Prozentcode faellt auf die 190-Euro-Pauschale zurueck, womit kleine
+     Anlagen teurer kaemen als im Saisonabschluss. */
+  const rabatt = (promo && promo.discount > 0)
     ? Math.round(nettoVorRabatt * promo.discount * 100) / 100
     : 0;
   const nettoGesamt  = Math.round((nettoVorRabatt - rabatt) * 100) / 100;
@@ -173,7 +178,7 @@ function computePrice(moduleCount, anfahrtZuschlag = 0, promoCode = null, kwp = 
     rabatt,
     rabattCode:    promo ? promo.code  : null,
     rabattLabel:   promo ? promo.label : null,
-    rabattProzent: promo && promo.type === 'percent' ? promo.discount : 0,
+    rabattProzent: promo && promo.discount > 0 ? promo.discount : 0,
     nettoGesamt,
     mwstBetrag,
     bruttoGesamt,

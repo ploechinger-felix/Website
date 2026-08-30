@@ -34,12 +34,19 @@ const ROOT = path.resolve(__dirname, '..');
 const argv  = process.argv.slice(2);
 const argOf = n => { const i = argv.indexOf('--' + n); return i >= 0 ? argv[i + 1] : null; };
 const DRY_RUN = argv.includes('--dry-run');
+/* Umgekehrter Lauf: nur die Betreiber, die den Brief schon bekommen haben.
+   Sie sind der wärmste Teil des Verteilers — sie kennen den Absender, halten
+   das Angebot in der Hand und bekommen im Nachfassen einen anderen Aufhänger
+   (Nachbarschaftsflug) statt derselben Nachricht ein zweites Mal. */
+const NUR_BRIEF = argv.includes('--brief-empfaenger');
 
 const INPUT_DIR = path.resolve(argOf('input') || process.env.MASTR_INPUT
   || 'C:/Users/ploec/Downloads/Gesamtdatenexport_20260821_26.1');
-const XLSX_PATH  = path.join(ROOT, 'Anschreiben', 'KolibriInspect_PV_Leads_PLZ94_Mail.xlsx');
-const SHEET      = 'PLZ94_Mail';
-const CACHE_JSON = path.join(__dirname, '.state', 'plz94-mail-leads.json');
+const XLSX_PATH  = path.join(ROOT, 'Anschreiben',
+  NUR_BRIEF ? 'KolibriInspect_PV_Leads_Nachbarschaft.xlsx' : 'KolibriInspect_PV_Leads_PLZ94_Mail.xlsx');
+const SHEET      = NUR_BRIEF ? 'Nachbarschaft' : 'PLZ94_Mail';
+const CACHE_JSON = path.join(__dirname, '.state',
+  NUR_BRIEF ? 'nachbarschaft-leads.json' : 'plz94-mail-leads.json');
 const BRIEF_SEE  = path.join(__dirname, '.state', 'brief-empfaenger-see.json');
 
 const PLZ_PREFIX = '94';
@@ -237,7 +244,8 @@ function baueZeilen(anlagen, akteure, katalog, briefEmpfaenger) {
     if (/^anonym/i.test(b.firma)) { z.anonym++; continue; }
     if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(b.email)) { z.keineMail++; continue; }
     if (EXCLUDE_FIRMA_REGEX && EXCLUDE_FIRMA_REGEX.test(b.firma)) { z.bestandskunde++; continue; }
-    if (briefEmpfaenger.has(a.see)) { z.brief++; continue; }
+    const hatBrief = briefEmpfaenger.has(a.see);
+    if (NUR_BRIEF ? !hatBrief : hatBrief) { z.brief++; continue; }
 
     rows.push({
       'Firmenname': b.firma,
@@ -262,7 +270,8 @@ function baueZeilen(anlagen, akteure, katalog, briefEmpfaenger) {
   console.log('  ohne Firmenname: ' + z.keinName + ' · anonymisiert: ' + z.anonym);
   console.log('  ohne E-Mail-Adresse: ' + z.keineMail);
   console.log('  Bestandskunden: ' + z.bestandskunde);
-  console.log('  hat den Brief bereits bekommen: ' + z.brief);
+  console.log(NUR_BRIEF ? '  ohne Brief (hier nicht gesucht): ' + z.brief
+                        : '  hat den Brief bereits bekommen: ' + z.brief);
   return rows;
 }
 

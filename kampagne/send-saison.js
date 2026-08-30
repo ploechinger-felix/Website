@@ -63,13 +63,27 @@ const KAMPAGNEN = {
     xlsx:  path.join(ROOT, 'Anschreiben', 'KolibriInspect_PV_Leads.xlsx'),
     sheet: 'Alle Leads',
     plz:   '83,84,85',
+    ref:   'mail-plz8385-2026',
     titel: 'Saisonabschluss 2026 — PLZ 83/84/85',
   },
   'plz94': {
     xlsx:  path.join(ROOT, 'Anschreiben', 'KolibriInspect_PV_Leads_PLZ94_Mail.xlsx'),
     sheet: 'PLZ94_Mail',
     plz:   '94',
+    ref:   'mail-plz94-2026',
     titel: 'Saisonabschluss 2026 — PLZ 94 (Heimatregion)',
+  },
+  /* Nachfassen bei denen, die im August den Brief bekommen haben. Anderer
+     Aufhänger, besseres Angebot: dieselbe Nachricht ein zweites Mal wäre
+     Zudringlichkeit, ein neuer Anlass ist ein Grund. */
+  'nachbarschaft': {
+    xlsx:  path.join(ROOT, 'Anschreiben', 'KolibriInspect_PV_Leads_Nachbarschaft.xlsx'),
+    sheet: 'Nachbarschaft',
+    plz:   '94',
+    promo: 'NACHBAR-2026',
+    ref:   'mail-nachbar-2026',
+    motiv: 'nachbarschaft',
+    titel: 'Nachbarschaftsflug — Nachfassen zur Briefwelle PLZ 94',
   },
 };
 
@@ -86,9 +100,19 @@ const KAMPAGNE = (() => {
   return gewaehlt;
 })();
 const KONFIG = KAMPAGNEN[KAMPAGNE];
+const MOTIV  = KONFIG.motiv || 'frist';
 process.env.SAISON_XLSX  = KONFIG.xlsx;
 process.env.SAISON_SHEET = KONFIG.sheet;
 process.env.SAISON_PLZ   = KONFIG.plz;
+if (KONFIG.promo) process.env.SAISON_PROMO = KONFIG.promo;
+/* Der Nachlass wird aus der ausgelieferten Preistabelle gelesen, nicht hier
+   noch einmal aufgeschrieben: zwei Stellen mit derselben Zahl laufen
+   auseinander, sobald jemand nur eine davon ändert. */
+{
+  const { resolvePromo } = require('../api/promo-codes');
+  const p = resolvePromo(process.env.SAISON_PROMO || 'SAISON-2026');
+  process.env.SAISON_RABATT = String((p && p.discount) || 0);
+}
 
 const nodemailer = require('nodemailer');
 const L = require('./saison-leads');
@@ -115,7 +139,10 @@ const MUSTERBERICHT   = process.env.MUSTERBERICHT_URL || 'https://www.kolibri-in
    Fassung unter Bilder/mail/ — die Originale wiegen zusammen 538 kB und
    werden auf 76 px dargestellt. */
 const BILD_BASIS      = process.env.BILD_BASIS_URL    || 'https://www.kolibri-inspect.de/Bilder/mail/';
-const CAMPAIGN_REF    = process.env.CAMPAIGN_REF      || 'saison-mail-2026';
+/* Je Kampagne eine eigene Kennung im Link. Ohne sie laesst sich hinterher
+   nicht sagen, welcher Aufhaenger die Auftraege gebracht hat — und genau
+   das ist die einzige Frage, die nach dem Versand noch zaehlt. */
+const CAMPAIGN_REF    = KONFIG.ref || process.env.CAMPAIGN_REF || 'saison-mail-2026';
 
 /* Zufälliger Abstand zwischen zwei Nachrichten. Ein fester Takt ist für
    jeden Filter das auffälligste Merkmal eines Massenversands. */
@@ -217,7 +244,14 @@ function betreff(e) {
   const ort = e.ort;
   const monat = e.gwEndeMonat;
   let liste;
-  if (e.neuanlage) {
+  if (MOTIV === 'nachbarschaft') {
+    const lk = String(e.landkreis || '').replace(/^(Landkreis|LK)\s+/i, '').trim();
+    liste = [
+      'Wir fliegen im Oktober ' + (lk ? 'im Landkreis ' + lk : 'bei ' + ort),
+      ort + ': Ihre Anlage im Sammeltermin mitnehmen?',
+      'Sammeltermin ' + (lk || ort) + ' — 15 % auf die Inspektion',
+    ];
+  } else if (e.neuanlage) {
     liste = [
       'PV-Anlage ' + ort + ': Montagekontrolle',
       ort + ': Wurde die Modulmontage je geprüft?',
@@ -378,9 +412,22 @@ function fristbalken(e, heute) {
    für welche Anlage, bis wann. Das ist im Kaltkontakt auch das Wirksamste —
    der Empfänger erkennt in der ersten Zeile, dass es um seine Anlage geht
    und nicht um ein Angebot von der Stange. */
+/* Wo genau wir unterwegs sind. Der Landkreis steht in den MaStR-Daten und
+   macht aus einer Floskel eine Ortsangabe — „in Ihrer Nachbarschaft" glaubt
+   niemand, „im Landkreis Passau" schon. Fehlt er, bleibt der Ort. */
+function gegend(e) {
+  const lk = String(e.landkreis || '').replace(/^(Landkreis|LK)\s+/i, '').trim();
+  return lk ? 'im Landkreis ' + esc(lk) : 'rund um ' + esc(e.ort);
+}
+
 function titelZeile(e) {
   const ort = esc(e.ort);
   const kwp = L.fmtKwp(e.kwp);
+
+  if (MOTIV === 'nachbarschaft') {
+    return 'Wir fliegen im Oktober ' + gegend(e)
+      + ' — Ihre Anlage in ' + ort + ' können wir mitnehmen';
+  }
   if (e.neuanlage) {
     return 'Montagefehler an Ihrer PV-Anlage in ' + ort + ' (' + kwp
       + ' kWp) zahlt bis ' + esc(e.gwEndeMonat) + ' noch Ihr Errichter';
@@ -394,36 +441,67 @@ function titelZeile(e) {
 }
 
 function untertitelZeile(e) {
+  if (MOTIV === 'nachbarschaft') return 'Sammeltermin zum Saisonende, 15 % auf die Inspektion';
   if (e.neuanlage) return 'Montage- und Anschlusskontrolle innerhalb der Haftungszeit';
   if (e.gwMonateRest <= 0) return 'Bestandsdokumentation für Versicherung und Wartung';
   return 'Befund vor Ablauf der Errichter-Mängelhaftung';
 }
 
+/* Die Anlagendaten stehen im Satz, nicht in einer Liste.
+   Eine Zeile aus fünf Kennzahlen nebeneinander ist schnell gebaut und wird
+   überflogen; dieselben Zahlen in einem Satz beweisen, dass jemand in die
+   Daten dieser einen Anlage geschaut hat. Genau darum geht es im ersten
+   Absatz eines Kaltkontakts. */
+function anlagenSatz(e) {
+  const zahl = t => '<strong style="color:#0E5A52;">' + t + '</strong>';
+  const ertrag = Math.round(e.kwp * L.ERTRAG_KWH_PRO_KWP / 1000);
+  return esc(e.bauart) + ' in ' + esc(e.ort) + ' ist seit ' + zahl(esc(e.ibnMonatJahr))
+    + ' am Netz — ' + zahl(L.fmtInt(e.module) + '&nbsp;Module') + ', die im Jahr rund '
+    + zahl(L.fmtInt(ertrag) + '&nbsp;MWh') + ' liefern.';
+}
+
 function absatzAufhaenger(e) {
   const p = t => '<p style="margin:0 0 15px 0;">' + t + '</p>';
-  const zahl = t => '<strong style="color:#0E5A52;">' + t + '</strong>';
   const frist = '<strong style="color:#B5730C;">' + esc(e.gwEndeMonat) + '</strong>';
 
+  /* Nachfassen. Der erste Satz nennt den Brief — wer ihn weggelegt hat, weiß
+     sofort, worum es geht; wer ihn nie gesehen hat, ist nicht verwirrt. Dann
+     der neue Anlass, und der ist echt: die Termine liegen ohnehin beieinander. */
+  if (MOTIV === 'nachbarschaft') {
+    let s = p('Ende August haben wir Ihnen geschrieben — zur Mängelhaftung Ihrer PV-Anlage '
+      + 'in ' + esc(e.ort) + '. Heute schreibe ich aus einem konkreteren Anlass: '
+      + '<strong>im Oktober sind wir ' + gegend(e) + ' unterwegs</strong> und fliegen dort '
+      + 'mehrere Anlagen an einem Stück.');
+    s += p(anlagenSatz(e) + ' Wenn wir sie in dieselbe Runde nehmen, teilen sich Anfahrt und '
+      + 'Rüstzeit auf mehrere Anlagen. Das geben wir weiter: '
+      + '<strong style="color:#167E74;">15&nbsp;% auf die Inspektion</strong>, zusätzlich zur '
+      + 'Kondition aus dem Brief.');
+    if (e.gwMonateRest > 0) {
+      s += p('Für Ihre Anlage kommt dazu, dass die Mängelhaftung Ihres Errichters im '
+        + frist + ' endet. Danach gehen Modulfehler, die bei Übergabe angelegt waren, '
+        + 'auf Ihre Rechnung.');
+    }
+    return s;
+  }
+
   if (e.neuanlage) {
-    return p(esc(e.bauart) + ' in ' + esc(e.ort) + ' ist seit ' + zahl(esc(e.ibnMonatJahr))
-      + ' am Netz. Was wir bei jungen Anlagen regelmäßig finden: nicht angeschlossene Strings, '
-      + 'Transportschäden an Modulen, gequetschte Zellen unter zu fest angezogenen Klemmen. '
-      + 'Der Zähler zeigt das nicht, er summiert nur — und bis ' + frist + ' gehen solche '
-      + 'Fehler zulasten Ihres Errichters, nicht zu Ihren.');
+    return p(anlagenSatz(e)
+      + ' Bis ' + frist + ' trägt Ihr Errichter die Mängelhaftung — ein guter Zeitpunkt, '
+      + 'um noch einmal alles zu kontrollieren. Was wir bei jungen Anlagen regelmäßig finden: '
+      + 'nicht angeschlossene Strings, Transportschäden an Modulen, gequetschte Zellen unter '
+      + 'zu fest angezogenen Klemmen. Der Zähler zeigt das nicht, er summiert nur.');
   }
   if (e.gwMonateRest <= 0) {
-    return p(esc(e.bauart) + ' in ' + esc(e.ort) + ' ist seit ' + zahl(esc(e.ibnMonatJahr))
-      + ' am Netz. Die Mängelhaftung Ihres Errichters (§&nbsp;634a Abs.&nbsp;1 Nr.&nbsp;2 BGB, '
-      + 'fünf Jahre ab Abnahme) ist im ' + esc(e.gwEndeMonat) + ' abgelaufen. Modulfehler '
-      + 'gehen seither vollständig zu Ihren Lasten — und ein Befund, der schwarz auf weiß '
-      + 'festhält, in welchem Zustand die Anlage ist, zählt jetzt gegenüber Versicherung, '
-      + 'Wartungsfirma und einem späteren Käufer.');
+    return p(anlagenSatz(e)
+      + ' Die Mängelhaftung Ihres Errichters (§&nbsp;634a Abs.&nbsp;1 Nr.&nbsp;2 BGB, fünf '
+      + 'Jahre ab Abnahme) ist im ' + esc(e.gwEndeMonat) + ' abgelaufen. Umso mehr lohnt '
+      + 'sich ein Befund, der schwarz auf weiß festhält, in welchem Zustand die Anlage ist — '
+      + 'gegenüber Versicherung, Wartungsfirma und einem späteren Käufer.');
   }
-  return p(esc(e.bauart) + ' in ' + esc(e.ort) + ' ist seit ' + zahl(esc(e.ibnMonatJahr))
-    + ' am Netz. Die Mängelhaftung Ihres Errichters (§&nbsp;634a Abs.&nbsp;1 Nr.&nbsp;2 BGB, '
-    + 'fünf Jahre ab Abnahme) endet damit voraussichtlich im ' + frist
-    + '. Bis dahin trägt er die Kosten für Modulfehler, die bei Übergabe angelegt waren. '
-    + 'Danach Sie.');
+  return p(anlagenSatz(e)
+    + ' Die Mängelhaftung Ihres Errichters (§&nbsp;634a Abs.&nbsp;1 Nr.&nbsp;2 BGB, fünf '
+    + 'Jahre ab Abnahme) endet damit voraussichtlich im ' + frist
+    + '. Ein guter Zeitpunkt, um vorher noch einmal alles zu kontrollieren.');
 }
 
 /* Zweiter Absatz: was gemessen wird, und das Fazit aus dem Fristverlauf.
@@ -450,6 +528,11 @@ function absatzMessung(e) {
    ohnehin beieinander. */
 function absatzAngebot(e) {
   const gross = e.kwp >= L.SCHWELLE_GROSS;
+  if (MOTIV === 'nachbarschaft') {
+    return '<p style="margin:0;">Was das für Ihre Anlage heißt — '
+      + (gross ? 'die Anfahrtspauschale entfällt ab 500 kWp ohnehin' : 'Anfahrt 95 statt 190 Euro')
+      + ', und auf alles kommen 15&nbsp;% Nachlass für den Sammeltermin:</p>';
+  }
   return '<p style="margin:0;">Zum Saisonende bündeln wir die verbleibenden Messtermine in '
     + 'einer Region und geben die gesparte Anfahrt weiter — bei Ihrer Anlagengröße '
     + (gross ? 'entfällt die Anfahrtspauschale damit ganz' : 'kostet die Anfahrt 95 statt 190 Euro')
@@ -463,6 +546,11 @@ function absatzAngebot(e) {
    niedrigste Hürde, die ein Kaltkontakt anbieten kann. */
 function psZeile(e) {
   const kursiv = t => '<span style="color:#5C6B69;">' + t + '</span>';
+  if (MOTIV === 'nachbarschaft') {
+    return kursiv('P.S. — Die Runde steht noch nicht fest. Wenn Ihnen ein bestimmter Zeitraum '
+      + 'im Oktober besser passt, schreiben Sie mir das kurz, dann plane ich Ihre Anlage '
+      + 'dorthin. Ein voller Kalender nützt Ihnen nichts, wenn der Termin nicht passt.');
+  }
   if (e.neuanlage) {
     return kursiv('P.S. — Hat Ihr Errichter die Anlage nach der Montage selbst thermografiert? '
       + 'Dann lassen Sie sich den Bericht geben. Fehlt er, ist das schon die halbe Antwort.');
@@ -539,6 +627,14 @@ function preisZeilen(e) {
     zeilen.push(z('Anfahrt über ' + L.FREIKILOMETER + ' km', e.distanzKm + ' km einfache Strecke',
       L.fmtEur2(p.zuschlagAktion), L.fmtEur2(p.zuschlagAktion)));
   }
+  /* Der Nachlass steht als eigene Zeile. Ihn still in die Endsumme zu
+     rechnen wäre bequemer und würde genau die Frage offen lassen, die der
+     Empfänger stellt: wo sind die 15 Prozent? */
+  if (p.rabattBetrag > 0) {
+    zeilen.push(z('Nachlass Sammeltermin',
+      Math.round(p.rabattSatz * 100) + ' % auf ' + L.fmtEur2(p.vorRabatt),
+      '—', '−&nbsp;' + L.fmtEur2(p.rabattBetrag), '#167E74'));
+  }
   return zeilen.join('\n');
 }
 
@@ -584,25 +680,50 @@ function textFassung(e, v) {
   z.push(e.anrede + ',');
   z.push('');
 
-  if (e.neuanlage) {
-    z.push(e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' am Netz. Was wir bei',
-      'jungen Anlagen regelmäßig finden: nicht angeschlossene Strings,',
-      'Transportschäden an Modulen, gequetschte Zellen unter zu fest',
-      'angezogenen Klemmen. Der Zähler zeigt das nicht, er summiert nur —',
-      'und bis ' + e.gwEndeMonat + ' gehen solche Fehler zulasten Ihres',
-      'Errichters, nicht zu Ihren.');
-  } else if (e.gwMonateRest <= 0) {
-    z.push(e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' am Netz. Die',
-      'Mängelhaftung Ihres Errichters (§ 634a Abs. 1 Nr. 2 BGB, fünf Jahre ab',
-      'Abnahme) ist im ' + e.gwEndeMonat + ' abgelaufen. Modulfehler gehen seither',
-      'vollständig zu Ihren Lasten — und ein Befund, der schwarz auf weiß',
-      'festhält, in welchem Zustand die Anlage ist, zählt jetzt gegenüber',
-      'Versicherung, Wartungsfirma und einem späteren Käufer.');
+  const ertragMWh = Math.round(e.kwp * L.ERTRAG_KWH_PRO_KWP / 1000);
+  const lk = String(e.landkreis || '').replace(/^(Landkreis|LK)\s+/i, '').trim();
+  const wo = lk ? 'im Landkreis ' + lk : 'rund um ' + e.ort;
+
+  if (MOTIV === 'nachbarschaft') {
+    z.push('Ende August haben wir Ihnen geschrieben — zur Mängelhaftung Ihrer',
+      'PV-Anlage in ' + e.ort + '. Heute schreibe ich aus einem konkreteren Anlass:',
+      'im Oktober sind wir ' + wo + ' unterwegs und fliegen dort mehrere',
+      'Anlagen an einem Stück.',
+      '',
+      e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' am Netz — '
+        + L.fmtInt(e.module) + ' Module,',
+      'die im Jahr rund ' + L.fmtInt(ertragMWh) + ' MWh liefern. Wenn wir sie in dieselbe Runde',
+      'nehmen, teilen sich Anfahrt und Rüstzeit auf mehrere Anlagen. Das geben',
+      'wir weiter: 15 % auf die Inspektion, zusätzlich zur Kondition aus dem Brief.');
+    if (e.gwMonateRest > 0) {
+      z.push('',
+        'Für Ihre Anlage kommt dazu, dass die Mängelhaftung Ihres Errichters im',
+        e.gwEndeMonat + ' endet. Danach gehen Modulfehler, die bei Übergabe angelegt',
+        'waren, auf Ihre Rechnung.');
+    }
   } else {
-    z.push(e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' am Netz. Die',
-      'Mängelhaftung Ihres Errichters (§ 634a Abs. 1 Nr. 2 BGB, fünf Jahre ab',
-      'Abnahme) endet damit voraussichtlich im ' + e.gwEndeMonat + '. Bis dahin trägt',
-      'er die Kosten für Modulfehler, die bei Übergabe angelegt waren. Danach Sie.');
+    const anlage = e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' am Netz — '
+      + L.fmtInt(e.module) + ' Module,';
+    const zweite = 'die im Jahr rund ' + L.fmtInt(ertragMWh) + ' MWh liefern.';
+    if (e.neuanlage) {
+      z.push(anlage, zweite,
+        'Bis ' + e.gwEndeMonat + ' trägt Ihr Errichter die Mängelhaftung — ein guter',
+        'Zeitpunkt, um noch einmal alles zu kontrollieren. Was wir bei jungen',
+        'Anlagen regelmäßig finden: nicht angeschlossene Strings, Transportschäden',
+        'an Modulen, gequetschte Zellen unter zu fest angezogenen Klemmen.',
+        'Der Zähler zeigt das nicht, er summiert nur.');
+    } else if (e.gwMonateRest <= 0) {
+      z.push(anlage, zweite,
+        'Die Mängelhaftung Ihres Errichters (§ 634a Abs. 1 Nr. 2 BGB, fünf Jahre ab',
+        'Abnahme) ist im ' + e.gwEndeMonat + ' abgelaufen. Umso mehr lohnt sich ein',
+        'Befund, der schwarz auf weiß festhält, in welchem Zustand die Anlage ist —',
+        'gegenüber Versicherung, Wartungsfirma und einem späteren Käufer.');
+    } else {
+      z.push(anlage, zweite,
+        'Die Mängelhaftung Ihres Errichters (§ 634a Abs. 1 Nr. 2 BGB, fünf Jahre ab',
+        'Abnahme) endet damit voraussichtlich im ' + e.gwEndeMonat + '. Ein guter',
+        'Zeitpunkt, um vorher noch einmal alles zu kontrollieren.');
+    }
   }
 
   const ertrag = Math.round(e.kwp * L.ERTRAG_KWH_PRO_KWP / 1000);
@@ -666,7 +787,12 @@ function textFassung(e, v) {
     '+49 179 1599311 · info@kolibri-inspect.de',
     '');
 
-  if (e.neuanlage) {
+  if (MOTIV === 'nachbarschaft') {
+    z.push('P.S. — Die Runde steht noch nicht fest. Wenn Ihnen ein bestimmter Zeitraum',
+      'im Oktober besser passt, schreiben Sie mir das kurz, dann plane ich Ihre',
+      'Anlage dorthin. Ein voller Kalender nützt Ihnen nichts, wenn der Termin',
+      'nicht passt.');
+  } else if (e.neuanlage) {
     z.push('P.S. — Hat Ihr Errichter die Anlage nach der Montage selbst thermografiert?',
       'Dann lassen Sie sich den Bericht geben. Fehlt er, ist das schon die halbe',
       'Antwort.');
@@ -700,15 +826,17 @@ function baueMail(e, heute) {
     subject: betreff(e),
     cta_url: ctaUrl(e),
   };
-  v.preheader = 'Vier typische Befunde, auf Ihre ' + L.fmtInt(e.module) + ' Module gerechnet: '
-    + L.fmtEur(e.befundSummeEur) + ' Ertragsverlust je Jahr.';
+  v.preheader = MOTIV === 'nachbarschaft'
+    ? 'Sammeltermin im Oktober, 15 % auf die Inspektion Ihrer '
+      + L.fmtInt(e.module) + ' Module — ' + L.fmtEur2(e.preis.nettoAktion) + ' netto.'
+    : 'Vier typische Befunde, auf Ihre ' + L.fmtInt(e.module) + ' Module gerechnet: '
+      + L.fmtEur(e.befundSummeEur) + ' Ertragsverlust je Jahr.';
   v.titel = titelZeile(e);
   v.untertitel = esc(untertitelZeile(e));
   v.datum = new Intl.DateTimeFormat('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(heute);
   v.ort = esc(e.ort);
   v.anrede = esc(e.anrede);
   v.logo_url = BILD_BASIS + 'symbol.png';
-  v.datenband = datenband(e);
   v.absatz_aufhaenger = absatzAufhaenger(e);
   v.fristbalken = fristbalken(e, heute);
   v.absatz_messung = absatzMessung(e);

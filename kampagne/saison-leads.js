@@ -34,6 +34,11 @@ const MIN_KWP     = parseFloat(process.env.SAISON_MIN_KWP || '100');
    muss es hier nachgezogen werden; send-saison.js --pruefen vergleicht den
    Code zusätzlich gegen die ausgelieferte angebot.html. */
 const PROMO_CODE      = process.env.SAISON_PROMO || 'SAISON-2026';
+/* Prozentualer Nachlass der Aktion, falls sie einen hat. Muss mit dem Feld
+   discount in api/promo-codes.js uebereinstimmen — sonst nennt die Mail einen
+   anderen Betrag als das Formular, auf das sie verlinkt. Genau dieser
+   Widerspruch kostet das Vertrauen, das die Mail gerade aufgebaut hat. */
+const RABATT          = parseFloat(process.env.SAISON_RABATT || '0');
 const AKTION_BIS      = '31. Oktober 2026';
 const PAUSCHALE_LISTE = 190;
 const PAUSCHALE_KLEIN = 95;      // < 500 kWp
@@ -163,11 +168,14 @@ function preisRechnung(l, distanzKm) {
   const zuschlagListe = distanzKm > 100
     ? Math.round((distanzKm - 100) * ANFAHRT_RATE * 100) / 100 : 0;
 
-  const nettoListe  = Math.round((PAUSCHALE_LISTE + preisModule + zuschlagListe) * 100) / 100;
-  const nettoAktion = Math.round((pauschale + preisModule + zuschlagAktion) * 100) / 100;
+  const nettoListe   = Math.round((PAUSCHALE_LISTE + preisModule + zuschlagListe) * 100) / 100;
+  const vorRabatt    = Math.round((pauschale + preisModule + zuschlagAktion) * 100) / 100;
+  const rabattBetrag = Math.round(vorRabatt * RABATT * 100) / 100;
+  const nettoAktion  = Math.round((vorRabatt - rabattBetrag) * 100) / 100;
 
   return {
     ratePerModul: tier.rate, preisModule, pauschale, zuschlagAktion,
+    vorRabatt, rabattSatz: RABATT, rabattBetrag,
     nettoListe, nettoAktion,
     ersparnis: Math.round((nettoListe - nettoAktion) * 100) / 100,
   };

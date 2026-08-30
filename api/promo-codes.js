@@ -47,6 +47,21 @@ const PROMO_CODES = {
     validUntil:        '2026-10-31',
     label:             'Aktion „Saisonabschluss 2026"',
   },
+  /* Nachbarschaftsflug: Nachfassen bei denen, die im August den Brief bekommen
+     haben. Sie halten bereits die Saisonabschluss-Kondition in der Hand — das
+     neue Angebot muss also besser sein, nicht anders. Deshalb dieselbe
+     Pauschalenregel PLUS 15 %: Wer sich an einen ohnehin geplanten Flug
+     anhaengt, teilt sich die Ruestzeit vor Ort. */
+  'NACHBAR-2026': {
+    type: 'pauschale-override',
+    pauschaleUnter500: 95,
+    pauschaleAb500:    0,
+    freikilometer:     200,
+    schwelleKwp:       500,
+    discount:          0.15,
+    validUntil:        '2026-10-31',
+    label:             'Aktion „Nachbarschaftsflug" − 15 %',
+  },
 };
 
 function resolvePromo(code) {
