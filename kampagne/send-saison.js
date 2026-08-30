@@ -248,7 +248,7 @@ function betreff(e) {
     const lk = String(e.landkreis || '').replace(/^(Landkreis|LK)\s+/i, '').trim();
     liste = [
       ort + ': wir sind bereits bei Ihnen in der Nähe',
-      ort + ': Ihre Anlage im Sammeltermin mitnehmen?',
+      ort + ': Thermografie 15 % günstiger im Sammeltermin',
       'Sammeltermin ' + (lk || ort) + ' — 15 % auf die Inspektion',
     ];
   } else if (e.neuanlage) {
