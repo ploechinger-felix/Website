@@ -247,7 +247,7 @@ function betreff(e) {
   if (MOTIV === 'nachbarschaft') {
     const lk = String(e.landkreis || '').replace(/^(Landkreis|LK)\s+/i, '').trim();
     liste = [
-      'Wir fliegen im Oktober ' + (lk ? 'im Landkreis ' + lk : 'bei ' + ort),
+      ort + ': wir sind bereits bei Ihnen in der Nähe',
       ort + ': Ihre Anlage im Sammeltermin mitnehmen?',
       'Sammeltermin ' + (lk || ort) + ' — 15 % auf die Inspektion',
     ];
@@ -425,8 +425,7 @@ function titelZeile(e) {
   const kwp = L.fmtKwp(e.kwp);
 
   if (MOTIV === 'nachbarschaft') {
-    return 'Wir fliegen im Oktober ' + gegend(e)
-      + ' — Ihre Anlage in ' + ort + ' können wir mitnehmen';
+    return 'Thermografie Ihrer PV-Anlage in ' + ort + ': 15 % günstiger im Sammeltermin';
   }
   if (e.neuanlage) {
     return 'Montagefehler an Ihrer PV-Anlage in ' + ort + ' (' + kwp
@@ -441,7 +440,7 @@ function titelZeile(e) {
 }
 
 function untertitelZeile(e) {
-  if (MOTIV === 'nachbarschaft') return 'Sammeltermin zum Saisonende, 15 % auf die Inspektion';
+  if (MOTIV === 'nachbarschaft') return 'Wir messen bereits in Ihrer Nähe, Anfahrt und Rüstzeit teilen sich';
   if (e.neuanlage) return 'Montage- und Anschlusskontrolle innerhalb der Haftungszeit';
   if (e.gwMonateRest <= 0) return 'Bestandsdokumentation für Versicherung und Wartung';
   return 'Befund vor Ablauf der Errichter-Mängelhaftung';
@@ -470,8 +469,8 @@ function absatzAufhaenger(e) {
   if (MOTIV === 'nachbarschaft') {
     let s = p('Ende August haben wir Ihnen geschrieben — zur Mängelhaftung Ihrer PV-Anlage '
       + 'in ' + esc(e.ort) + '. Heute schreibe ich aus einem konkreteren Anlass: '
-      + '<strong>im Oktober sind wir ' + gegend(e) + ' unterwegs</strong> und fliegen dort '
-      + 'mehrere Anlagen an einem Stück.');
+      + '<strong>wir sind mit der Drohne bereits ' + gegend(e) + ' unterwegs</strong> und '
+      + 'fliegen dort mehrere Anlagen an einem Stück.');
     s += p(anlagenSatz(e) + ' Wenn wir sie in dieselbe Runde nehmen, teilen sich Anfahrt und '
       + 'Rüstzeit auf mehrere Anlagen. Das geben wir weiter: '
       + '<strong style="color:#167E74;">15&nbsp;% auf die Inspektion</strong>, zusätzlich zur '
@@ -548,8 +547,8 @@ function psZeile(e) {
   const kursiv = t => '<span style="color:#5C6B69;">' + t + '</span>';
   if (MOTIV === 'nachbarschaft') {
     return kursiv('P.S. — Die Runde steht noch nicht fest. Wenn Ihnen ein bestimmter Zeitraum '
-      + 'im Oktober besser passt, schreiben Sie mir das kurz, dann plane ich Ihre Anlage '
-      + 'dorthin. Ein voller Kalender nützt Ihnen nichts, wenn der Termin nicht passt.');
+      + 'besser passt, schreiben Sie mir das kurz, dann plane ich Ihre Anlage dorthin. '
+      + 'Ein voller Kalender nützt Ihnen nichts, wenn der Termin nicht passt.');
   }
   if (e.neuanlage) {
     return kursiv('P.S. — Hat Ihr Errichter die Anlage nach der Montage selbst thermografiert? '
@@ -687,8 +686,8 @@ function textFassung(e, v) {
   if (MOTIV === 'nachbarschaft') {
     z.push('Ende August haben wir Ihnen geschrieben — zur Mängelhaftung Ihrer',
       'PV-Anlage in ' + e.ort + '. Heute schreibe ich aus einem konkreteren Anlass:',
-      'im Oktober sind wir ' + wo + ' unterwegs und fliegen dort mehrere',
-      'Anlagen an einem Stück.',
+      'wir sind mit der Drohne bereits ' + wo + ' unterwegs und fliegen dort',
+      'mehrere Anlagen an einem Stück.',
       '',
       e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' am Netz — '
         + L.fmtInt(e.module) + ' Module,',
@@ -781,8 +780,8 @@ function textFassung(e, v) {
     '');
 
   if (MOTIV === 'nachbarschaft') {
-    z.push('P.S. — Die Runde steht noch nicht fest. Wenn Ihnen ein bestimmter Zeitraum',
-      'im Oktober besser passt, schreiben Sie mir das kurz, dann plane ich Ihre',
+    z.push('P.S. — Die Runde steht noch nicht fest. Wenn Ihnen ein bestimmter',
+      'Zeitraum besser passt, schreiben Sie mir das kurz, dann plane ich Ihre',
       'Anlage dorthin. Ein voller Kalender nützt Ihnen nichts, wenn der Termin',
       'nicht passt.');
   } else if (e.neuanlage) {
@@ -820,7 +819,7 @@ function baueMail(e, heute) {
     cta_url: ctaUrl(e),
   };
   v.preheader = MOTIV === 'nachbarschaft'
-    ? 'Sammeltermin im Oktober, 15 % auf die Inspektion Ihrer '
+    ? 'Sammeltermin in Ihrer Nähe, 15 % auf die Inspektion Ihrer '
       + L.fmtInt(e.module) + ' Module — ' + L.fmtEur2(e.preis.nettoAktion) + ' netto.'
     : 'Vier typische Befunde, auf Ihre ' + L.fmtInt(e.module) + ' Module gerechnet: '
       + L.fmtEur(e.befundSummeEur) + ' Ertragsverlust je Jahr.';
