@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
-<meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
 <title>{{subject}}</title>
 <!--[if mso]>
 <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
@@ -27,22 +27,17 @@
     .h1 { font-size:23px !important; line-height:30px !important; }
     .cta a { display:block !important; }
   }
-  /* Dunkelmodus.
-     Bewusst zurückhaltend: nur Flächen und Fließtext werden gesetzt, die
-     Markenfarben bleiben. Wer hier jedes Detail nachbaut, riskiert in den
-     Clients, die zusätzlich eigenmächtig invertieren, ein schlechteres
-     Ergebnis als eine Vorlage, die den Umschlag einfach aushält. Das
-     helle Türkis der Website trägt auf dunklem Grund besser als das
-     dunklere der Drucksachen. */
-  @media (prefers-color-scheme: dark) {
-    .grund  { background:#0E1614 !important; }
-    .huelle { background:#16211F !important; }
-    .txt, .txt p, .txt div, .txt strong { color:#E6EFED !important; }
-    .flaeche { background:#1E2E2B !important; }
-    .zart   { color:#9FB3AF !important; }
-    .rahmen { border-color:#2C3E3A !important; }
-    .akzent { color:#22C2AF !important; }
-  }
+  /* Kein eigener Dunkelmodus — bewusst, und erst nach einem Versuch.
+     Diese Mail besteht zum grossen Teil aus Zahlen in Tabellenzellen, deren
+     Farben inline und teils erst im Skript gesetzt werden. Eine Umschaltung,
+     die nur die Flächen umfärbt, verschluckt genau das: Überschrift,
+     Befundnamen, Summenzeile und die halbe Preistabelle standen dunkel auf
+     dunkel. Eine halb gebaute Umschaltung ist schlechter als gar keine.
+
+     Stattdessen hält die Vorlage eine erzwungene Invertierung aus: keine
+     reinweisse Fläche, getönte Neutraltöne, Thermogramme auf getöntem statt
+     weissem Grund. Clients, die color-scheme beachten, zeigen die helle
+     Fassung — und die ist die entworfene. */
 </style>
 </head>
 <body class="grund" style="margin:0; padding:0; background:#EFF5F3;">
@@ -73,7 +68,7 @@
 
   <!-- ══ Titel ══ -->
   <tr>
-    <td class="luft" style="padding:30px 32px 0 32px;">
+    <td class="luft prosa" style="padding:30px 48px 0 48px;">
       <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:1.4px; color:#167E74; text-transform:uppercase;">
         Saisonabschluss&nbsp;2026 &nbsp;·&nbsp; {{ort}}
       </div>
@@ -262,7 +257,7 @@
 
   <!-- ══ Fußnoten ══ -->
   <tr>
-    <td class="luft" style="padding:24px 32px 0 32px;">
+    <td class="luft prosa" style="padding:24px 48px 0 48px;">
       <div style="border-top:1px solid #D3E0DD; padding-top:12px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:10.5px; line-height:16px; color:#5C6B69;">
         {{fussnoten}}
       </div>

@@ -391,12 +391,24 @@ function fazitBlock(e) {
     + esc(e.fazit) + '</p>';
 }
 
+/* Kennung des Befundes → Bilddatei.
+   Die Zuordnung steht hier und nicht in den Empfängerdaten: dort würde ein
+   Dateiname mitgespeichert und beim nächsten Wechsel von Format oder Pfad
+   still veralten, bis jemand die Empfängerdatei neu baut. Genau das ist
+   einmal passiert. */
+const BEFUND_BILD = {
+  zellfehler:    'Zellfehler.jpg',
+  diode:         'Diodenfehler.jpg',
+  string:        'Stringfehler.jpg',
+  verschmutzung: 'Verschmutzung.jpg',
+};
+
 function befundZeilen(e) {
   return e.befund.map(b =>
     '<tr><td style="padding:11px 0; border-bottom:1px solid #D3E0DD;">'
     + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>'
     + '<td class="befund-bild" width="76" valign="top" style="padding-right:12px;">'
-    + '<img src="' + BILD_BASIS + encodeURIComponent(b.bild) + '" width="76" alt="Thermogramm ' + esc(b.name) + '" '
+    + '<img src="' + BILD_BASIS + (BEFUND_BILD[b.art] || '') + '" width="76" alt="Thermogramm ' + esc(b.name) + '" '
     + 'style="display:block; width:76px; height:auto; border-radius:4px; background:#EFF5F3;">'
     + '</td>'
     + '<td valign="top" style="font-family:\'Segoe UI\',Helvetica,Arial,sans-serif;">'
