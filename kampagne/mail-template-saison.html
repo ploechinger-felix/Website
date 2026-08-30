@@ -11,274 +11,249 @@
 <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
 <![endif]-->
 <style>
-  /* Nur Verfeinerung. Alles Tragende steht inline — Gmail schneidet
-     <style> im weitergeleiteten Mailtext weg. */
+  /* Diese Nachricht ist als Brief gebaut, nicht als Newsletter: Briefkopf,
+     Haarlinien, alles linksbündig, keine Karte, kein Farbbalken, kein
+     zentrierter Knopf. Vorbild ist der gedruckte Brief derselben Kampagne
+     (scripts/generate-briefe-heimat94.js) — wer beide nebeneinander legt,
+     soll denselben Absender erkennen.
+
+     Alles Tragende steht inline; Gmail wirft <style> beim Weiterleiten weg. */
   body { margin:0 !important; padding:0 !important; width:100% !important; }
   table { border-collapse:collapse !important; }
   img { border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
   a { color:#0E5A52; }
   @media only screen and (max-width:620px) {
-    .huelle { width:100% !important; }
-    .luft   { padding-left:20px !important; padding-right:20px !important; }
-    .prosa  { padding-left:20px !important; padding-right:20px !important; }
+    .blatt { width:100% !important; }
+    .rand  { padding-left:22px !important; padding-right:22px !important; }
     .stapel { display:block !important; width:100% !important; }
-    .kennzahl { padding-bottom:12px !important; }
-    .befund-bild { width:64px !important; }
-    .h1 { font-size:23px !important; line-height:30px !important; }
-    .cta a { display:block !important; }
+    .kennzahl { padding-bottom:10px !important; }
+    .kopfrechts { display:none !important; }
+    .befund-bild { width:60px !important; }
+    .h1 { font-size:21px !important; line-height:29px !important; }
   }
-  /* Kein eigener Dunkelmodus — bewusst, und erst nach einem Versuch.
-     Diese Mail besteht zum grossen Teil aus Zahlen in Tabellenzellen, deren
-     Farben inline und teils erst im Skript gesetzt werden. Eine Umschaltung,
-     die nur die Flächen umfärbt, verschluckt genau das: Überschrift,
-     Befundnamen, Summenzeile und die halbe Preistabelle standen dunkel auf
-     dunkel. Eine halb gebaute Umschaltung ist schlechter als gar keine.
-
-     Stattdessen hält die Vorlage eine erzwungene Invertierung aus: keine
-     reinweisse Fläche, getönte Neutraltöne, Thermogramme auf getöntem statt
-     weissem Grund. Clients, die color-scheme beachten, zeigen die helle
-     Fassung — und die ist die entworfene. */
 </style>
 </head>
-<body class="grund" style="margin:0; padding:0; background:#EFF5F3;">
+<body style="margin:0; padding:0; background:#F4F6F5;">
 
-<!-- Vorschauzeile. Begründung der Umsetzung in VERSAND-MAIL-SAISON.md. -->
 <div style="display:none; max-height:0; overflow:hidden;">{{preheader}}</div>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="grund" style="background:#EFF5F3;">
-<tr><td align="center" style="padding:28px 10px 36px 10px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F4F6F5;">
+<tr><td align="center" style="padding:26px 8px 34px 8px;">
 
-<table role="presentation" class="huelle" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px; max-width:600px; background:#FCFDFC; border-radius:14px; overflow:hidden; box-shadow:0 2px 10px rgba(22,126,116,0.10);">
+<table role="presentation" class="blatt" width="620" cellpadding="0" cellspacing="0" border="0" style="width:620px; max-width:620px; background:#FDFDFC;">
 
-  <!-- ══ Kopfband ══ -->
+  <!-- ══ Briefkopf: Wortmarke links, Bildmarke rechts ══ -->
   <tr>
-    <td style="background:#167E74; padding:18px 32px;">
+    <td class="rand" style="padding:34px 46px 0 46px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:17px; font-weight:700; color:#FFFFFF; letter-spacing:0.4px;">
-            Kolibri&nbsp;Inspect
+          <td valign="top" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+            <div style="font-size:19px; font-weight:700; letter-spacing:1.6px; color:#167E74; text-transform:uppercase;">
+              Kolibri&nbsp;Inspect
+            </div>
+            <div style="font-size:10.5px; line-height:16px; color:#7A8886; padding-top:5px;">
+              TGA Plöchinger GmbH · Passauer Str. 20 · 94121 Salzweg
+            </div>
           </td>
-          <td align="right" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:11px; color:#BFE6E0; letter-spacing:0.3px;">
-            Drohnen-Thermografie&nbsp;· DIN&nbsp;EN&nbsp;IEC&nbsp;62446-3
+          <td valign="top" width="60" align="right">
+            <img src="{{logo_url}}" width="52" height="52" alt="Kolibri Inspect"
+                 style="display:block; width:52px; height:52px;">
           </td>
         </tr>
       </table>
     </td>
   </tr>
 
-  <!-- ══ Titel ══ -->
+  <!-- ══ Leistungszeile, rechtsbündig wie im Brief ══ -->
   <tr>
-    <td class="luft prosa" style="padding:30px 48px 0 48px;">
-      <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:1.4px; color:#167E74; text-transform:uppercase;">
-        Saisonabschluss&nbsp;2026 &nbsp;·&nbsp; {{ort}}
-      </div>
-      <div class="h1" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:26px; line-height:33px; font-weight:700; color:#16211F; padding-top:6px;">
+    <td class="rand kopfrechts" align="right" style="padding:16px 46px 0 46px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:11px; line-height:18px; color:#5C6B69;">
+      <strong style="color:#16211F; font-size:12px;">Drohnen-Thermografie für Photovoltaik</strong><br>
+      normgerecht nach DIN EN IEC 62446-3<br>
+      <a href="https://www.kolibri-inspect.de" style="color:#5C6B69; text-decoration:none;">www.kolibri-inspect.de</a>
+    </td>
+  </tr>
+
+  <!-- ══ Ort und Datum ══ -->
+  <tr>
+    <td class="rand" align="right" style="padding:22px 46px 0 46px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:11.5px; color:#7A8886;">
+      Salzweg, {{datum}}
+    </td>
+  </tr>
+
+  <!-- ══ Betreffzeile des Briefs ══ -->
+  <tr>
+    <td class="rand" style="padding:20px 46px 0 46px;">
+      <div class="h1" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:23px; line-height:32px; font-weight:700; color:#16211F;">
         {{titel}}
       </div>
+      <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; line-height:20px; padding-top:7px;">
+        <span style="color:#167E74; font-weight:700;">Drohnen-Thermografie</span>
+        <span style="color:#5C6B69;"> — {{untertitel}}</span>
+      </div>
     </td>
   </tr>
 
-  <!-- ══ Datenband ══ -->
+  <!-- ══ Anschreiben ══ -->
   <tr>
-    <td class="luft" style="padding:20px 32px 0 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="flaeche" style="background:#EFF5F3; border-radius:8px;">
-        <tr>
-          <td style="padding:14px 16px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                {{datenband}}
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-
-  <!-- ══ Anrede und Aufhänger ══ -->
-  <tr>
-    <td class="luft prosa txt" style="padding:24px 48px 0 48px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:16px; line-height:26px; color:#16211F;">
-      <p style="margin:0 0 16px 0;">{{anrede}},</p>
+    <td class="rand" style="padding:24px 46px 0 46px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:15px; line-height:25px; color:#16211F;">
+      <p style="margin:0 0 15px 0;">{{anrede}},</p>
       {{absatz_aufhaenger}}
     </td>
   </tr>
 
-  <!-- ══ Fristbalken ══ -->
+  <!-- ══ Kennzahlen, Haarlinien statt Fläche ══ -->
   <tr>
-    <td class="luft" style="padding:6px 32px 0 32px;">
+    <td class="rand" style="padding:18px 46px 0 46px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+             style="border-top:1px solid #D3E0DD; border-bottom:1px solid #D3E0DD;">
+        <tr><td style="padding:11px 0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>{{datenband}}</tr>
+          </table>
+        </td></tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ══ Fristverlauf ══ -->
+  <tr>
+    <td class="rand" style="padding:16px 46px 0 46px;">
       {{fristbalken}}
     </td>
   </tr>
 
-  <!-- ══ Messung ══ -->
+  <!-- ══ Fortsetzung ══ -->
   <tr>
-    <td class="luft prosa txt" style="padding:22px 48px 0 48px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:16px; line-height:26px; color:#16211F;">
-      <p style="margin:0;">
-        Wir messen im laufenden Betrieb die Oberflächentemperatur jedes Moduls, georeferenziert,
-        ohne Anlagenstillstand. {{spezifisch}} Was solche Befunde bei Ihrer Anlage kosten:
-      </p>
+    <td class="rand" style="padding:20px 46px 0 46px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:15px; line-height:25px; color:#16211F;">
+      {{absatz_messung}}
     </td>
   </tr>
 
-  <!-- ══ Befundtabelle ══ -->
+  <!-- ══ Befunde ══ -->
   <tr>
-    <td class="luft" style="padding:18px 32px 0 32px;">
+    <td class="rand" style="padding:16px 46px 0 46px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td style="padding:0 0 7px 0; border-bottom:1.5px solid #167E74;">
+          <td style="padding:0 0 6px 0; border-bottom:1px solid #D3E0DD;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
-                <td style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:0.9px; color:#5C6B69;">BEFUND</td>
-                <td align="right" width="78" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:0.9px; color:#5C6B69;">JE&nbsp;JAHR</td>
-                <td align="right" width="96" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:0.9px; color:#B5730C;">{{befund_kopf_rest}}</td>
+                <td style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; color:#7A8886;">BEFUND</td>
+                <td align="right" width="80" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; color:#7A8886;">JE&nbsp;JAHR</td>
+                <td align="right" width="104" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; color:#B5730C;">{{befund_kopf_rest}}</td>
               </tr>
             </table>
           </td>
         </tr>
         {{befund_zeilen}}
         <tr>
-          <td style="padding:12px 0 0 0;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="flaeche" style="background:#EFF5F3; border-radius:6px;">
+          <td style="padding:13px 0 0 0; border-top:1.5px solid #16211F;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
-                <td style="padding:11px 12px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; font-weight:700; color:#16211F;">
-                  Summe, wenn alle vier Befunde zutreffen
+                <td style="padding-top:11px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:#16211F;">
+                  Treten diese Befunde gemeinsam auf
                 </td>
-                <td align="right" width="78" style="padding:11px 0; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; font-weight:700; color:#16211F;">{{befund_summe_jahr}}</td>
-                <td align="right" width="96" style="padding:11px 12px 11px 0; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:#B5730C;">{{befund_summe_gesamt}}</td>
+                <td align="right" width="80" style="padding-top:11px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; color:#16211F; white-space:nowrap;">{{befund_summe_jahr}}</td>
+                <td align="right" width="104" style="padding-top:11px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:18px; font-weight:700; color:#B5730C; white-space:nowrap;">{{befund_summe_gesamt}}</td>
               </tr>
             </table>
           </td>
         </tr>
       </table>
-      <div class="zart" style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:11px; line-height:17px; color:#5C6B69; padding-top:8px;">
+      <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:11px; line-height:17px; color:#7A8886; padding-top:9px;">
         {{befund_basis}}
       </div>
     </td>
   </tr>
 
-  <!-- ══ Angebot ══ -->
+  <!-- ══ Das Angebot, als Absatz statt als Kasten ══ -->
   <tr>
-    <td class="luft" style="padding:30px 32px 0 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="rahmen" style="border:1px solid #D3E0DD; border-radius:10px;">
-        <tr>
-          <td style="padding:20px 22px 4px 22px;">
-            <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:10px; font-weight:700; letter-spacing:1.4px; color:#5C6B69; text-transform:uppercase;">Ihr Aktionsangebot</div>
-            <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:19px; font-weight:700; color:#16211F; padding-top:4px;">Saisonabschluss&nbsp;2026</div>
-            <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:12px; color:#5C6B69; padding-top:3px;">{{anlage_zeile}}</div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:14px 22px 0 22px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td style="padding-bottom:6px; border-bottom:1.5px solid #167E74;"></td>
-                <td align="right" width="92" style="padding-bottom:6px; border-bottom:1.5px solid #167E74; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:0.9px; color:#5C6B69;">LISTENPREIS</td>
-                <td align="right" width="112" style="padding-bottom:6px; border-bottom:1.5px solid #167E74; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:0.9px; color:#167E74;">AKTION</td>
-              </tr>
-              {{preis_zeilen}}
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:14px 22px 0 22px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="flaeche" style="background:#EFF5F3; border-radius:6px;">
-              <tr>
-                <td style="padding:13px 14px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:#16211F;">Gesamt netto zzgl. MwSt.</td>
-                <td align="right" width="92" style="padding:13px 0; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; color:#5C6B69; text-decoration:line-through; white-space:nowrap;">{{preis_liste}}</td>
-                <td align="right" width="112" style="padding:13px 14px 13px 0; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:19px; font-weight:700; color:#167E74; white-space:nowrap;">{{preis_aktion}}</td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:10px 22px 0 22px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:12px; line-height:19px; color:#16211F;">
-            Ersparnis gegenüber Listenpreis <strong>{{ersparnis}}</strong> &nbsp;·&nbsp; Aktionscode
-            <strong style="color:#0E5A52;">{{promo}}</strong>, gültig bis {{aktion_bis}}
-          </td>
-        </tr>
+    <td class="rand" style="padding:24px 46px 0 46px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:15px; line-height:25px; color:#16211F;">
+      {{absatz_angebot}}
+    </td>
+  </tr>
 
-        <!-- CTA -->
+  <!-- ══ Preis: Haarlinien, linksbündig ══ -->
+  <tr>
+    <td class="rand" style="padding:14px 46px 0 46px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="cta" align="center" style="padding:20px 22px 8px 22px;">
-            <!--[if mso]>
-            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
-              href="{{cta_url}}" style="height:50px;v-text-anchor:middle;width:400px;" arcsize="18%" stroke="f" fillcolor="#167E74">
-              <w:anchorlock/>
-              <center style="color:#ffffff;font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:16px;font-weight:bold;">Angebot ansehen und beauftragen</center>
-            </v:roundrect>
-            <![endif]-->
-            <!--[if !mso]><!-- -->
-            <a href="{{cta_url}}" style="display:inline-block; background:#167E74; color:#FFFFFF; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:16px; font-weight:700; line-height:20px; text-decoration:none; padding:15px 30px; border-radius:9px;">
-              Angebot ansehen und beauftragen
-            </a>
-            <!--<![endif]-->
-          </td>
+          <td style="padding-bottom:6px; border-bottom:1px solid #D3E0DD;"></td>
+          <td align="right" width="96" style="padding-bottom:6px; border-bottom:1px solid #D3E0DD; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; color:#7A8886;">LISTE</td>
+          <td align="right" width="112" style="padding-bottom:6px; border-bottom:1px solid #D3E0DD; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; color:#167E74;">SAISONABSCHLUSS</td>
         </tr>
+        {{preis_zeilen}}
         <tr>
-          <td align="center" style="padding:0 22px 20px 22px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:12px; line-height:18px; color:#5C6B69;">
-            Leistung, Modulzahl, Standort und Aktionscode sind im Formular bereits eingetragen.<br>
-            Sie sehen den Preis, bevor Sie etwas bestätigen.
+          <td style="padding-top:12px; border-top:1.5px solid #16211F; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:14px; font-weight:700; color:#16211F;">
+            Gesamt netto zzgl. MwSt.
           </td>
+          <td align="right" width="96" style="padding-top:12px; border-top:1.5px solid #16211F; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; color:#7A8886; text-decoration:line-through; white-space:nowrap;">{{preis_liste}}</td>
+          <td align="right" width="112" style="padding-top:12px; border-top:1.5px solid #16211F; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:19px; font-weight:700; color:#167E74; white-space:nowrap;">{{preis_aktion}}</td>
         </tr>
       </table>
     </td>
   </tr>
 
-  <!-- ══ Musterbericht ══ -->
+  <!-- ══ Handlungsaufforderung, linksbündig und ohne Druck ══ -->
   <tr>
-    <td class="luft" style="padding:18px 32px 0 32px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="flaeche rahmen" style="background:#FBFDFC; border:1px solid #D3E0DD; border-radius:10px;">
-        <tr>
-          <td style="padding:15px 18px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:13px; line-height:20px; color:#16211F;">
-            <strong>Vorher ansehen, was Sie bekommen:</strong>
-            der <a href="{{musterbericht_url}}" style="color:#0E5A52; font-weight:700;">Musterbericht als PDF</a> —
-            Thermogramme, Befundliste je Modul, Handlungsempfehlung.
-          </td>
-        </tr>
-      </table>
+    <td class="rand" style="padding:22px 46px 0 46px;">
+      <!--[if mso]>
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+        href="{{cta_url}}" style="height:46px;v-text-anchor:middle;width:280px;" arcsize="8%" stroke="f" fillcolor="#167E74">
+        <w:anchorlock/>
+        <center style="color:#ffffff;font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:15px;font-weight:bold;">Preis und Termin ansehen</center>
+      </v:roundrect>
+      <![endif]-->
+      <!--[if !mso]><!-- -->
+      <a href="{{cta_url}}" style="display:inline-block; background:#167E74; color:#FFFFFF; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:15px; font-weight:700; line-height:20px; text-decoration:none; padding:13px 26px; border-radius:4px;">
+        Preis und Termin ansehen
+      </a>
+      <!--<![endif]-->
+      <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:12.5px; line-height:19px; color:#5C6B69; padding-top:11px;">
+        Ihre Anlagendaten sind im Formular schon eingetragen. Sie sehen den Preis,
+        bevor Sie irgendetwas bestätigen — und können dort auch nur einen Termin anfragen.
+      </div>
     </td>
   </tr>
 
   <!-- ══ Grußformel ══ -->
   <tr>
-    <td class="luft prosa txt" style="padding:24px 48px 0 48px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:16px; line-height:26px; color:#16211F;">
-      <p style="margin:0 0 4px 0;">Für Rückfragen erreichen Sie mich direkt.</p>
-      <p style="margin:16px 0 0 0;">Mit freundlichen Grüßen</p>
-      <p style="margin:6px 0 0 0;">
+    <td class="rand" style="padding:26px 46px 0 46px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:15px; line-height:25px; color:#16211F;">
+      <p style="margin:0;">Mit freundlichen Grüßen</p>
+      <p style="margin:14px 0 0 0;">
         <strong>Dipl.-Ing. Friedrich Plöchinger</strong><br>
         <span style="font-size:13px; color:#5C6B69;">
-          TGA Plöchinger GmbH&nbsp;· Kolibri Inspect<br>
-          <a href="tel:+491791599311" style="color:#0E5A52; text-decoration:none;">+49 179 1599311</a> &nbsp;·&nbsp;
+          Kolibri Inspect · TGA Plöchinger GmbH<br>
+          <a href="tel:+491791599311" style="color:#0E5A52; text-decoration:none;">+49 179 1599311</a> ·
           <a href="mailto:info@kolibri-inspect.de" style="color:#0E5A52; text-decoration:none;">info@kolibri-inspect.de</a>
         </span>
+      </p>
+      <p style="margin:18px 0 0 0; font-size:14px; line-height:23px; color:#16211F;">
+        {{ps}}
       </p>
     </td>
   </tr>
 
   <!-- ══ Fußnoten ══ -->
   <tr>
-    <td class="luft prosa" style="padding:24px 48px 0 48px;">
-      <div style="border-top:1px solid #D3E0DD; padding-top:12px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:10.5px; line-height:16px; color:#5C6B69;">
+    <td class="rand" style="padding:26px 46px 0 46px;">
+      <div style="border-top:1px solid #D3E0DD; padding-top:12px; font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:10.5px; line-height:16px; color:#7A8886;">
         {{fussnoten}}
       </div>
     </td>
   </tr>
 
-  <!-- ══ Fuß ══ -->
+  <!-- ══ Pflichtangaben ══ -->
   <tr>
-    <td style="padding:22px 32px 26px 32px; background:#16211F;">
-      <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:11px; line-height:18px; color:#9FB3AF;">
-        <strong style="color:#FFFFFF;">TGA Plöchinger GmbH</strong> · Passauer Str. 20 · 94121 Salzweg<br>
-        Geschäftsführer Friedrich Plöchinger · USt-IdNr. DE 322 015 971<br>
-        <a href="https://www.kolibri-inspect.de/impressum.html" style="color:#BFE6E0;">Impressum</a> &nbsp;·&nbsp;
-        <a href="https://www.kolibri-inspect.de/datenschutz.html" style="color:#BFE6E0;">Datenschutz</a>
-      </div>
-      <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:10.5px; line-height:17px; color:#7E918D; padding-top:12px;">
-        Sie erhalten diese Nachricht als Betreiber einer im Marktstammdatenregister
-        veröffentlichten Photovoltaikanlage ab 100&nbsp;kWp. Kein Newsletter, keine
-        Weitergabe Ihrer Daten, keine Zählpixel.<br>
-        <a href="{{abmelden_url}}" style="color:#BFE6E0; font-weight:700;">Abmelden</a>
-        — eine Antwort mit „Abmelden" genügt ebenso, wir löschen Ihre Adresse dann dauerhaft.
+    <td class="rand" style="padding:16px 46px 34px 46px;">
+      <div style="font-family:'Segoe UI',Helvetica,Arial,sans-serif; font-size:10.5px; line-height:17px; color:#7A8886;">
+        TGA Plöchinger GmbH · Passauer Str. 20 · 94121 Salzweg · Geschäftsführer Friedrich Plöchinger ·
+        USt-IdNr. DE 322 015 971 ·
+        <a href="https://www.kolibri-inspect.de/impressum.html" style="color:#5C6B69;">Impressum</a> ·
+        <a href="https://www.kolibri-inspect.de/datenschutz.html" style="color:#5C6B69;">Datenschutz</a><br>
+        Ihre Anlagendaten stammen aus dem öffentlichen Marktstammdatenregister der Bundesnetzagentur.
+        Keine Weitergabe Ihrer Daten, keine Zählpixel.
+        <a href="{{abmelden_url}}" style="color:#5C6B69; font-weight:700;">Abmelden</a> —
+        oder antworten Sie mit „Abmelden", dann löschen wir Ihre Adresse dauerhaft.
       </div>
     </td>
   </tr>

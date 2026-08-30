@@ -288,22 +288,26 @@ function abmeldeUrl(e) {
 }
 
 function kennzahl(label, wertText, farbe) {
-  return '<td class="stapel kennzahl" width="25%" valign="top" style="font-family:\'Segoe UI\',Helvetica,Arial,sans-serif;">'
-    + '<div style="font-size:9px; font-weight:700; letter-spacing:0.9px; color:#5C6B69; text-transform:uppercase;">' + esc(label) + '</div>'
-    + '<div style="font-size:15px; font-weight:700; color:' + (farbe || '#16211F') + '; padding-top:2px;">' + wertText + '</div>'
+  return '<td class="stapel kennzahl" width="20%" valign="top" style="font-family:\'Segoe UI\',Helvetica,Arial,sans-serif;">'
+    + '<div style="font-size:8.5px; font-weight:700; letter-spacing:1px; color:#7A8886; text-transform:uppercase;">' + esc(label) + '</div>'
+    + '<div style="font-size:14px; font-weight:700; color:' + (farbe || '#16211F') + '; padding-top:3px;">' + wertText + '</div>'
     + '</td>';
 }
 
+/* Kennzahlenband wie im gedruckten Brief: fünf Werte zwischen zwei
+   Haarlinien, keine gefüllte Fläche. Der Ertrag steht bewusst dabei — er
+   macht die Eurobeträge weiter unten nachvollziehbar, statt sie einfach
+   zu behaupten. */
 function datenband(e) {
-  /* Einwortige Beschriftung: „Mängelhaftung endete" bricht in der vierten
-     Spalte um und schiebt den Wert aus der Zeilenflucht. Ob die Frist läuft
-     oder abgelaufen ist, trägt die Farbe und der Absatz darunter. */
+  const ertrag = Math.round(e.kwp * L.ERTRAG_KWH_PRO_KWP / 1000);
   return [
     kennzahl('Leistung', L.fmtKwp(e.kwp) + '&nbsp;kWp'),
     kennzahl('Module', L.fmtInt(e.module)),
-    kennzahl('In Betrieb seit', esc(e.ibnMonatJahr || 'unbekannt')),
-    kennzahl('Mängelhaftung', esc(e.gwEndeMonat || 'unbekannt'),
-      e.gwMonateRest > 0 ? '#B5730C' : '#5C6B69'),
+    kennzahl('Am Netz seit', esc(e.ibnMonatJahr || 'unbekannt')),
+    kennzahl('Ertrag/Jahr', L.fmtInt(ertrag) + '&nbsp;MWh'),
+    kennzahl(e.gwMonateRest > 0 ? 'Frist bis' : 'Frist endete',
+      esc(e.gwEndeMonat || 'unbekannt'),
+      e.gwMonateRest > 0 ? '#B5730C' : '#7A8886'),
   ].join('\n');
 }
 
@@ -338,19 +342,21 @@ function fristbalken(e, heute) {
   const pSaison = Math.max(pHeute, pct(L.SAISON_ENDE));
   const restNachSaison = Math.max(0, 100 - pSaison);
 
-  const balken = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-radius:5px; overflow:hidden;">'
+  /* Wie im Brief: verstrichene Zeit grau, ein schmaler Marker für „heute",
+     die verbleibende Frist in Amber. Der Balken zeigt damit, wie viel Zeit
+     weg ist — nicht, wie viel Fläche die Marke belegt. */
+  const marker = 3;
+  const grau = Math.max(0, pHeute - marker);
+  const balken = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">'
     + '<tr>'
-    + zelle(pHeute, '#167E74')
-    + zelle(pSaison - pHeute, '#8FD3CA')
-    + (restNachSaison > 0 ? zelle(restNachSaison, '#F2DFC0') : '')
+    + zelle(grau, '#DDE5E3')
+    + zelle(marker, '#167E74')
+    + (restNachSaison > 0 ? zelle(pSaison - pHeute, '#E8C88A') : '')
+    + zelle(Math.max(0, 100 - pHeute - (restNachSaison > 0 ? pSaison - pHeute : 0)), '#B5730C')
     + '</tr></table>';
 
-  /* Die Mitte beschriftet den Übergang zwischen den beiden hellen Segmenten.
-     Endet die Frist noch vor dem Saisonende, gibt es diesen Übergang nicht —
-     dann bleibt die Mitte leer, statt ein „heute" zu setzen, das an einer
-     Stelle steht, die es nicht meint. */
   const mitte = restNachSaison > 0
-    ? '<strong style="color:#0E5A52;">messbar bis ' + L.SAISON_ENDE_KURZ + '</strong>'
+    ? '<span style="color:#5C6B69;">messbar bis ' + L.SAISON_ENDE_KURZ + '</span>'
     : '';
 
   return balken + legende(
@@ -359,36 +365,107 @@ function fristbalken(e, heute) {
     '<strong style="color:#B5730C;">Frist endet ' + esc(e.gwEndeMonat) + '</strong>');
 }
 
+/* ── Titel und Untertitel ──
+   Der Brief stellt oben die Tatsache hin, nicht einen Werbesatz: was gilt,
+   für welche Anlage, bis wann. Das ist im Kaltkontakt auch das Wirksamste —
+   der Empfänger erkennt in der ersten Zeile, dass es um seine Anlage geht
+   und nicht um ein Angebot von der Stange. */
+function titelZeile(e) {
+  const ort = esc(e.ort);
+  const kwp = L.fmtKwp(e.kwp);
+  if (e.neuanlage) {
+    return 'Montagefehler an Ihrer PV-Anlage in ' + ort + ' (' + kwp
+      + ' kWp) zahlt bis ' + esc(e.gwEndeMonat) + ' noch Ihr Errichter';
+  }
+  if (e.gwMonateRest <= 0) {
+    return 'Für Ihre PV-Anlage in ' + ort + ' (' + kwp
+      + ' kWp) haftet seit ' + esc(e.gwEndeMonat) + ' niemand mehr außer Ihnen';
+  }
+  return 'Die Mängelhaftung Ihrer PV-Anlage in ' + ort + ' (' + kwp
+    + ' kWp) endet im ' + esc(e.gwEndeMonat);
+}
+
+function untertitelZeile(e) {
+  if (e.neuanlage) return 'Montage- und Anschlusskontrolle innerhalb der Haftungszeit';
+  if (e.gwMonateRest <= 0) return 'Bestandsdokumentation für Versicherung und Wartung';
+  return 'Befund vor Ablauf der Errichter-Mängelhaftung';
+}
+
 function absatzAufhaenger(e) {
-  const p = t => '<p style="margin:0 0 16px 0;">' + t + '</p>';
+  const p = t => '<p style="margin:0 0 15px 0;">' + t + '</p>';
   const zahl = t => '<strong style="color:#0E5A52;">' + t + '</strong>';
+  const frist = '<strong style="color:#B5730C;">' + esc(e.gwEndeMonat) + '</strong>';
 
   if (e.neuanlage) {
     return p(esc(e.bauart) + ' in ' + esc(e.ort) + ' ist seit ' + zahl(esc(e.ibnMonatJahr))
-      + ' in Betrieb. Rein statistisch, was wir vorfinden: nicht angeschlossene Strings, '
+      + ' am Netz. Was wir bei jungen Anlagen regelmäßig finden: nicht angeschlossene Strings, '
       + 'Transportschäden an Modulen, gequetschte Zellen unter zu fest angezogenen Klemmen. '
-      + 'Der Zähler verrät das nicht, er summiert nur — und solche Fehler gehen zulasten '
-      + 'Ihres PV-Errichters, solange die Mängelhaftung läuft.');
+      + 'Der Zähler zeigt das nicht, er summiert nur — und bis ' + frist + ' gehen solche '
+      + 'Fehler zulasten Ihres Errichters, nicht zu Ihren.');
   }
   if (e.gwMonateRest <= 0) {
     return p(esc(e.bauart) + ' in ' + esc(e.ort) + ' ist seit ' + zahl(esc(e.ibnMonatJahr))
-      + ' in Betrieb. Die Mängelhaftung Ihres PV-Errichters (§&nbsp;634a Abs.&nbsp;1 Nr.&nbsp;2 BGB, '
-      + 'fünf Jahre ab Abnahme) ist damit abgelaufen — Modulfehler gehen seither vollständig '
-      + 'zu Ihren Lasten. Ein dokumentierter Befund ist jetzt vor allem für Versicherung, '
-      + 'Wartungsvertrag und einen späteren Anlagenverkauf etwas wert.');
+      + ' am Netz. Die Mängelhaftung Ihres Errichters (§&nbsp;634a Abs.&nbsp;1 Nr.&nbsp;2 BGB, '
+      + 'fünf Jahre ab Abnahme) ist im ' + esc(e.gwEndeMonat) + ' abgelaufen. Modulfehler '
+      + 'gehen seither vollständig zu Ihren Lasten — und ein Befund, der schwarz auf weiß '
+      + 'festhält, in welchem Zustand die Anlage ist, zählt jetzt gegenüber Versicherung, '
+      + 'Wartungsfirma und einem späteren Käufer.');
   }
   return p(esc(e.bauart) + ' in ' + esc(e.ort) + ' ist seit ' + zahl(esc(e.ibnMonatJahr))
-    + ' in Betrieb. Die Mängelhaftung Ihres PV-Errichters (§&nbsp;634a Abs.&nbsp;1 Nr.&nbsp;2 BGB, '
-    + 'fünf Jahre ab Abnahme) endet damit voraussichtlich im '
-    + '<strong style="color:#B5730C;">' + esc(e.gwEndeMonat) + '</strong>. '
-    + 'Bis dahin trägt dieser die Kosten für Modulfehler, die bei Übergabe angelegt waren — danach Sie.');
+    + ' am Netz. Die Mängelhaftung Ihres Errichters (§&nbsp;634a Abs.&nbsp;1 Nr.&nbsp;2 BGB, '
+    + 'fünf Jahre ab Abnahme) endet damit voraussichtlich im ' + frist
+    + '. Bis dahin trägt er die Kosten für Modulfehler, die bei Übergabe angelegt waren. '
+    + 'Danach Sie.');
 }
 
-function fazitBlock(e) {
-  if (!e.fazit) return '';
-  const farbe = e.fazitDringend ? '#B5730C' : '#0E5A52';
-  return '<p style="margin:14px 0 0 0; font-size:15px; line-height:23px; font-weight:700; color:' + farbe + ';">'
-    + esc(e.fazit) + '</p>';
+/* Zweiter Absatz: was gemessen wird, und das Fazit aus dem Fristverlauf.
+   Das Fazit stand vorher als fetter Einzeiler über dem Balken und las sich
+   wie ein Werbeeinschub. Als Satz im Fließtext trägt es weiter. */
+function absatzMessung(e) {
+  const p = t => '<p style="margin:0 0 15px 0;">' + t + '</p>';
+  let s = '';
+  if (e.fazit) {
+    s += p(e.fazitDringend
+      ? '<strong>' + esc(e.fazit) + '</strong>'
+      : esc(e.fazit));
+  }
+  s += p('Wir messen im laufenden Betrieb die Oberflächentemperatur jedes Moduls, '
+    + 'georeferenziert, ohne Anlagenstillstand — ein Termin, rund zwei Stunden, kein Eingriff '
+    + 'in Ihren Betrieb. ' + esc(e.spezifisch) + ' Was solche Befunde bei Ihrer Anlage kosten, '
+    + 'wenn sie unentdeckt bleiben:');
+  return s;
+}
+
+/* Das Angebot als Absatz statt als Kasten mit „Aktionscode".
+   Ein Rabatt ohne Begründung sieht nach Verkaufstrick aus. Der Grund ist
+   real und wird deshalb genannt: am Saisonende liegen die letzten Termine
+   ohnehin beieinander. */
+function absatzAngebot(e) {
+  const gross = e.kwp >= L.SCHWELLE_GROSS;
+  return '<p style="margin:0;">Zum Saisonende bündeln wir die verbleibenden Messtermine in '
+    + 'einer Region und geben die gesparte Anfahrt weiter — bei Ihrer Anlagengröße '
+    + (gross ? 'entfällt die Anfahrtspauschale damit ganz' : 'kostet die Anfahrt 95 statt 190 Euro')
+    + '. Das gilt für Termine bis zum ' + esc(e.aktionBis) + ', danach schließt das Messfenster '
+    + 'ohnehin bis März.</p>';
+}
+
+/* Die Nachschrift wird nach der Betreffzeile am häufigsten gelesen. Sie
+   verkauft hier nichts, sondern verschenkt etwas: einen fachlichen Hinweis
+   und eine Frage, die sich in einem Satz beantworten lässt. Das ist die
+   niedrigste Hürde, die ein Kaltkontakt anbieten kann. */
+function psZeile(e) {
+  const kursiv = t => '<span style="color:#5C6B69;">' + t + '</span>';
+  if (e.neuanlage) {
+    return kursiv('P.S. — Hat Ihr Errichter die Anlage nach der Montage selbst thermografiert? '
+      + 'Dann lassen Sie sich den Bericht geben. Fehlt er, ist das schon die halbe Antwort.');
+  }
+  if (e.gwMonateRest <= 0) {
+    return kursiv('P.S. — Falls für Ihre Anlage schon einmal eine Thermografie gemacht wurde: '
+      + 'schreiben Sie mir kurz, wann. Wenn der Befund noch trägt, sparen Sie sich den Termin.');
+  }
+  return kursiv('P.S. — Maßgeblich für die Frist ist die Abnahme, nicht die Inbetriebnahme im '
+    + 'Register. Weicht Ihr Abnahmeprotokoll ab, verschiebt sich der ' + esc(e.gwEndeMonat)
+    + ' entsprechend. Schreiben Sie mir das Datum, dann rechne ich Ihnen den richtigen Termin.');
 }
 
 /* Kennung des Befundes → Bilddatei.
@@ -403,22 +480,26 @@ const BEFUND_BILD = {
   verschmutzung: 'Verschmutzung.jpg',
 };
 
+/* Beträge mit Minuszeichen, wie im Brief. „1.772 €" neben einem Fehlerbild
+   liest sich einen Wimpernschlag lang wie ein Preis; „− 1.772 €" nicht. */
+const minus = n => '−&nbsp;' + L.fmtEur(n);
+
 function befundZeilen(e) {
   return e.befund.map(b =>
-    '<tr><td style="padding:11px 0; border-bottom:1px solid #D3E0DD;">'
+    '<tr><td style="padding:10px 0; border-bottom:1px solid #E4EBE9;">'
     + '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>'
-    + '<td class="befund-bild" width="76" valign="top" style="padding-right:12px;">'
-    + '<img src="' + BILD_BASIS + (BEFUND_BILD[b.art] || '') + '" width="76" alt="Thermogramm ' + esc(b.name) + '" '
-    + 'style="display:block; width:76px; height:auto; border-radius:4px; background:#EFF5F3;">'
+    + '<td class="befund-bild" width="72" valign="top" style="padding-right:14px;">'
+    + '<img src="' + BILD_BASIS + (BEFUND_BILD[b.art] || '') + '" width="72" alt="Thermogramm ' + esc(b.name) + '" '
+    + 'style="display:block; width:72px; height:auto; background:#EFF5F3;">'
     + '</td>'
     + '<td valign="top" style="font-family:\'Segoe UI\',Helvetica,Arial,sans-serif;">'
     + '<div style="font-size:13.5px; font-weight:700; color:#16211F;">' + esc(b.name) + '</div>'
-    + '<div style="font-size:11.5px; line-height:17px; color:#5C6B69; padding-top:2px;">' + esc(b.annahme) + '</div>'
+    + '<div style="font-size:11px; line-height:16px; color:#7A8886; padding-top:2px;">' + esc(b.annahme) + '</div>'
     + '</td>'
-    + '<td width="78" align="right" valign="top" style="font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:13px; color:#16211F;">'
-    + L.fmtEur(b.eur) + '</td>'
-    + '<td width="96" align="right" valign="top" style="font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:13px; font-weight:700; color:#B5730C;">'
-    + (b.gesamt == null ? '—' : L.fmtEur(b.gesamt)) + '</td>'
+    + '<td width="80" align="right" valign="top" style="font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:13px; color:#16211F; white-space:nowrap;">'
+    + minus(b.eur) + '</td>'
+    + '<td width="104" align="right" valign="top" style="font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:15px; font-weight:700; color:#B5730C; white-space:nowrap;">'
+    + (b.gesamt == null ? '—' : minus(b.gesamt)) + '</td>'
     + '</tr></table></td></tr>'
   ).join('\n');
 }
@@ -427,16 +508,16 @@ function preisZeilen(e) {
   const p = e.preis;
   const z = (links, unten, listeText, aktionText, aktionFarbe) =>
     '<tr>'
-    + '<td style="padding:11px 0; border-bottom:1px solid #D3E0DD; font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:13px; color:#16211F;">'
-    + links + (unten ? '<div style="font-size:11px; color:#5C6B69; padding-top:2px;">' + unten + '</div>' : '')
+    + '<td style="padding:10px 0; border-bottom:1px solid #E4EBE9; font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:13px; color:#16211F;">'
+    + links + (unten ? '<div style="font-size:11px; color:#7A8886; padding-top:2px;">' + unten + '</div>' : '')
     + '</td>'
-    + '<td width="92" align="right" style="padding:11px 0; border-bottom:1px solid #D3E0DD; font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:13px; color:#5C6B69; white-space:nowrap;">' + listeText + '</td>'
-    + '<td width="112" align="right" style="padding:11px 0; border-bottom:1px solid #D3E0DD; font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:13px; font-weight:700; color:' + (aktionFarbe || '#16211F') + '; white-space:nowrap;">' + aktionText + '</td>'
+    + '<td width="96" align="right" style="padding:10px 0; border-bottom:1px solid #E4EBE9; font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:13px; color:#7A8886; white-space:nowrap;">' + listeText + '</td>'
+    + '<td width="112" align="right" style="padding:10px 0; border-bottom:1px solid #E4EBE9; font-family:\'Segoe UI\',Helvetica,Arial,sans-serif; font-size:13px; font-weight:700; color:' + (aktionFarbe || '#16211F') + '; white-space:nowrap;">' + aktionText + '</td>'
     + '</tr>';
 
   const anfahrtUnten = e.kwp >= L.SCHWELLE_GROSS
-    ? 'ab 500 kWp entfällt sie im Saisonabschluss'
-    : 'Saisonabschluss: 95 € statt 190 €';
+    ? 'entfällt ab 500 kWp'
+    : 'gebündelte Anfahrt zum Saisonende';
 
   const zeilen = [
     z('Anfahrtspauschale', anfahrtUnten, L.fmtEur2(L.PAUSCHALE_LISTE),
@@ -455,10 +536,11 @@ function preisZeilen(e) {
 
 function befundBasis(e) {
   const art = e.stromwert >= 0.2 ? 'Eigenverbrauch' : 'Volleinspeisung';
-  return 'Grundlage: ' + L.fmtInt(e.kwp * L.ERTRAG_KWH_PRO_KWP) + ' kWh Jahresertrag ('
-    + L.ERTRAG_KWH_PRO_KWP + ' kWh/kWp), bewertet mit '
+  return 'Beispielrechnung mit branchenüblichen Häufigkeiten, bewertet mit '
     + String(e.stromwert).replace('.', ',') + ' €/kWh (' + art + ')'
-    + (e.restJahre != null ? ', hochgerechnet auf ' + e.restJahre + ' Jahre Restlaufzeit der Einspeisung' : '') + '.';
+    + (e.restJahre != null ? ' über ' + e.restJahre + ' Jahre Restlaufzeit der Einspeisung' : '')
+    + '. Ob diese Befunde bei Ihnen vorliegen, zeigt erst die Messung — die Inspektion Ihrer Anlage '
+    + 'kostet einmalig ' + L.fmtEur2(e.preis.nettoAktion) + ' netto.';
 }
 
 function fussnoten(e) {
@@ -478,92 +560,131 @@ function fussnoten(e) {
 /* ── Textfassung ──
    Kein Abfallprodukt: Manche Empfänger sehen nur diesen Teil, und ein
    fehlender oder lieblos gefüllter Textteil ist für sich schon ein
-   Spammerkmal. Die Nachricht geht als UTF-8 raus, deshalb stehen hier
-   richtige Umlaute — eine Mischung aus „Maengel" und „auffällig" in
-   derselben Mail sieht nach Serienbrief aus. */
+   Spammerkmal. Sie folgt derselben Dramaturgie wie die HTML-Fassung —
+   Tatsache, Frist, Befunde, Preis, Nachschrift. */
 function textFassung(e, v) {
-  const linie = '------------------------------------------------------------';
-  const zeilen = [];
-  zeilen.push(v.subject, '', e.anrede + ',', '');
+  const linie = '--------------------------------------------------------';
+  const z = [];
+  z.push('KOLIBRI INSPECT');
+  z.push('Drohnen-Thermografie für Photovoltaik, normgerecht nach DIN EN IEC 62446-3');
+  z.push('');
+  z.push('Salzweg, ' + v.datum);
+  z.push('');
+  z.push(titelZeile(e).replace(/&nbsp;/g, ' '));
+  z.push(untertitelZeile(e));
+  z.push('');
+  z.push(e.anrede + ',');
+  z.push('');
 
   if (e.neuanlage) {
-    zeilen.push(
-      e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' in Betrieb.',
-      'Rein statistisch, was wir vorfinden: nicht angeschlossene Strings,',
+    z.push(e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' am Netz. Was wir bei',
+      'jungen Anlagen regelmäßig finden: nicht angeschlossene Strings,',
       'Transportschäden an Modulen, gequetschte Zellen unter zu fest',
-      'angezogenen Klemmen. Der Zähler verrät das nicht, er summiert nur —',
-      'und solche Fehler gehen zulasten Ihres PV-Errichters, solange die',
-      'Mängelhaftung läuft.');
+      'angezogenen Klemmen. Der Zähler zeigt das nicht, er summiert nur —',
+      'und bis ' + e.gwEndeMonat + ' gehen solche Fehler zulasten Ihres',
+      'Errichters, nicht zu Ihren.');
   } else if (e.gwMonateRest <= 0) {
-    zeilen.push(
-      e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' in Betrieb.',
-      'Die Mängelhaftung Ihres PV-Errichters (§ 634a Abs. 1 Nr. 2 BGB, fünf',
-      'Jahre ab Abnahme) ist abgelaufen — Modulfehler gehen seither',
-      'vollständig zu Ihren Lasten. Ein dokumentierter Befund ist jetzt vor',
-      'allem für Versicherung, Wartungsvertrag und Anlagenwert etwas wert.');
+    z.push(e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' am Netz. Die',
+      'Mängelhaftung Ihres Errichters (§ 634a Abs. 1 Nr. 2 BGB, fünf Jahre ab',
+      'Abnahme) ist im ' + e.gwEndeMonat + ' abgelaufen. Modulfehler gehen seither',
+      'vollständig zu Ihren Lasten — und ein Befund, der schwarz auf weiß',
+      'festhält, in welchem Zustand die Anlage ist, zählt jetzt gegenüber',
+      'Versicherung, Wartungsfirma und einem späteren Käufer.');
   } else {
-    zeilen.push(
-      e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' in Betrieb.',
-      'Die Mängelhaftung Ihres PV-Errichters (§ 634a Abs. 1 Nr. 2 BGB, fünf',
-      'Jahre ab Abnahme) endet voraussichtlich im ' + e.gwEndeMonat + '.',
-      'Bis dahin trägt dieser die Kosten für Modulfehler, die bei Übergabe',
-      'angelegt waren — danach Sie.');
+    z.push(e.bauart + ' in ' + e.ort + ' ist seit ' + e.ibnMonatJahr + ' am Netz. Die',
+      'Mängelhaftung Ihres Errichters (§ 634a Abs. 1 Nr. 2 BGB, fünf Jahre ab',
+      'Abnahme) endet damit voraussichtlich im ' + e.gwEndeMonat + '. Bis dahin trägt',
+      'er die Kosten für Modulfehler, die bei Übergabe angelegt waren. Danach Sie.');
   }
-  if (e.fazit) zeilen.push('', e.fazit);
 
-  zeilen.push('',
-    'Wir messen im laufenden Betrieb die Oberflächentemperatur jedes Moduls,',
-    'georeferenziert, ohne Anlagenstillstand.',
-    '', linie, 'WAS SOLCHE BEFUNDE BEI IHRER ANLAGE KOSTEN', linie);
+  const ertrag = Math.round(e.kwp * L.ERTRAG_KWH_PRO_KWP / 1000);
+  z.push('', linie,
+    'Leistung ' + L.fmtKwp(e.kwp) + ' kWp | Module ' + L.fmtInt(e.module)
+      + ' | am Netz seit ' + e.ibnMonatJahr,
+    'Ertrag rund ' + L.fmtInt(ertrag) + ' MWh/Jahr | Frist '
+      + (e.gwMonateRest > 0 ? 'bis ' : 'endete ') + e.gwEndeMonat,
+    linie, '');
+
+  if (e.fazit) z.push(e.fazit, '');
+  z.push('Wir messen im laufenden Betrieb die Oberflächentemperatur jedes Moduls,',
+    'georeferenziert, ohne Anlagenstillstand — ein Termin, rund zwei Stunden,',
+    'kein Eingriff in Ihren Betrieb. ' + e.spezifisch,
+    '',
+    'Was solche Befunde bei Ihrer Anlage kosten, wenn sie unentdeckt bleiben:',
+    '');
 
   for (const b of e.befund) {
-    zeilen.push('* ' + b.name + ' (' + b.annahme + ')',
-      '  ' + L.fmtEur(b.eur) + ' je Jahr'
-      + (b.gesamt == null ? '' : '  |  ' + L.fmtEur(b.gesamt) + ' über ' + e.restJahre + ' Jahre'));
+    z.push('  ' + b.name,
+      '  ' + b.annahme,
+      '  − ' + L.fmtEur(b.eur) + ' je Jahr'
+        + (b.gesamt == null ? '' : '   − ' + L.fmtEur(b.gesamt) + ' über ' + e.restJahre + ' Jahre'),
+      '');
   }
-  zeilen.push(linie,
-    'Summe, wenn alle vier zutreffen: ' + L.fmtEur(e.befundSummeEur) + ' je Jahr'
-    + (e.befundSummeGesamt == null ? '' : ', ' + L.fmtEur(e.befundSummeGesamt) + ' über die Restlaufzeit'),
-    linie, '',
-    'IHR ANGEBOT (Saisonabschluss 2026)',
-    '- Anfahrtspauschale: ' + (e.preis.pauschale === 0 ? 'entfällt' : L.fmtEur2(e.preis.pauschale))
-      + ' (Listenpreis ' + L.fmtEur2(L.PAUSCHALE_LISTE) + ')',
-    '- Thermografie ' + L.fmtInt(e.module) + ' Module à ' + L.fmtEur2(e.preis.ratePerModul)
+  z.push('  Treten diese Befunde gemeinsam auf:',
+    '  − ' + L.fmtEur(e.befundSummeEur) + ' je Jahr'
+      + (e.befundSummeGesamt == null ? '' : '   − ' + L.fmtEur(e.befundSummeGesamt) + ' über die Restlaufzeit'),
+    '',
+    'Beispielrechnung mit branchenüblichen Häufigkeiten. Ob diese Befunde bei',
+    'Ihnen vorliegen, zeigt erst die Messung.',
+    '');
+
+  const gross = e.kwp >= L.SCHWELLE_GROSS;
+  z.push('Zum Saisonende bündeln wir die verbleibenden Messtermine in einer Region',
+    'und geben die gesparte Anfahrt weiter — bei Ihrer Anlagengröße '
+      + (gross ? 'entfällt die' : 'kostet die'),
+    gross ? 'Anfahrtspauschale damit ganz. Das gilt für Termine bis zum ' + e.aktionBis + ','
+          : 'Anfahrt 95 statt 190 Euro. Das gilt für Termine bis zum ' + e.aktionBis + ',',
+    'danach schließt das Messfenster ohnehin bis März.',
+    '', linie,
+    '  Anfahrtspauschale        Liste ' + L.fmtEur2(L.PAUSCHALE_LISTE)
+      + '   jetzt ' + (e.preis.pauschale === 0 ? 'entfällt' : L.fmtEur2(e.preis.pauschale)),
+    '  Thermografie ' + L.fmtInt(e.module) + ' Module à ' + L.fmtEur2(e.preis.ratePerModul)
       + ' = ' + L.fmtEur2(e.preis.preisModule),
-    '- Befundbericht mit Thermogrammen: inklusive');
+    '  Befundbericht mit Thermogrammen und Handlungsempfehlung: inklusive');
   if (e.preis.zuschlagAktion > 0) {
-    zeilen.push('- Anfahrt über ' + L.FREIKILOMETER + ' km: ' + L.fmtEur2(e.preis.zuschlagAktion));
+    z.push('  Anfahrt über ' + L.FREIKILOMETER + ' km: ' + L.fmtEur2(e.preis.zuschlagAktion));
   }
-  zeilen.push(
-    '- Gesamt netto: ' + L.fmtEur2(e.preis.nettoAktion)
+  z.push('  GESAMT NETTO ' + L.fmtEur2(e.preis.nettoAktion)
       + ' statt ' + L.fmtEur2(e.preis.nettoListe) + ', zzgl. MwSt.',
-    '',
-    'Aktionscode ' + e.promo + ', gültig bis ' + e.aktionBis + '.',
-    'Angebot mit vorausgefüllten Daten:',
+    linie, '',
+    'Preis und Termin ansehen — Ihre Anlagendaten sind im Formular schon',
+    'eingetragen, Sie sehen den Preis, bevor Sie etwas bestätigen, und können',
+    'dort auch nur einen Termin anfragen:',
     v.cta_url,
-    '',
-    'Musterbericht als PDF: ' + MUSTERBERICHT,
-    '',
-    'Für Rückfragen erreichen Sie mich direkt.',
     '',
     'Mit freundlichen Grüßen',
     'Dipl.-Ing. Friedrich Plöchinger',
-    'TGA Plöchinger GmbH | Kolibri Inspect',
-    '+49 179 1599311 | info@kolibri-inspect.de',
-    '',
-    linie,
-    'TGA Plöchinger GmbH | Passauer Str. 20 | 94121 Salzweg',
-    'Geschäftsführer Friedrich Plöchinger | USt-IdNr. DE 322 015 971',
+    'Kolibri Inspect · TGA Plöchinger GmbH',
+    '+49 179 1599311 · info@kolibri-inspect.de',
+    '');
+
+  if (e.neuanlage) {
+    z.push('P.S. — Hat Ihr Errichter die Anlage nach der Montage selbst thermografiert?',
+      'Dann lassen Sie sich den Bericht geben. Fehlt er, ist das schon die halbe',
+      'Antwort.');
+  } else if (e.gwMonateRest <= 0) {
+    z.push('P.S. — Falls für Ihre Anlage schon einmal eine Thermografie gemacht wurde:',
+      'schreiben Sie mir kurz, wann. Wenn der Befund noch trägt, sparen Sie sich',
+      'den Termin.');
+  } else {
+    z.push('P.S. — Maßgeblich für die Frist ist die Abnahme, nicht die Inbetriebnahme',
+      'im Register. Weicht Ihr Abnahmeprotokoll ab, verschiebt sich der',
+      e.gwEndeMonat + ' entsprechend. Schreiben Sie mir das Datum, dann rechne ich',
+      'Ihnen den richtigen Termin.');
+  }
+
+  z.push('', linie,
+    'TGA Plöchinger GmbH · Passauer Str. 20 · 94121 Salzweg',
+    'Geschäftsführer Friedrich Plöchinger · USt-IdNr. DE 322 015 971',
     'Impressum: https://www.kolibri-inspect.de/impressum.html',
     'Datenschutz: https://www.kolibri-inspect.de/datenschutz.html',
     '',
-    'Sie erhalten diese Nachricht als Betreiber einer im',
-    'Marktstammdatenregister veröffentlichten PV-Anlage ab 100 kWp.',
-    'Kein Newsletter, keine Weitergabe Ihrer Daten, keine Zählpixel.',
-    'Keine weiteren Nachrichten: eine Antwort mit „Abmelden" genügt, wir',
-    'löschen Ihre Adresse dann dauerhaft.');
+    'Ihre Anlagendaten stammen aus dem öffentlichen Marktstammdatenregister der',
+    'Bundesnetzagentur. Keine Weitergabe Ihrer Daten, keine Zählpixel.',
+    'Keine weiteren Nachrichten: antworten Sie mit „Abmelden", dann löschen wir',
+    'Ihre Adresse dauerhaft.');
 
-  return zeilen.join('\n');
+  return z.join('\n');
 }
 
 function baueMail(e, heute) {
@@ -573,31 +694,26 @@ function baueMail(e, heute) {
   };
   v.preheader = 'Vier typische Befunde, auf Ihre ' + L.fmtInt(e.module) + ' Module gerechnet: '
     + L.fmtEur(e.befundSummeEur) + ' Ertragsverlust je Jahr.';
-  v.titel = e.neuanlage
-    ? 'Was die Montage Ihrer Anlage verschwiegen haben könnte'
-    : e.gwMonateRest > 0
-      ? 'Noch ' + L.monate(e.gwMonateRest) + ', in denen Modulfehler nicht Ihre Sache sind'
-      : 'Ein Befund, solange die Saison noch misst';
+  v.titel = titelZeile(e);
+  v.untertitel = esc(untertitelZeile(e));
+  v.datum = new Intl.DateTimeFormat('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(heute);
   v.ort = esc(e.ort);
   v.anrede = esc(e.anrede);
+  v.logo_url = BILD_BASIS + 'symbol.png';
   v.datenband = datenband(e);
-  v.absatz_aufhaenger = absatzAufhaenger(e) + fazitBlock(e);
+  v.absatz_aufhaenger = absatzAufhaenger(e);
   v.fristbalken = fristbalken(e, heute);
-  v.spezifisch = esc(e.spezifisch);
+  v.absatz_messung = absatzMessung(e);
   v.befund_zeilen = befundZeilen(e);
   v.befund_kopf_rest = e.restJahre != null ? 'ÜBER ' + e.restJahre + ' JAHRE' : 'ÜBER DIE LAUFZEIT';
-  v.befund_summe_jahr = L.fmtEur(e.befundSummeEur);
-  v.befund_summe_gesamt = e.befundSummeGesamt == null ? '—' : L.fmtEur(e.befundSummeGesamt);
+  v.befund_summe_jahr = minus(e.befundSummeEur);
+  v.befund_summe_gesamt = e.befundSummeGesamt == null ? '—' : minus(e.befundSummeGesamt);
   v.befund_basis = esc(befundBasis(e));
-  v.anlage_zeile = L.fmtKwp(e.kwp) + ' kWp · ' + L.fmtInt(e.module) + ' Module · Standort ' + esc(e.ort)
-    + (e.see ? ' · ' + esc(e.see) : '');
+  v.absatz_angebot = absatzAngebot(e);
   v.preis_zeilen = preisZeilen(e);
   v.preis_liste = L.fmtEur2(e.preis.nettoListe);
   v.preis_aktion = L.fmtEur2(e.preis.nettoAktion);
-  v.ersparnis = L.fmtEur2(e.preis.ersparnis);
-  v.promo = esc(e.promo);
-  v.aktion_bis = esc(e.aktionBis);
-  v.musterbericht_url = MUSTERBERICHT;
+  v.ps = psZeile(e);
   v.abmelden_url = abmeldeUrl(e);
 
   const tpl = fs.readFileSync(TEMPLATE, 'utf8');
