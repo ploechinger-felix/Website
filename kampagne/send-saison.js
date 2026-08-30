@@ -134,7 +134,11 @@ const MAIL_REPLY_TO  = process.env.MAIL_REPLY_TO  || 'info@kolibri-inspect.de';
 const ABMELDE_MAIL   = process.env.ABMELDE_MAIL   || MAIL_REPLY_TO;
 
 const BASIS_URL       = process.env.CAMPAIGN_BASE_URL || 'https://www.kolibri-inspect.de/angebot.html';
-const MUSTERBERICHT   = process.env.MUSTERBERICHT_URL || 'https://www.kolibri-inspect.de/musterbericht.pdf';
+/* Ziel ist der Musterbericht-Abschnitt der Startseite, nicht die PDF-Datei
+   selbst: dort steht, was im Bericht drin ist, und der Download-Knopf
+   daneben. Ein direkter PDF-Link aus einer Kaltmail heraus sieht ausserdem
+   nach Anhang aus, und darauf klickt niemand. */
+const MUSTERBERICHT   = process.env.MUSTERBERICHT_URL || 'https://www.kolibri-inspect.de/#report';
 /* Die Thermogramme liegen in einer eigenen, auf Anzeigegröße gerechneten
    Fassung unter Bilder/mail/ — die Originale wiegen zusammen 538 kB und
    werden auf 76 px dargestellt. */
@@ -143,6 +147,10 @@ const BILD_BASIS      = process.env.BILD_BASIS_URL    || 'https://www.kolibri-in
    nicht sagen, welcher Aufhaenger die Auftraege gebracht hat — und genau
    das ist die einzige Frage, die nach dem Versand noch zaehlt. */
 const CAMPAIGN_REF    = KONFIG.ref || process.env.CAMPAIGN_REF || 'saison-mail-2026';
+/* Wohin der Versandbericht geht. Faellt auf das Weiterleitungsziel zurueck,
+   damit Bericht und weitergeleitete Antworten im selben Postfach liegen. */
+const BERICHT_AN      = process.env.BERICHT_AN || process.env.WEITERLEITUNG_AN
+                        || 'info@kolibri-inspect.de';
 
 /* Zufälliger Abstand zwischen zwei Nachrichten. Ein fester Takt ist für
    jeden Filter das auffälligste Merkmal eines Massenversands. */
@@ -842,6 +850,7 @@ function baueMail(e, heute) {
   v.preis_liste = L.fmtEur2(e.preis.nettoListe);
   v.preis_aktion = L.fmtEur2(e.preis.nettoAktion);
   v.ps = psZeile(e);
+  v.musterbericht_url = MUSTERBERICHT;
   v.abmelden_url = abmeldeUrl(e);
 
   const tpl = fs.readFileSync(TEMPLATE, 'utf8');
@@ -1241,6 +1250,8 @@ async function versenden() {
   }
 
   let raus = 0, fehler = 0;
+  const versandteHeute = [];
+  const fehlerHeute = [];
   for (const e of portion) {
     // Sendefenster einhalten, außer bei Einzeltest oder ausdrücklichem Wunsch
     if (SEND && !NUR && !OHNE_FENSTER && !imFenster(new Date())) {
@@ -1276,10 +1287,12 @@ async function versenden() {
         schreibJson(VERSAND_JSON, versand);
         log({ status: 'versandt', email: e.email, firma: e.firma, ort: e.ort,
               kwp: e.kwp, gw_monate: e.gwMonateRest, betreff: m.subject });
+        versandteHeute.push({ e, betreff: m.subject });
       }
       raus++;
     } catch (err) {
       fehler++;
+      fehlerHeute.push({ e, grund: err.message });
       log({ status: 'fehler', email: e.email, firma: e.firma, fehler: err.message });
       /* Weist das Postfach die Nachricht dauerhaft zurück, ist weitermachen
          das Schlechteste, was man tun kann — jeder weitere Versuch
@@ -1296,11 +1309,77 @@ async function versenden() {
     }
   }
 
+  const rest = empf.length - Object.keys(versand.gesendet).length;
+
+  /* Bericht über den Stoß, bevor die Verbindung zugeht — sie wird dafür
+     wiederverwendet. Der Bericht geht raus, sobald mindestens eine Nachricht
+     versandt wurde, auch wenn der Lauf danach abgebrochen ist: gerade dann
+     will man wissen, wen es noch erwischt hat. */
+  if (SEND && transporter && versandteHeute.length) {
+    try {
+      await sendeBericht(transporter, versandteHeute, fehlerHeute, datum, rest, empf.length);
+      console.log('Bericht an ' + BERICHT_AN + ' verschickt.');
+    } catch (err) {
+      console.error('Bericht konnte nicht verschickt werden: ' + err.message);
+      log({ status: 'berichtfehler', fehler: err.message });
+    }
+  }
+
   if (transporter) transporter.close();
   console.log('\nFertig. ' + (SEND ? 'versandt: ' + raus : 'Trockenlauf: ' + raus + ' vorbereitet')
     + (fehler ? ' · Fehler: ' + fehler : ''));
-  const rest = empf.length - Object.keys(versand.gesendet).length;
   console.log('Noch offen: ' + rest);
+}
+
+/* ── Versandbericht ──
+   Nach jedem Stoß eine Nachricht an den Betreiber: wer angeschrieben wurde,
+   mit welchem Betreff und zu welchem Preis. Zwei Gründe, warum die volle
+   Liste drinsteht und nicht nur eine Zahl: Erstens ruft womöglich jemand aus
+   dieser Liste an, und dann will man wissen, was er bekommen hat. Zweitens
+   ist es die einzige Kontrolle darüber, was eine Automatik ohne Rückfrage
+   tut — eine Zahl allein wäre keine. */
+async function sendeBericht(transporter, versandte, fehlgeschlagen, datum, rest, gesamt) {
+  const z = [];
+  z.push(KONFIG.titel,
+    'Versandtag ' + datum + ' · ' + versandte.length + ' Nachrichten raus',
+    'Noch offen in dieser Kampagne: ' + rest + ' von ' + gesamt,
+    '',
+    '────────────────────────────────────────────────────────',
+    '');
+
+  versandte.forEach((v, i) => {
+    const e = v.e;
+    z.push((i + 1) + '. ' + (e.firma || '(ohne Firmenname)'),
+      '   ' + e.email,
+      '   ' + e.ort + ' · ' + L.fmtKwp(e.kwp) + ' kWp · ' + L.fmtInt(e.module) + ' Module'
+        + (e.gwEndeMonat ? ' · Frist ' + e.gwEndeMonat : ''),
+      '   Betreff: ' + v.betreff,
+      '   Angebot: ' + L.fmtEur2(e.preis.nettoAktion) + ' netto',
+      '');
+  });
+
+  if (fehlgeschlagen.length) {
+    z.push('────────────────────────────────────────────────────────',
+      'Nicht zugestellt (' + fehlgeschlagen.length + '):', '');
+    fehlgeschlagen.forEach(f => z.push('   ' + f.e.email + ' — ' + f.grund));
+    z.push('');
+  }
+
+  z.push('────────────────────────────────────────────────────────',
+    'Antworten dieser Empfänger laufen über ' + MAIL_REPLY_TO + ' und werden',
+    'an ' + BERICHT_AN + ' weitergeleitet. Abmeldungen und Rückläufer traegt',
+    'der Tageslauf selbst in die Sperrliste ein.',
+    '',
+    'Versand anhalten: im Ordner kampagne/.state eine Datei namens STOPP',
+    'anlegen. Dann geht nichts mehr raus, bis sie geloescht wird.');
+
+  await transporter.sendMail({
+    from: '"Kampagnenversand" <' + MAIL_FROM + '>',
+    to: BERICHT_AN,
+    subject: 'Versandbericht ' + KAMPAGNE + ' ' + datum + ': ' + versandte.length
+      + ' Nachrichten' + (fehlgeschlagen.length ? ', ' + fehlgeschlagen.length + ' Fehler' : ''),
+    text: z.join('\n'),
+  });
 }
 
 /* ── Einstieg ── */
