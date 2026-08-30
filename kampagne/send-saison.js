@@ -516,8 +516,8 @@ function absatzMessung(e) {
       : esc(e.fazit));
   }
   s += p('Wir messen im laufenden Betrieb die Oberflächentemperatur jedes Moduls, '
-    + 'georeferenziert, ohne Anlagenstillstand — ein Termin, rund zwei Stunden, kein Eingriff '
-    + 'in Ihren Betrieb. ' + esc(e.spezifisch) + ' Was solche Befunde bei Ihrer Anlage kosten, '
+    + 'georeferenziert — ohne Anlagenstillstand, ohne Abschalten, ohne dass jemand aufs Dach '
+    + 'muss. ' + esc(e.spezifisch) + ' Was solche Befunde bei Ihrer Anlage kosten, '
     + 'wenn sie unentdeckt bleiben:');
   return s;
 }
@@ -726,18 +726,11 @@ function textFassung(e, v) {
     }
   }
 
-  const ertrag = Math.round(e.kwp * L.ERTRAG_KWH_PRO_KWP / 1000);
-  z.push('', linie,
-    'Leistung ' + L.fmtKwp(e.kwp) + ' kWp | Module ' + L.fmtInt(e.module)
-      + ' | am Netz seit ' + e.ibnMonatJahr,
-    'Ertrag rund ' + L.fmtInt(ertrag) + ' MWh/Jahr | Frist '
-      + (e.gwMonateRest > 0 ? 'bis ' : 'endete ') + e.gwEndeMonat,
-    linie, '');
-
+  z.push('');
   if (e.fazit) z.push(e.fazit, '');
   z.push('Wir messen im laufenden Betrieb die Oberflächentemperatur jedes Moduls,',
-    'georeferenziert, ohne Anlagenstillstand — ein Termin, rund zwei Stunden,',
-    'kein Eingriff in Ihren Betrieb. ' + e.spezifisch,
+    'georeferenziert — ohne Anlagenstillstand, ohne Abschalten, ohne dass',
+    'jemand aufs Dach muss. ' + e.spezifisch,
     '',
     'Was solche Befunde bei Ihrer Anlage kosten, wenn sie unentdeckt bleiben:',
     '');
@@ -1033,6 +1026,38 @@ async function pruefen() {
   const empf = lesJson(EMPFAENGER_JSON, null);
   empf ? ok('Empfängerdatei', empf.length + ' Empfänger vorbereitet')
        : bad('Empfängerdatei', 'fehlt — zuerst --vorbereiten');
+
+  /* 6 Preisgleichheit.
+     Die Mail nennt einen Betrag und verlinkt auf ein Formular, das ihn neu
+     rechnet. Weichen beide ab, ist der Vertrauensvorschuss weg, den die Mail
+     gerade aufgebaut hat — und zwar genau in dem Moment, in dem der Empfaenger
+     kaufen wollte. Geprueft wird gegen die Funktion aus api/server.js selbst,
+     nicht gegen eine zweite Abschrift davon. */
+  if (empf) {
+    try {
+      const src = fs.readFileSync(path.join(ROOT, 'api', 'server.js'), 'utf8');
+      const a = src.indexOf('const PRICE_TIERS');
+      const b = src.indexOf('// ── PDF-Generierung');
+      if (a < 0 || b < 0) throw new Error('computePrice in server.js nicht auffindbar');
+      const { resolvePromo } = require('../api/promo-codes');
+      const computePrice = new Function('resolvePromo',
+        src.slice(a, b) + '; return computePrice;')(resolvePromo);
+
+      let abw = 0, beispiel = '';
+      for (const r of empf) {
+        const s = computePrice(r.module, 0, r.promo, r.kwp, r.distanzKm);
+        if (Math.abs(s.nettoGesamt - r.preis.nettoAktion) > 0.01) {
+          if (!abw) beispiel = r.ort + ': Mail ' + L.fmtEur2(r.preis.nettoAktion)
+            + ' vs. Formular ' + L.fmtEur2(s.nettoGesamt);
+          abw++;
+        }
+      }
+      abw ? bad('Preisgleichheit', abw + ' von ' + empf.length + ' weichen ab — ' + beispiel)
+          : ok('Preisgleichheit', empf.length + ' Preise stimmen mit dem Formular ueberein');
+    } catch (e) {
+      warn('Preisgleichheit', 'nicht pruefbar: ' + e.message);
+    }
+  }
 
   const sperr = ladeSperrliste();
   ok('Sperrliste', sperr.size + ' Adressen');
