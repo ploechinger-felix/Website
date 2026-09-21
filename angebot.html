@@ -477,7 +477,7 @@
           <input type="hidden" name="brutto_gesamt"     id="brutto_gesamt" />
           <input type="hidden" name="modulkosten"       id="modulkosten" />
           <input type="hidden" name="rate_per_module"   id="rate_per_module" />
-          <input type="hidden" name="pauschale"         value="190" />
+          <input type="hidden" name="pauschale"         id="pauschale" value="190" />
           <input type="hidden" name="anfahrt_zuschlag"  id="anfahrt_zuschlag" value="0" />
           <input type="hidden" name="distance_km"       id="distance_km" value="0" />
           <input type="hidden" name="promo_code"        id="promo_code"  value="" />
@@ -957,6 +957,11 @@ function updateStep4() {
   document.getElementById('rate_per_module').value   = pr.rate;
   document.getElementById('anfahrt_zuschlag').value  = pr.anfahrtZuschlag;
   document.getElementById('distance_km').value       = distanceKm;
+  /* Auch die Pauschale mitführen: bei einer Aktion ist sie 0, im Markup
+     steht aber 190. Der Server rechnet ohnehin selbst nach, aber ein
+     übermitteltes Feld, das der Gesamtsumme widerspricht, ist eine Falle
+     für jeden, der die Rohdaten später liest. */
+  document.getElementById('pauschale').value         = pr.pauschale;
 }
 
 /* ── kWp → Modul-Schätzung ── */
@@ -1165,7 +1170,18 @@ document.getElementById('back5').addEventListener('click', () => goBack(4));
 document.getElementById('offer-form').addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  if (!validateStep(5)) return;
+  /* Jede Stufe prüfen, nicht nur die letzte. Wer über den Kampagnenlink
+     kommt, wird direkt auf Schritt 4 gesetzt und bekommt Schritt 3 (Name,
+     E-Mail) nie zu sehen. Prüfte hier nur Schritt 5, ginge die Bestellung
+     mit leeren Pflichtfeldern an den Server, der sie mit 400 ablehnt — und
+     der Kunde läse nur "konnte nicht übermittelt werden", ohne zu erfahren,
+     was fehlt. Jeder weitere Versuch endete gleich. */
+  for (let s = 1; s <= 5; s++) {
+    if (validateStep(s)) continue;
+    if (s < currentStep) goBack(s); else goTo(s);
+    validateStep(s);   // zweiter Durchlauf setzt den Fokus, jetzt ist der Schritt sichtbar
+    return;
+  }
 
   const agb  = document.getElementById('agb_akzeptiert');
   const dsgvo = document.getElementById('dsgvo_akzeptiert');
@@ -1214,7 +1230,12 @@ document.getElementById('offer-form').addEventListener('submit', async function 
   } catch (err) {
     submitBtn.disabled = false;
     submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg> Angebot verbindlich beauftragen';
-    alert('Der Auftrag konnte leider nicht übermittelt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt: info@kolibri-inspect.de');
+    /* Den Grund mitnennen. Ein Kunde, der nur "hat nicht geklappt" liest,
+       versucht es zweimal und schreibt dann eine Mail — oder gar nicht. */
+    const grund = (err && err.message) ? err.message : '';
+    alert('Der Auftrag konnte leider nicht übermittelt werden.'
+      + (grund ? '\n\nGrund: ' + grund : '')
+      + '\n\nBitte versuchen Sie es erneut oder kontaktieren Sie uns direkt: info@kolibri-inspect.de');
     console.error('Angebot-Fehler:', err.message);
   }
 });
