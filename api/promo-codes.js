@@ -62,6 +62,15 @@ const PROMO_CODES = {
     validUntil:        '2026-10-31',
     label:             'Aktion „Nachbarschaftsflug" − 15 %',
   },
+  /* Weiterempfehlung: Bestandskunden geben den Code an Bekannte weiter.
+     Neutral benannt, weil das Repo öffentlich ist — welcher Kunde welchen
+     Code hält, steht nur in Bestellungen/kunden/*.json. */
+  'EMPF-2027-R4T': {
+    type:       'percent',
+    discount:   0.20,
+    validUntil: '2027-12-31',
+    label:      'Weiterempfehlung − 20 %',
+  },
 };
 
 function resolvePromo(code) {

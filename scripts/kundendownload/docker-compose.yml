@@ -1,0 +1,27 @@
+# Liegt auf dem VPS unter /docker/downloads, getrennt vom Website-Repo,
+# damit die Berichte nie in einem Image oder im öffentlichen Repo landen.
+# DL_NETWORK (in /docker/downloads/.env) ist das Netz, über das Traefik den
+# web-Container der Website erreicht; upload.sh trägt es beim ersten Lauf ein.
+services:
+  downloads:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./files:/srv/download:ro
+      - ./auth:/auth:ro
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kolibri-dl.rule=(Host(`kolibri-inspect.de`) || Host(`www.kolibri-inspect.de`)) && PathPrefix(`/download/`)"
+      - "traefik.http.routers.kolibri-dl.entrypoints=websecure"
+      - "traefik.http.routers.kolibri-dl.tls=true"
+      - "traefik.http.routers.kolibri-dl.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.kolibri-dl.priority=120"
+      - "traefik.http.services.kolibri-dl.loadbalancer.server.port=80"
+    restart: unless-stopped
+
+networks:
+  traefik:
+    name: ${DL_NETWORK:?DL_NETWORK in /docker/downloads/.env setzen}
+    external: true

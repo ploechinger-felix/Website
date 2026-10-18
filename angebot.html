@@ -836,6 +836,9 @@ const PROMO_CODES = {
     pauschaleUnter500: 95, pauschaleAb500: 0,
     freikilometer: 200, schwelleKwp: 500, discount: 0.15,
     validUntil: '2026-10-31', label: 'Aktion „Nachbarschaftsflug“ − 15 %' },
+  /* Weiterempfehlung durch Bestandskunden (Zuordnung nur in Bestellungen/kunden). */
+  'EMPF-2027-R4T': { type: 'percent', discount: 0.20,
+    validUntil: '2027-12-31', label: 'Weiterempfehlung − 20 %' },
 };
 function resolvePromo(code) {
   if (!code) return null;
