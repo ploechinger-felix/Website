@@ -71,6 +71,12 @@ const PROMO_CODES = {
     validUntil: '2027-12-31',
     label:      'Weiterempfehlung − 20 %',
   },
+  'EMPF-2027-FX7': {
+    type:       'percent',
+    discount:   0.20,
+    validUntil: '2027-12-31',
+    label:      'Weiterempfehlung − 20 %',
+  },
 };
 
 function resolvePromo(code) {
